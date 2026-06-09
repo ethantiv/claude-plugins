@@ -19,6 +19,8 @@ W sesji Claude Code uruchom komendy (`/plugin` to wbudowana komenda Claude Code)
 /plugin marketplace add ethantiv/claude-plugins
 /plugin install book-forge@claude-plugins
 /plugin install babysit-pr@claude-plugins
+/plugin install read-arxiv-paper@claude-plugins
+/plugin install roadmap@claude-plugins
 ```
 
 Albo z terminala, przez CLI:
@@ -27,6 +29,8 @@ Albo z terminala, przez CLI:
 claude plugin marketplace add ethantiv/claude-plugins
 claude plugin install book-forge@claude-plugins
 claude plugin install babysit-pr@claude-plugins
+claude plugin install read-arxiv-paper@claude-plugins
+claude plugin install roadmap@claude-plugins
 ```
 
 Instaluj tylko to, czego potrzebujesz; wtyczki są od siebie niezależne. Po instalacji sprawdź stan:
