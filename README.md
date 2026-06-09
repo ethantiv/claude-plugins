@@ -6,8 +6,8 @@ Publiczny **marketplace wtyczek do [Claude Code](https://claude.com/claude-code)
 
 | Wtyczka | Język | Co robi |
 | --- | --- | --- |
-| **book-forge** | 🇵🇱 polski | Kompletny, 12-etapowy pipeline do pisania powieści rojem agentów: od luki rynkowej i pomysłu, przez konspekt i „biblię książki", po pisanie, redakcję i pakiet wydawniczy. Każdy etap kończy obowiązkowa redakcja na naturalną polszczyznę (anty-AI-slop). |
-| **babysit-pr** | 🌍 uniwersalna | Lokalny odpowiednik `autofix-pr`: monitoruje bieżący pull request i naprawia go w sesji Claude Code — błędy CI, komentarze z review proszące o zmiany i konflikty scalania. |
+| **book-forge** | polski | Kompletny, 12-etapowy pipeline do pisania powieści rojem agentów: od luki rynkowej i pomysłu, przez konspekt i „biblię książki", po pisanie, redakcję i pakiet wydawniczy. Każdy etap kończy obowiązkowa redakcja na naturalną polszczyznę (anty-AI-slop). |
+| **babysit-pr** | uniwersalna | Lokalny odpowiednik `autofix-pr`: monitoruje bieżący pull request i naprawia go w sesji Claude Code — błędy CI, komentarze z review proszące o zmiany i konflikty scalania. |
 
 ## Instalacja
 
@@ -59,7 +59,7 @@ Obie wtyczki potrzebują działającego Claude Code. Dodatkowo:
 
 Po instalacji każda wtyczka udostępnia swoje skille jako komendy `/<wtyczka>:<skill>`.
 
-- **book-forge** — pełny pipeline opisany w [`plugins/book-forge/README.md`](plugins/book-forge/README.md). Start: `/book-forge:market-report` (lub lekki `/book-forge:idea-spark`).
+- **book-forge** — pełny pipeline opisany w [`plugins/book-forge/README.md`](plugins/book-forge/README.md); wizualny przewodnik po 12 etapach: [`przewodnik.html`](plugins/book-forge/przewodnik.html). Start: `/book-forge:market-report` (lub lekki `/book-forge:idea-spark`).
 - **babysit-pr** — wywołaj `/babysit-pr` na gałęzi z otwartym PR, by monitorować i naprawiać CI/review/konflikty lokalnie.
 
 ## Licencja
