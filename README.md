@@ -59,6 +59,17 @@ npx skills add https://github.com/softaworks/agent-toolkit --skill humanizer
 npx skills add https://github.com/vercel-labs/agent-browser --skill agent-browser
 ```
 
+Samo CLI agent-browser (z pobraniem przeglądarki) instalujesz tak:
+
+```bash
+npm install -g agent-browser      # wszystkie platformy
+brew install agent-browser        # macOS
+agent-browser install             # pobranie Chrome (przy pierwszym uruchomieniu)
+
+# albo bez instalacji
+npx agent-browser open example.com
+```
+
 **babysit-pr**
 - **`gh`** (GitHub CLI, zalogowane), **`jq`**, **`git`** dostępne w `PATH`.
 
