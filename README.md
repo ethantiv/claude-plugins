@@ -1,6 +1,6 @@
 # claude-plugins
 
-Publiczny **Marketplace wtyczek do [Claude Code](https://claude.com/claude-code)**. Dodajesz go raz, potem instalujesz wtyczki jedną komendą. Działają w terminalu, aplikacji desktopowej i rozszerzeniach IDE.
+**Marketplace wtyczek do [Claude Code](https://claude.com/claude-code)**. Dodajesz go raz, potem instalujesz wtyczki jedną komendą. Działają w terminalu, aplikacji desktopowej i rozszerzeniach IDE.
 
 ## Wtyczki
 
