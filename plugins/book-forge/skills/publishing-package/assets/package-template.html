@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pakiet wydawniczy: {{TITLE}}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,900;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f6f1e8; --paper-raised:#efe7d7; --ink:#181310; --ink-soft:#4a4034;
+  --cream:#f4ead6; --cream-dim:#cdbfa6;
+  --ox:#8a1c2b; --ox-bright:#a8303f; --ox-deep:#4f0f18;
+  --gold:#9a6712; --gold-bright:#c89233;
+  --win:#1c5e46; --warn:#9a5a12;
+  --line:#d8ccb6; --line-dark:rgba(244,234,214,.16);
+  --z-nav:50;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:'Inter',system-ui,-apple-system,sans-serif;font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+::selection{background:var(--ox);color:var(--cream)}
+:focus-visible{outline:2px solid var(--ox);outline-offset:3px;border-radius:2px}
+.masthead :focus-visible{outline-color:var(--gold-bright)}
+.wrap{max-width:1080px;margin:0 auto;padding:0 28px}
+
+/* ---- masthead (drench) ---- */
+header.masthead{background:var(--ox);background:linear-gradient(157deg,var(--ox) 0%,var(--ox-deep) 100%);color:var(--cream);padding:30px 0 50px;position:relative;overflow:hidden}
+header.masthead::after{content:"";position:absolute;inset:0;background:radial-gradient(120% 80% at 85% -10%,rgba(200,146,51,.16),transparent 55%);pointer-events:none}
+.masthead-rule{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;letter-spacing:.26em;text-transform:uppercase;color:var(--gold-bright);padding-bottom:22px;margin-bottom:34px;border-bottom:1px solid var(--line-dark);display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.masthead-rule span{opacity:.5}
+header.masthead h1{font-family:'Fraunces',serif;font-weight:900;font-size:clamp(40px,7vw,84px);line-height:.97;letter-spacing:-.025em;text-wrap:balance;max-width:16ch}
+header.masthead h1 em{font-style:italic;color:var(--gold-bright);font-weight:400}
+.h1en{font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:.1em;color:var(--cream-dim);text-transform:uppercase;margin-top:14px}
+.metaline{margin-top:28px;display:flex;flex-wrap:wrap;gap:9px}
+.chip{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.05em;background:var(--cream);color:var(--ox-deep);font-weight:700;padding:6px 12px;border-radius:2px}
+.chip.alt{background:transparent;color:var(--cream);border:1px solid var(--line-dark);font-weight:500}
+
+/* ---- contents nav ---- */
+nav.contents{position:sticky;top:0;z-index:var(--z-nav);background:rgba(246,241,232,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+nav.contents .wrap{display:flex;gap:2px;overflow-x:auto}
+.tab{flex:0 0 auto;background:none;border:none;font-family:'Fraunces',serif;font-size:16px;font-weight:600;color:var(--ink-soft);padding:17px 16px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:color .2s,border-color .2s}
+.tab:hover{color:var(--ink)}
+.tab.active{color:var(--ox);border-bottom-color:var(--ox)}
+.tab .n{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:var(--gold);margin-right:7px}
+
+section.panel{display:none;padding:54px 0 78px;animation:fade .45s ease}
+section.panel.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+.block{margin-bottom:38px}
+.lbl{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--ox);display:block;margin-bottom:11px}
+.logline{font-family:'Fraunces',serif;font-style:italic;font-size:clamp(22px,2.7vw,28px);line-height:1.36;max-width:46ch;color:var(--ink);text-wrap:balance}
+.pitch{font-size:17px;line-height:1.65}
+.blurb{background:var(--paper-raised);border:1px solid var(--line);border-radius:6px;padding:28px 32px;font-family:'Fraunces',serif;font-size:18px;line-height:1.72;max-width:66ch}
+.blurb p{margin-bottom:14px}.blurb p:last-child{margin-bottom:0}
+.prose{font-size:16.5px;line-height:1.78}
+.prose p{margin-bottom:16px}
+.spoiler{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.04em;color:#fff;background:var(--ox);display:inline-block;padding:5px 12px;border-radius:3px;margin-bottom:20px}
+.query{background:var(--paper-raised);border:1px solid var(--line);border-radius:6px;padding:30px 34px;font-size:15.5px;line-height:1.78;white-space:pre-wrap;max-width:74ch}
+.fillmark{background:rgba(138,28,43,.08);border:1px solid rgba(138,28,43,.3);border-radius:3px;padding:1px 7px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ox)}
+
+.comps{display:grid;gap:12px;max-width:760px}
+.comp{background:var(--paper-raised);border:1px solid var(--line);border-radius:5px;padding:15px 18px}
+.comp .t{font-family:'Fraunces',serif;font-weight:600;font-size:16.5px}
+.comp .t::before{content:"▸";color:var(--win);margin-right:9px}
+.comp .d{font-size:14px;color:var(--ink-soft);margin-top:4px;line-height:1.5;padding-left:22px}
+.uwagi{margin-top:30px;background:var(--ink);color:var(--cream);border-radius:6px;padding:24px 28px;font-size:14px;line-height:1.55;max-width:760px}
+.uwagi b{color:var(--gold-bright);font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:12px}
+.uwagi ul{margin:0;list-style:none;display:grid;gap:9px}
+.uwagi li{padding-left:18px;position:relative}
+.uwagi li::before{content:"–";position:absolute;left:0;color:var(--gold-bright)}
+.note{font-size:13px;color:var(--ink-soft);margin-top:16px}
+
+footer{border-top:1px solid var(--ink);padding:30px 0 64px;margin-top:20px}
+footer .wrap{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.04em;color:var(--ink-soft)}
+
+@media(max-width:640px){.wrap{padding:0 20px}.blurb,.query{padding:22px 22px}}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,section.panel{animation:none!important}
+  *{transition:none!important}
+}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="masthead-rule">Pakiet wydawniczy <span>/</span> {{GENRE}}</div>
+    <h1 id="booktitle">{{TITLE}}</h1>
+    <div class="h1en" id="booken"></div>
+    <div class="metaline" id="chips"></div>
+  </div>
+</header>
+
+<nav class="contents">
+  <div class="wrap">
+    <button class="tab active" data-p="pitch-p"><span class="n">01</span>Pitch i comps</button>
+    <button class="tab" data-p="synopsis-p"><span class="n">02</span>Synopsis</button>
+    <button class="tab" data-p="query-p"><span class="n">03</span>List do agenta</button>
+  </div>
+</nav>
+
+<section class="panel active" id="pitch-p">
+  <div class="wrap">
+    <div class="block"><span class="lbl">Logline</span><div class="logline" id="logline"></div></div>
+    <div class="block"><span class="lbl">Elevator pitch</span><div class="pitch" id="pitch"></div></div>
+    <div class="block"><span class="lbl">Opis z okładki (bez spoilerów)</span><div class="blurb" id="blurb"></div></div>
+    <div class="block"><span class="lbl">Comp titles — dla czytelników</span><div class="comps" id="comps"></div></div>
+    <div class="uwagi" id="uwagi" style="display:none"></div>
+  </div>
+</section>
+
+<section class="panel" id="synopsis-p">
+  <div class="wrap">
+    <div class="spoiler">Uwaga: synopsis zawiera zakończenie (materiał dla agenta)</div>
+    <div class="prose" id="synopsis"></div>
+  </div>
+</section>
+
+<section class="panel" id="query-p">
+  <div class="wrap">
+    <span class="lbl">List do agenta</span>
+    <div class="query" id="query"></div>
+    <p class="note">Pola w nawiasach uzupełnij sam: bio i dane kontaktowe nie są zmyślane.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    Pakiet wydawniczy &bull; {{GENRE}} &bull; przygotowany wieloagentowym procesem w Claude Code
+  </div>
+</footer>
+
+<script>
+const DATA = /*__INJECT_DATA__*/ null;
+const $=s=>document.querySelector(s);
+const m=DATA.meta||{};
+function paras(t){return (t||'').split(/\n\s*\n/).map(p=>'<p>'+p.trim().replace(/\s*\n\s*/g,' ')+'</p>').join('')}
+function marks(t){return (t||'').replace(/\[([^\]]+)\]/g,'<span class="fillmark">[$1]</span>')}
+
+$('#booktitle').textContent=m.title||'';
+$('#booken').textContent=m.en?('oryg. „'+m.en+'”'):'';
+$('#chips').innerHTML=[
+  m.genre?`<span class="chip">${m.genre}</span>`:'',
+  m.words?`<span class="chip alt">${(m.words).toLocaleString('pl-PL')} słów</span>`:'',
+  m.target?`<span class="chip alt">${m.target}</span>`:'',
+].join('');
+
+$('#logline').textContent=DATA.logline||'';
+$('#pitch').textContent=DATA.pitch||'';
+$('#blurb').innerHTML=paras(DATA.blurb);
+$('#synopsis').innerHTML=paras(DATA.synopsis);
+$('#query').innerHTML=marks(DATA.query||'');
+$('#comps').innerHTML=(DATA.comps||[]).map(c=>`<div class="comp"><div class="t">${c.tytul||''}</div><div class="d">${c.dla_czytelnikow||''}</div></div>`).join('')||'<p>—</p>';
+
+if(DATA.uwagi&&DATA.uwagi.length){
+  $('#uwagi').style.display='block';
+  $('#uwagi').innerHTML='<b>Uwagi redakcyjne</b><ul>'+DATA.uwagi.map(u=>`<li>${u}</li>`).join('')+'</ul>';
+}
+
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active'); document.getElementById(t.dataset.p).classList.add('active');
+  window.scrollTo({top:0,behavior:'instant'});
+}));
+</script>
+</body>
+</html>

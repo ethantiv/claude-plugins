@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nota zakupowa: {{GENRE}} · {{YEAR}}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,900;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f6f1e8; --paper-raised:#efe7d7; --ink:#181310; --ink-soft:#4a4034;
+  --cream:#f4ead6; --cream-dim:#cdbfa6;
+  --ox:#8a1c2b; --ox-bright:#a8303f; --ox-deep:#4f0f18;
+  --gold:#9a6712; --gold-bright:#c89233;
+  --win:#1c5e46;
+  --line:#d8ccb6; --line-dark:rgba(244,234,214,.16);
+  --z-nav:50;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:'Inter',sans-serif;font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+::selection{background:var(--ox);color:var(--cream)}
+:focus-visible{outline:2px solid var(--ox);outline-offset:3px;border-radius:2px}
+.masthead :focus-visible{outline-color:var(--gold-bright)}
+
+.wrap{max-width:1080px;margin:0 auto;padding:0 28px}
+
+/* ---- masthead (drench) ---- */
+header.masthead{background:var(--ox);background:linear-gradient(157deg,var(--ox) 0%,var(--ox-deep) 100%);color:var(--cream);padding:30px 0 50px;position:relative;overflow:hidden}
+header.masthead::after{content:"";position:absolute;inset:0;background:radial-gradient(120% 80% at 85% -10%,rgba(200,146,51,.16),transparent 55%);pointer-events:none}
+.masthead-rule{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;letter-spacing:.26em;text-transform:uppercase;color:var(--gold-bright);padding-bottom:22px;margin-bottom:34px;border-bottom:1px solid var(--line-dark);display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.masthead-rule span{opacity:.5}
+header.masthead h1{font-family:'Fraunces',serif;font-weight:900;font-size:clamp(44px,7.4vw,88px);line-height:.96;letter-spacing:-.025em;text-wrap:balance;max-width:14ch}
+header.masthead h1 em{font-style:italic;color:var(--gold-bright);font-weight:400}
+.sub{font-family:'Fraunces',serif;font-style:italic;font-size:clamp(18px,2.4vw,24px);line-height:1.4;color:var(--cream-dim);margin-top:22px;max-width:50ch}
+.metaline{margin-top:30px;display:flex;flex-wrap:wrap;gap:9px}
+.chip{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.05em;background:var(--cream);color:var(--ox-deep);font-weight:700;padding:6px 12px;border-radius:2px}
+.chip.alt{background:transparent;color:var(--cream);border:1px solid var(--line-dark);font-weight:500}
+
+/* ---- contents nav (sticky, light) ---- */
+nav.contents{position:sticky;top:0;z-index:var(--z-nav);background:rgba(246,241,232,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+nav.contents .wrap{display:flex;gap:2px;overflow-x:auto}
+.tab{flex:0 0 auto;background:none;border:none;font-family:'Fraunces',serif;font-size:16px;font-weight:600;color:var(--ink-soft);padding:17px 16px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:color .2s,border-color .2s}
+.tab:hover{color:var(--ink)}
+.tab.active{color:var(--ox);border-bottom-color:var(--ox)}
+.tab .n{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:var(--gold);margin-right:7px}
+
+section.panel{display:none;padding:54px 0 78px;animation:fade .45s ease}
+section.panel.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+h2.sec{font-family:'Fraunces',serif;font-weight:900;font-size:clamp(30px,4.2vw,46px);letter-spacing:-.015em;line-height:1.04;text-wrap:balance;max-width:18ch}
+h2.sec::before{content:"";display:block;width:54px;height:3px;background:var(--ox);margin-bottom:20px}
+.lead{font-size:18px;line-height:1.6;color:var(--ink-soft);margin:16px 0 40px;text-wrap:pretty}
+.lead b{color:var(--ink);font-weight:600}
+
+/* ---- bestseller list (editorial ranked list) ---- */
+.blist{border-top:1px solid var(--line)}
+.bcard{border-bottom:1px solid var(--line)}
+.bhead{display:flex;align-items:baseline;gap:20px;padding:20px 6px;cursor:pointer;user-select:none;transition:background .2s}
+.bhead:hover{background:rgba(138,28,43,.035)}
+.brank{font-family:'Fraunces',serif;font-weight:900;font-size:clamp(32px,5vw,46px);color:var(--ox);min-width:60px;line-height:.9;font-variant-numeric:lining-nums}
+.bmain{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:9px}
+.btitle{font-family:'Fraunces',serif;font-weight:600;font-size:21px;line-height:1.2}
+.bauthor{font-style:italic;color:var(--ink-soft);font-weight:400;font-size:16px}
+.btag{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.03em;line-height:1.5;color:var(--ink-soft);border:1px solid var(--line);background:var(--paper-raised);padding:4px 10px;border-radius:2px;max-width:100%}
+.bplus{font-family:'Fraunces',serif;font-size:30px;color:var(--ox);line-height:1;transition:transform .3s ease;flex:0 0 auto;align-self:center}
+.bcard.open .bplus{transform:rotate(45deg)}
+.bbody{display:grid;grid-template-rows:0fr;transition:grid-template-rows .4s ease}
+.bcard.open .bbody{grid-template-rows:1fr}
+.bbody>.inner{overflow:hidden}
+.bbody .pad{padding:2px 6px 26px 80px;display:grid;gap:16px}
+.bbody .blockq{font-size:15.5px;line-height:1.6}
+.bbody .lbl{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ox);display:block;margin-bottom:5px;font-weight:700}
+
+/* ---- observations (dark interlude) ---- */
+.obs{margin-top:52px;background:var(--ink);color:var(--cream);border-radius:5px;padding:38px 40px;position:relative;overflow:hidden}
+.obs::after{content:"";position:absolute;top:-50px;right:-30px;width:200px;height:200px;background:radial-gradient(circle,rgba(200,146,51,.14),transparent 70%);pointer-events:none}
+.obs h3{font-family:'Fraunces',serif;font-weight:900;font-size:25px;line-height:1.1;letter-spacing:-.01em}
+.obs .osub{color:var(--cream-dim);font-size:15px;margin:8px 0 26px;font-style:italic;font-family:'Fraunces',serif}
+.obs ul{list-style:none;display:grid;gap:18px}
+.obs li{display:flex;gap:18px;font-size:15.5px;line-height:1.55;color:var(--cream)}
+.obs li .num{font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--gold-bright);font-size:14px;flex:0 0 auto;padding-top:2px;min-width:24px}
+.obs li b{color:#fff;font-weight:600}
+
+/* ---- gaps ---- */
+.gaps{display:grid;gap:30px}
+.gap{background:var(--paper-raised);border:1px solid var(--line);border-radius:5px;padding:32px 34px;position:relative}
+.gap .gn{font-family:'Fraunces',serif;font-weight:900;font-size:44px;color:var(--ox);line-height:.85;opacity:.92}
+.gap h3{font-family:'Fraunces',serif;font-weight:600;font-size:23px;margin:6px 0 14px;line-height:1.2;letter-spacing:-.01em;text-wrap:balance}
+.gap p{font-size:16px;line-height:1.6;margin-bottom:20px}
+.gap .ev{border-top:1px solid var(--line);padding-top:20px}
+.gap .ev-h{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ox);display:block;margin-bottom:15px;font-weight:700}
+.gap .ev-proof{list-style:none;counter-reset:ev;display:grid;gap:12px;margin-bottom:14px}
+.gap .ev-proof li{counter-increment:ev;display:flex;gap:13px;font-size:14px;color:var(--ink-soft);line-height:1.55}
+.gap .ev-proof li::before{content:counter(ev,decimal-leading-zero);font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:var(--ox);flex:0 0 auto;padding-top:1px}
+.ev-notes{display:grid;gap:10px}
+.gap .ev-note{display:flex;gap:12px;align-items:baseline;font-size:14px;line-height:1.55;color:var(--ink);padding:12px 16px;border-radius:4px;border:1px solid}
+.gap .ev-note .k{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;flex:0 0 auto;padding-top:2px}
+.gap .ev-note.luka{background:rgba(28,94,70,.08);border-color:rgba(28,94,70,.35)}
+.gap .ev-note.luka .k{color:var(--win)}
+.gap .ev-note.ryzyko{background:rgba(138,28,43,.07);border-color:rgba(138,28,43,.32)}
+.gap .ev-note.ryzyko .k{color:var(--ox)}
+.gap .ev-note.pozy{background:rgba(154,103,18,.1);border-color:rgba(154,103,18,.34)}
+.gap .ev-note.pozy .k{color:var(--gold)}
+.gap .ev a{color:var(--ox);text-decoration:none;border-bottom:1px solid var(--line);white-space:nowrap;font-weight:500}
+.gap .ev a:hover{border-bottom-color:var(--ox)}
+
+/* ---- ideas ---- */
+.idea{background:var(--paper-raised);border:1px solid var(--line);border-radius:6px;padding:30px 32px;margin-bottom:20px;transition:border-color .3s,box-shadow .3s}
+.idea.winner{border:2px solid var(--gold);box-shadow:0 8px 34px -16px rgba(154,103,18,.55)}
+.itop{display:flex;justify-content:space-between;align-items:flex-start;gap:22px;flex-wrap:wrap}
+.ititle{font-family:'Fraunces',serif;font-weight:900;font-size:27px;letter-spacing:-.015em;line-height:1.05;text-wrap:balance}
+.ititle-en{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.06em;color:var(--ink-soft);text-transform:uppercase;margin-top:7px}
+.vsuben{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.1em;color:var(--cream-dim);text-transform:uppercase;margin:4px 0 18px}
+.badge{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.08em;padding:4px 10px;border-radius:3px;margin-left:12px;vertical-align:middle;white-space:nowrap}
+.badge.w{background:var(--gold);color:#fff}
+.badge.r{background:transparent;color:var(--ink-soft);border:1px solid var(--line)}
+.scorebox{text-align:center;flex:0 0 auto;border-left:1px solid var(--line);padding-left:22px}
+.scorenum{font-family:'Fraunces',serif;font-weight:900;font-size:46px;line-height:1;color:var(--ox);font-variant-numeric:lining-nums}
+.idea.winner .scorenum{color:var(--gold)}
+.scorelbl{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-soft);margin-top:4px}
+.logline{font-family:'Fraunces',serif;font-style:italic;font-size:17px;color:var(--ink);margin:18px 0 16px;line-height:1.45}
+.opis{font-size:15.5px;line-height:1.6;margin-bottom:18px}
+.hook{background:var(--paper);border:1px solid var(--line);padding:14px 18px;font-size:14.5px;line-height:1.55;margin-bottom:22px;border-radius:4px}
+.hook .hk{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);display:block;margin-bottom:5px}
+.hook b{color:var(--ox)}
+
+.judges{display:grid;gap:11px;margin-bottom:20px}
+.jrow{display:grid;grid-template-columns:150px 1fr 40px;align-items:center;gap:14px}
+.jname{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.03em;color:var(--ink-soft);text-transform:uppercase;font-weight:500}
+.bar{height:8px;background:var(--paper);border:1px solid var(--line);border-radius:5px;overflow:hidden}
+.fill{height:100%;width:0;background:var(--ox);border-radius:5px;transition:width 1s cubic-bezier(.2,.8,.2,1)}
+.idea.winner .fill{background:var(--gold)}
+.jval{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;text-align:right}
+.meta2{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.gaptag{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;background:var(--ink);color:var(--cream);padding:5px 10px;border-radius:3px}
+.comp{font-size:12px;color:var(--ink-soft);border:1px solid var(--line);padding:4px 10px;border-radius:12px}
+
+/* ---- verdict (drench) ---- */
+.verd{background:var(--ox);background:linear-gradient(157deg,var(--ox) 0%,var(--ox-deep) 100%);color:var(--cream);border-radius:7px;padding:48px 46px;position:relative;overflow:hidden;box-shadow:0 14px 50px -22px rgba(79,15,24,.7)}
+.verd::before{content:"";position:absolute;top:-70px;right:-50px;width:280px;height:280px;background:radial-gradient(circle,rgba(200,146,51,.2),transparent 68%);pointer-events:none}
+.vkick{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.3em;text-transform:uppercase;color:var(--gold-bright)}
+.vtitle{font-family:'Fraunces',serif;font-weight:900;font-size:clamp(34px,5.4vw,58px);line-height:1;margin:12px 0 4px;color:#fff;text-wrap:balance;letter-spacing:-.02em;max-width:16ch}
+.vscore{font-family:'JetBrains Mono',monospace;color:var(--gold-bright);font-size:14px;margin-bottom:28px}
+.verd h4{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-bright);margin:26px 0 9px}
+.verd p{color:var(--cream);font-size:15.5px;line-height:1.62;margin-bottom:10px}
+.verd p b{color:#fff;font-weight:600}
+.steps{list-style:none;counter-reset:s;display:grid;gap:12px;margin-top:10px}
+.steps li{counter-increment:s;display:flex;gap:16px;color:var(--cream);font-size:15px;line-height:1.55}
+.steps li::before{content:counter(s);font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--ox-deep);background:var(--gold-bright);width:26px;height:26px;border-radius:50%;display:grid;place-items:center;flex:0 0 auto;font-size:12px}
+.runner{margin-top:34px;border-top:1px solid var(--line-dark);padding-top:24px}
+.runner .rl{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--cream-dim)}
+.runner b{color:#fff;font-family:'Fraunces',serif;font-weight:600;font-size:20px}
+.runner .ren{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.06em;color:var(--cream-dim);text-transform:uppercase}
+.runner p{margin-top:9px}
+
+/* ---- footer ---- */
+footer{border-top:1px solid var(--ink);padding:30px 0 64px;margin-top:20px}
+footer .wrap{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.04em;color:var(--ink-soft)}
+
+@media(max-width:640px){
+  .wrap{padding:0 20px}
+  .jrow{grid-template-columns:104px 1fr 36px;gap:10px}
+  .bbody .pad{padding-left:20px}
+  .scorebox{order:3;border-left:none;padding-left:0;text-align:left}
+  .obs,.verd,.gap{padding-left:24px;padding-right:24px}
+  .brank{min-width:48px}
+}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,section.panel{animation:none!important}
+  .fill,.bplus,.bbody,.tab,.bhead,.idea{transition:none!important}
+}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="masthead-rule">Nota zakupowa <span>/</span> Dział {{GENRE}} <span>/</span> {{YEAR}}</div>
+    <h1>Czego rynek <em>jeszcze nie kupił</em></h1>
+    <p class="sub">Notatka starszego redaktora do spraw zakupów: gdzie w {{YEAR}} roku leży pomysł na powieść wartą miliona, zanim padnie pierwsze zdanie.</p>
+    <div class="metaline">
+      <span class="chip">50 agentów</span>
+      <span class="chip">5 faz analizy</span>
+      <span class="chip alt">ok. 527 zapytań do rynku</span>
+      <span class="chip alt">dane {{YEAR}}</span>
+      <span class="chip alt">czytelnik docelowy: {{READER}}</span>
+    </div>
+  </div>
+</header>
+
+<nav class="contents">
+  <div class="wrap">
+    <button class="tab active" data-p="market"><span class="n">01</span>10 bestsellerów</button>
+    <button class="tab" data-p="gaps"><span class="n">02</span>3 luki rynkowe</button>
+    <button class="tab" data-p="ideas"><span class="n">03</span>5 pomysłów</button>
+    <button class="tab" data-p="verdict"><span class="n">04</span>Werdykt</button>
+  </div>
+</nav>
+
+<!-- ===== 01 MARKET ===== -->
+<section class="panel active" id="market">
+  <div class="wrap">
+    <h2 class="sec">Co naprawdę się sprzedaje w tej niszy</h2>
+    <p class="lead">Kilkunastu agentów przeczesało listy bestsellerów („New York Times”, Amazon), Goodreads, Reddita, BookToka, najważniejsze nagrody gatunku oraz transakcje wydawnicze. Z tego materiału wypadła dziesiątka, która dziś napędza tę półkę. <b>Kliknij tytuł, żeby zobaczyć, dlaczego się sprzedaje i co kupuje czytelnik.</b></p>
+    <div class="blist" id="blist"></div>
+
+    <div class="obs">
+      <h3>Osiem rzeczy, które redaktor powinien wiedzieć przed zakupem</h3>
+      <div class="osub">Wzorce, które wracały w analizach niezależnie od tytułu.</div>
+      <ul id="obs"></ul>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 02 GAPS ===== -->
+<section class="panel" id="gaps">
+  <div class="wrap">
+    <h2 class="sec">Trzy luki, których konkurencja nie obsługuje</h2>
+    <p class="lead">Budżety branży płyną w kilka modnych nurtów, a inne, dochodowe segmenty dostają mniej tytułów i słabszą promocję. To zostawia trzy puste pola, które da się kupić taniej, niż wynikałoby z popytu.</p>
+    <div class="gaps" id="gaplist"></div>
+  </div>
+</section>
+
+<!-- ===== 03 IDEAS ===== -->
+<section class="panel" id="ideas">
+  <div class="wrap">
+    <h2 class="sec">Pięć pomysłów na stół</h2>
+    <p class="lead">Kilku agentów wymyśliło kandydatów z różnych stron, a panel sędziów ocenił każdy pomysł osobno: redaktor (strona finansowa), marketing, czytelnik docelowy i analityk sprzedaży. Ocena to średnia z głosów w skali od 1 do 10. Kolejność jest stała: zwycięzca, wicemistrz, dalej według oceny.</p>
+    <div id="idealist"></div>
+  </div>
+</section>
+
+<!-- ===== 04 VERDICT ===== -->
+<section class="panel" id="verdict">
+  <div class="wrap" id="verdwrap"></div>
+</section>
+
+<footer>
+  <div class="wrap">
+    Nota zakupowa &bull; {{GENRE}} &bull; {{YEAR}} &bull; przygotowana wieloagentowym procesem w Claude Code
+  </div>
+</footer>
+
+<script>
+const DATA = /*__INJECT_DATA__*/ null;
+
+/* ---------- helpers ---------- */
+const $=s=>document.querySelector(s);
+const fx=n=>(Number(n)||0).toFixed(1).replace('.',',');
+const linkify=t=>String(t).replace(/https?:\/\/[^\s<)]+/g,u=>{
+  const clean=u.replace(/[.,;:]+$/,'');
+  let host; try{host=new URL(clean).hostname.replace(/^www\./,'')}catch(e){host=clean}
+  return `<a href="${clean}" target="_blank" rel="noopener">${host}↗</a>`;
+});
+const NOTECLS={'luka':'luka','ryzyko':'ryzyko','pozycjonowanie':'pozy'};
+
+/* keyboard-operable expandable rows */
+function makeToggle(el,target){
+  el.setAttribute('role','button');
+  el.setAttribute('tabindex','0');
+  const toggle=()=>{const open=target.classList.toggle('open');el.setAttribute('aria-expanded',open?'true':'false')};
+  el.setAttribute('aria-expanded','false');
+  el.addEventListener('click',toggle);
+  el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();toggle()}});
+}
+
+/* books */
+$('#blist').innerHTML = (DATA.books||[]).map((b,i)=>`
+  <div class="bcard" data-i="${i}">
+    <div class="bhead">
+      <span class="brank">${String(i+1).padStart(2,'0')}</span>
+      <div class="bmain">
+        <div class="btitle">${b.t} <span class="bauthor">— ${b.a}</span></div>
+        <span class="btag">${b.g}</span>
+      </div>
+      <span class="bplus" aria-hidden="true">+</span>
+    </div>
+    <div class="bbody"><div class="inner"><div class="pad">
+      <div class="blockq"><span class="lbl">Dlaczego się sprzedaje</span>${b.why}</div>
+      <div class="blockq"><span class="lbl">Co kupuje czytelnik</span>${b.love}</div>
+    </div></div></div>
+  </div>`).join('');
+document.querySelectorAll('.bcard .bhead').forEach(h=>makeToggle(h,h.parentElement));
+
+/* observations */
+$('#obs').innerHTML = (DATA.obs||[]).map((o,i)=>`
+  <li><span class="num">${String(i+1).padStart(2,'0')}</span><span><b>${o.b}</b> ${o.t}</span></li>`).join('');
+
+/* gaps */
+function evHTML(e){
+  if(e && typeof e==='object'){
+    const proof=(e.proof||[]).map(p=>`<li><span>${linkify(p)}</span></li>`).join('');
+    const notes=(e.notes||[]).map(n=>`<div class="ev-note ${NOTECLS[String(n.k).toLowerCase()]||'pozy'}"><span class="k">${n.k}</span><span>${linkify(n.t)}</span></div>`).join('');
+    return `<div class="ev-h">Dowód i okazja</div>${proof?`<ol class="ev-proof">${proof}</ol>`:''}${notes?`<div class="ev-notes">${notes}</div>`:''}`;
+  }
+  return `<div class="ev-h">Dowód i okazja</div><p>${linkify(e||'')}</p>`;
+}
+$('#gaplist').innerHTML = (DATA.gaps||[]).map(g=>`
+  <div class="gap">
+    <div class="gn">${String(g.n).padStart(2,'0')}</div>
+    <h3>${g.h}</h3>
+    <p>${g.p}</p>
+    <div class="ev">${evHTML(g.e)}</div>
+  </div>`).join('');
+
+/* ideas */
+function ideaHTML(idea){
+  const badge = idea.winner?'<span class="badge w">ZWYCIĘZCA</span>':(idea.runner?'<span class="badge r">WICEMISTRZ</span>':'');
+  return `<div class="idea ${idea.winner?'winner':''}">
+    <div class="itop">
+      <div style="flex:1;min-width:240px">
+        <div class="ititle">${idea.t}${badge}</div>
+        ${idea.en?`<div class="ititle-en">oryg. „${idea.en}”</div>`:''}
+      </div>
+      <div class="scorebox"><div class="scorenum">${fx(idea.score)}</div><div class="scorelbl">/ 10</div></div>
+    </div>
+    <div class="logline">${idea.log}</div>
+    <div class="opis">${idea.op}</div>
+    <div class="hook"><span class="hk">Haczyk</span>${idea.hook}</div>
+    <div class="judges">
+      ${(idea.votes||[]).map(v=>`<div class="jrow">
+        <span class="jname">${v[0]}</span>
+        <div class="bar"><div class="fill" data-w="${(Number(v[1])||0)*10}"></div></div>
+        <span class="jval">${fx(v[1])}</span>
+      </div>`).join('')}
+    </div>
+    <div class="meta2">
+      <span class="gaptag">▸ ${idea.gap}</span>
+      ${(idea.comps||[]).map(c=>`<span class="comp">${c}</span>`).join('')}
+    </div>
+  </div>`;
+}
+function renderIdeas(){
+  const rank=x=>x.winner?0:(x.runner?1:2);
+  const arr=[...(DATA.ideas||[])].sort((a,b)=>rank(a)-rank(b)||(Number(b.score)||0)-(Number(a.score)||0));
+  $('#idealist').innerHTML = arr.map(ideaHTML).join('');
+  requestAnimationFrame(()=>{
+    setTimeout(()=>document.querySelectorAll('#idealist .fill').forEach(f=>f.style.width=f.dataset.w+'%'),60);
+  });
+}
+renderIdeas();
+
+/* verdict */
+const v=DATA.verdict||{};
+$('#verdwrap').innerHTML=`
+  <div class="verd">
+    <div class="vkick">Pomysł do rozwijania</div>
+    <div class="vtitle">${v.title}</div>
+    ${v.titleEn?`<div class="vsuben">oryg. „${v.titleEn}”</div>`:''}
+    <div class="vscore">${v.score}</div>
+    <h4>Dlaczego ten</h4><p>${v.rationale}</p>
+    <h4>Uczciwe ostrzeżenie</h4><p>${v.warn}</p>
+    <h4>Dlaczego teraz</h4><p>${v.whyNow}</p>
+    <h4>Następne kroki dla autora</h4>
+    <ol class="steps">${(v.steps||[]).map(s=>`<li>${s}</li>`).join('')}</ol>
+    <div class="runner">
+      <div class="rl">Wicemistrz</div>
+      <b>${v.runner}</b>${v.runnerEn?` <span class="ren">(oryg. „${v.runnerEn}”)</span>`:''}
+      <p>${v.runnerWhy}</p>
+    </div>
+  </div>`;
+
+/* tabs */
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    const p=document.getElementById(t.dataset.p);
+    p.classList.add('active');
+    if(t.dataset.p==='ideas') renderIdeas();
+    window.scrollTo({top:0,behavior:'instant'});
+  });
+});
+</script>
+</body>
+</html>

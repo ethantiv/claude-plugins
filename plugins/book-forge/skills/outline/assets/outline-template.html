@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Konspekt: {{TITLE}}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,900;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f6f1e8; --paper-raised:#efe7d7; --ink:#181310; --ink-soft:#4a4034;
+  --cream:#f4ead6; --cream-dim:#cdbfa6;
+  --ox:#8a1c2b; --ox-bright:#a8303f; --ox-deep:#4f0f18;
+  --gold:#9a6712; --gold-bright:#c89233;
+  --win:#1c5e46; --warn:#9a5a12;
+  --line:#d8ccb6; --line-dark:rgba(244,234,214,.16);
+  --z-nav:50;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:'Inter',sans-serif;font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+::selection{background:var(--ox);color:var(--cream)}
+:focus-visible{outline:2px solid var(--ox);outline-offset:3px;border-radius:2px}
+.masthead :focus-visible{outline-color:var(--gold-bright)}
+.wrap{max-width:1080px;margin:0 auto;padding:0 28px}
+
+/* ---- masthead (drench) ---- */
+header.masthead{background:var(--ox);background:linear-gradient(157deg,var(--ox) 0%,var(--ox-deep) 100%);color:var(--cream);padding:30px 0 50px;position:relative;overflow:hidden}
+header.masthead::after{content:"";position:absolute;inset:0;background:radial-gradient(120% 80% at 85% -10%,rgba(200,146,51,.16),transparent 55%);pointer-events:none}
+.masthead-rule{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;letter-spacing:.26em;text-transform:uppercase;color:var(--gold-bright);padding-bottom:22px;margin-bottom:34px;border-bottom:1px solid var(--line-dark);display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.masthead-rule span{opacity:.5}
+header.masthead h1{font-family:'Fraunces',serif;font-weight:900;font-size:clamp(40px,7vw,84px);line-height:.97;letter-spacing:-.025em;text-wrap:balance;max-width:16ch}
+header.masthead h1 em{font-style:italic;color:var(--gold-bright);font-weight:400}
+.h1en{font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:.1em;color:var(--cream-dim);text-transform:uppercase;margin-top:14px}
+.sub{font-family:'Fraunces',serif;font-style:italic;font-size:clamp(18px,2.4vw,24px);line-height:1.4;color:var(--cream-dim);margin-top:18px;max-width:54ch}
+.metaline{margin-top:28px;display:flex;flex-wrap:wrap;gap:9px}
+.chip{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.05em;background:var(--cream);color:var(--ox-deep);font-weight:700;padding:6px 12px;border-radius:2px}
+.chip.alt{background:transparent;color:var(--cream);border:1px solid var(--line-dark);font-weight:500}
+
+/* ---- contents nav ---- */
+nav.contents{position:sticky;top:0;z-index:var(--z-nav);background:rgba(246,241,232,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+nav.contents .wrap{display:flex;gap:2px;overflow-x:auto}
+.tab{flex:0 0 auto;background:none;border:none;font-family:'Fraunces',serif;font-size:16px;font-weight:600;color:var(--ink-soft);padding:17px 16px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:color .2s,border-color .2s}
+.tab:hover{color:var(--ink)}
+.tab.active{color:var(--ox);border-bottom-color:var(--ox)}
+.tab .n{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:var(--gold);margin-right:7px}
+
+section.panel{display:none;padding:54px 0 78px;animation:fade .45s ease}
+section.panel.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h2.sec{font-family:'Fraunces',serif;font-weight:900;font-size:clamp(30px,4.2vw,46px);letter-spacing:-.015em;line-height:1.04;text-wrap:balance;max-width:18ch}
+h2.sec::before{content:"";display:block;width:54px;height:3px;background:var(--ox);margin-bottom:20px}
+.lead{font-size:18px;line-height:1.6;color:var(--ink-soft);margin:16px 0 40px;text-wrap:pretty}
+.lead b{color:var(--ink);font-weight:600}
+
+/* ---- fundament ---- */
+.fcards{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.fcard{background:var(--paper-raised);border:1px solid var(--line);border-radius:5px;padding:22px 24px}
+.fcard .lbl{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--ox);display:block;margin-bottom:9px}
+.fcard p{font-size:15.5px;line-height:1.6}
+.fcard.wide{grid-column:1/-1;background:var(--ink);border-color:var(--ink)}
+.fcard.wide .lbl{color:var(--gold-bright)}
+.fcard.wide p{color:var(--cream)}
+@media(max-width:680px){.fcards{grid-template-columns:1fr}}
+
+/* ---- rozdzialy ---- */
+.chap{border-bottom:1px solid var(--line)}
+.chap-h{display:flex;gap:20px;align-items:baseline;padding:20px 6px;cursor:pointer;user-select:none;transition:background .2s}
+.chap-h:hover{background:rgba(138,28,43,.035)}
+.chap-n{font-family:'Fraunces',serif;font-weight:900;font-size:clamp(28px,4vw,40px);color:var(--ox);min-width:54px;line-height:.9;font-variant-numeric:lining-nums}
+.chap-main{flex:1;min-width:0}
+.chap-t{font-family:'Fraunces',serif;font-weight:600;font-size:19px;line-height:1.2;text-wrap:balance}
+.chap-p{font-style:italic;color:var(--ink-soft);font-size:15px;margin-top:4px}
+.vbadge{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;line-height:1.5;padding:5px 11px;border-radius:4px;color:#fff;margin-top:11px;max-width:100%}
+.vbadge.plus{background:var(--win)}.vbadge.minus{background:var(--ox)}
+.chap-plus{font-family:'Fraunces',serif;font-size:28px;color:var(--ox);line-height:1;transition:transform .3s ease;flex:0 0 auto;align-self:center}
+.chap.open .chap-plus{transform:rotate(45deg)}
+.chap-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .45s ease}
+.chap.open .chap-body{grid-template-rows:1fr}
+.chap-body>.inner{overflow:hidden}
+.chap-body .pad{padding:2px 6px 28px 74px}
+.chap-body .lbl{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ox);display:block;margin:16px 0 7px}
+.chap-body ul{margin:0 0 0 20px}
+.chap-body li{font-size:15px;margin-bottom:6px;line-height:1.5}
+.chap-body p{font-size:15px;line-height:1.55}
+.ht{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:8px}
+.hcell{background:var(--paper-raised);border:1px solid var(--line);border-radius:5px;padding:15px 17px}
+.hcell .lbl{margin-top:0}
+.hcell.hook .lbl{color:var(--win)}
+.hcell.twist .lbl{color:var(--ox)}
+@media(max-width:600px){.ht{grid-template-columns:1fr}.chap-body .pad{padding-left:20px}}
+
+/* ---- sceny ---- */
+.chapgroup{margin-bottom:32px}
+.chaplabel{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ox);margin-bottom:6px;padding-bottom:9px;border-bottom:1px solid var(--line)}
+.scene{border-bottom:1px solid var(--line)}
+.scene-h{display:flex;gap:16px;align-items:baseline;padding:15px 6px;cursor:pointer;user-select:none;transition:background .2s}
+.scene-h:hover{background:rgba(138,28,43,.035)}
+.scene-id{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:var(--gold);min-width:58px}
+.scene-goal{flex:1;font-size:15.5px;line-height:1.4}
+.scene-h .vbadge{margin-top:0;padding:3px 9px;font-size:11px}
+.scene-plus{font-family:'Fraunces',serif;font-size:22px;color:var(--ox);transition:transform .3s ease;align-self:center}
+.scene.open .scene-plus{transform:rotate(45deg)}
+.scene-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .4s ease}
+.scene.open .scene-body{grid-template-rows:1fr}
+.scene-body>.inner{overflow:hidden}
+.scene-body .pad{padding:2px 6px 20px 74px}
+.scene-body .row{margin-bottom:9px;font-size:15px;line-height:1.5}
+.scene-body .lbl{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);margin-right:6px}
+@media(max-width:600px){.scene-body .pad{padding-left:20px}}
+
+/* ---- cutbox ---- */
+.cutbox{margin-top:32px;background:var(--ink);color:var(--cream);border-radius:5px;padding:28px 32px}
+.cutbox h3{font-family:'Fraunces',serif;font-weight:600;font-size:20px;color:var(--gold-bright);margin-bottom:12px}
+.cutbox ul{margin:0;list-style:none;display:grid;gap:9px}
+.cutbox li{font-size:14.5px;line-height:1.5;color:var(--cream);padding-left:18px;position:relative}
+.cutbox li::before{content:"–";position:absolute;left:0;color:var(--gold-bright)}
+
+footer{border-top:1px solid var(--ink);padding:30px 0 64px;margin-top:20px}
+footer .wrap{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.04em;color:var(--ink-soft)}
+
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,section.panel{animation:none!important}
+  *{transition:none!important}
+}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="masthead-rule">Konspekt <span>/</span> {{GENRE}}</div>
+    <h1 id="booktitle">{{TITLE}}</h1>
+    <div class="h1en" id="booken"></div>
+    <p class="sub" id="booksub"></p>
+    <div class="metaline" id="chips"></div>
+  </div>
+</header>
+
+<nav class="contents">
+  <div class="wrap">
+    <button class="tab active" data-p="fundament"><span class="n">01</span>Fundament</button>
+    <button class="tab" data-p="chapters"><span class="n">02</span>Rozdziały</button>
+    <button class="tab" data-p="scenes" id="tab-scenes" style="display:none"><span class="n">03</span>Sceny</button>
+  </div>
+</nav>
+
+<section class="panel active" id="fundament">
+  <div class="wrap">
+    <h2 class="sec">Fundament książki</h2>
+    <p class="lead">Kręgosłup, na którym stoją wszystkie rozdziały: przesłanka, motyw, transformacja i łuk emocjonalny całości.</p>
+    <div class="fcards" id="fcards"></div>
+  </div>
+</section>
+
+<section class="panel" id="chapters">
+  <div class="wrap">
+    <h2 class="sec">Rozdziały</h2>
+    <p class="lead">Kliknij rozdział, aby zobaczyć kluczowe punkty, haczyk i zwrot akcji. Każdy rozdział ma zasługiwać na swoje miejsce.</p>
+    <div id="chapters-list"></div>
+    <div class="cutbox" id="cutbox" style="display:none"></div>
+  </div>
+</section>
+
+<section class="panel" id="scenes">
+  <div class="wrap">
+    <h2 class="sec">Sceny</h2>
+    <p class="lead">Siatka scen scena po scenie: cel postaci → konflikt → zwrot, ze zmianą wartości (+/–). Kliknij scenę, aby rozwinąć. Łuk, beaty, zasiewy i research żyją w biblii.</p>
+    <div id="scenes-list"></div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    Konspekt &bull; {{GENRE}} &bull; przygotowany wieloagentowym procesem w Claude Code
+  </div>
+</footer>
+
+<script>
+const DATA = /*__INJECT_DATA__*/ null;
+const $=s=>document.querySelector(s);
+const m=DATA.meta||{};
+
+function makeToggle(el,target){
+  el.setAttribute('role','button');
+  el.setAttribute('tabindex','0');
+  el.setAttribute('aria-expanded','false');
+  const toggle=()=>{const open=target.classList.toggle('open');el.setAttribute('aria-expanded',open?'true':'false')};
+  el.addEventListener('click',toggle);
+  el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();toggle()}});
+}
+
+// hero
+$('#booktitle').textContent = m.title || '';
+$('#booken').textContent = m.en ? ('oryg. „'+m.en+'”') : '';
+$('#booksub').textContent = m.sub || '';
+$('#booksub').style.display = m.sub ? '' : 'none';
+$('#chips').innerHTML = [
+  m.length?`<span class="chip">${m.length}</span>`:'',
+  `<span class="chip">${(DATA.chapters||[]).length} rozdziałów</span>`,
+  (DATA.scenes&&DATA.scenes.length)?`<span class="chip">${DATA.scenes.length} scen</span>`:'',
+  m.structure?`<span class="chip alt">struktura: ${m.structure}</span>`:'',
+  m.reader?`<span class="chip alt">czytelnik: ${m.reader}</span>`:'',
+].join('');
+
+// fundament
+const F=[
+  ['Przesłanka', m.premise, true],
+  ['Motyw', m.theme],
+  ['Transformacja', m.transformation],
+  ['Konflikt', m.conflict],
+  ['Zakończenie', m.ending],
+  ['Łuk emocjonalny', m.arc, true],
+].filter(x=>x[1]);
+$('#fcards').innerHTML = F.map(([l,v,wide])=>
+  `<div class="fcard${wide?' wide':''}"><span class="lbl">${l}</span><p>${v}</p></div>`).join('');
+
+// rozdzialy
+const cls=v=>(String(v).trim().startsWith('-')||/minus/i.test(v))?'minus':'plus';
+$('#chapters-list').innerHTML = (DATA.chapters||[]).map(c=>{
+  const v=cls(c.value);
+  return `<div class="chap">
+    <div class="chap-h">
+      <span class="chap-n">${String(c.n).padStart(2,'0')}</span>
+      <div class="chap-main">
+        <div class="chap-t">${c.title||''}</div>
+        <div class="chap-p">${c.promise||''}</div>
+        <span class="vbadge ${v}">${v==='plus'?'+':'–'} ${c.emotion||''}</span>
+      </div>
+      <span class="chap-plus" aria-hidden="true">+</span>
+    </div>
+    <div class="chap-body"><div class="inner"><div class="pad">
+      <span class="lbl">Kluczowe punkty</span>
+      <ul>${(c.beats||[]).map(b=>`<li>${b}</li>`).join('')}</ul>
+      <div class="ht">
+        <div class="hcell hook"><span class="lbl">Haczyk (początek)</span><p>${c.hook||''}</p></div>
+        <div class="hcell twist"><span class="lbl">Zwrot akcji (koniec)</span><p>${c.twist||''}</p></div>
+      </div>
+    </div></div></div>
+  </div>`;
+}).join('');
+document.querySelectorAll('.chap-h').forEach(h=>makeToggle(h,h.parentElement));
+
+// wyciete wypelniacze
+if(DATA.cut && DATA.cut.length){
+  $('#cutbox').style.display='block';
+  $('#cutbox').innerHTML='<h3>Wycięte wypełniacze</h3><ul>'+DATA.cut.map(c=>`<li>Rozdział ${c.n}: ${c.powod||''}</li>`).join('')+'</ul>';
+}
+
+// sceny (scalone z outline-to-scenes; zakładka pojawia się tylko, gdy DATA.scenes istnieje)
+if (DATA.scenes && DATA.scenes.length) {
+  document.getElementById('tab-scenes').style.display='';
+  const byChap={};
+  DATA.scenes.forEach(s=>{(byChap[s.rozdzial]=byChap[s.rozdzial]||[]).push(s)});
+  $('#scenes-list').innerHTML = Object.keys(byChap).sort((a,b)=>a-b).map(ch=>`
+    <div class="chapgroup">
+      <div class="chaplabel">Rozdział ${ch}</div>
+      ${byChap[ch].map(s=>{const v=cls(s.value);return `
+        <div class="scene">
+          <div class="scene-h">
+            <span class="scene-id">${s.id||''}</span>
+            <span class="scene-goal">${s.cel||''}</span>
+            <span class="vbadge ${v}">${v==='plus'?'+':'–'}</span>
+            <span class="scene-plus" aria-hidden="true">+</span>
+          </div>
+          <div class="scene-body"><div class="inner"><div class="pad">
+            <div class="row"><span class="lbl">POV</span>${s.pov||'—'} <span class="lbl" style="margin-left:10px">Miejsce/czas</span>${[s.miejsce,s.czas].filter(Boolean).join(', ')||'—'}</div>
+            <div class="row"><span class="lbl">Konflikt</span>${s.konflikt||'—'}</div>
+            <div class="row"><span class="lbl">Zwrot</span>${s.zwrot||'—'}</div>
+            ${s.luk?`<div class="row"><span class="lbl">Łuk</span>${s.luk}</div>`:''}
+          </div></div></div>
+        </div>`}).join('')}
+    </div>`).join('');
+  document.querySelectorAll('.scene-h').forEach(h=>makeToggle(h,h.parentElement));
+}
+
+// tabs
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active'); document.getElementById(t.dataset.p).classList.add('active');
+  window.scrollTo({top:0,behavior:'instant'});
+}));
+</script>
+</body>
+</html>

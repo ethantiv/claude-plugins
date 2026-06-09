@@ -1,0 +1,52 @@
+{
+  "kanon": "working",
+  "meta": { "RO": true, "tytul": "Pył i Pamięć", "subgatunek": "space opera", "logline": "Kartografka szuka siostry na pustynnej planecie.", "target": "fani Diuny", "comps": ["Diuna", "Hyperion"], "pov": "trzecioosobowa ograniczona", "czas": "przeszły", "tomy": 1 },
+  "swiat": {
+    "RO": true,
+    "lokacje": [
+      { "nazwa": "Cytadela", "opis": "Forteca namiestnika na krawędzi pustyni." },
+      { "nazwa": "Pas Łomów", "opis": "Pole asteroid, dom kartografów." }
+    ],
+    "zasady": [
+      { "zasada": "Skoki przez próżnię wymagają przyprawy", "koszt": "skraca życie skoczka", "ograniczenie": "tylko z mapą gwiezdną" }
+    ],
+    "technologia": ["mapy gwiezdne", "skafandry pustynne"],
+    "konsekwencje": "Monopol na przyprawę napędza wojnę."
+  },
+  "postacie": [
+    { "imie": "Kalina", "odmiana": "D. Kaliny, C. Kalinie, B. Kalinę", "rola": "protagonistka", "opis_fizyczny": "drobna, blizna na dłoni", "maniery": "stuka palcami", "want": "znaleźć siostrę", "need": "wybaczyć sobie", "rana": "zostawiła siostrę", "klamstwo": "to była moja wina", "luk": "od poczucia winy do akceptacji", "relacje": ["siostra: Wena"], "glos_ref": "kalina", "_stan": { "RUNTIME": true, "lokalizacja": "Pas Łomów", "stan": "zdrowa", "postep_luku": "0%" } },
+    { "imie": "Eron", "odmiana": "D. Erona, C. Eronowi, B. Erona", "rola": "antagonista lokalny", "opis_fizyczny": "wysoki, siwiejący", "maniery": "mówi cicho", "want": "utrzymać władzę", "need": "uznać stratę", "rana": "stracił ród", "klamstwo": "siła to jedyny język", "luk": "od tyranii do wątpliwości", "relacje": ["wróg: Kalina"], "glos_ref": "eron", "_stan": { "RUNTIME": true, "lokalizacja": "Cytadela", "stan": "zdrowy", "postep_luku": "0%" } }
+  ],
+  "antagonista": { "RO": true, "profil": "Namiestnik Eron", "cel": "zmonopolizować przyprawę", "motywacja": "porządek za każdą cenę", "plan": ["odciąć Pas", "przejąć mapy"], "przewaga": "armia i informacja" },
+  "stawka": { "RO": true, "osobista": "życie siostry", "globalna": "wolność Pasa", "zegar": "burza piaskowa za 10 dni" },
+  "glos_narratora": { "RO": true, "pov": "trzecioosobowa ograniczona", "czas": "przeszły", "rytm": "krótkie zdania w akcji", "rejestr": "oszczędny, zmysłowy", "zwroty": ["pył osiadał"], "metafory": "pustynne, mineralne", "czego_unikac": ["anglicyzmy"] },
+  "glosy_postaci": [
+    { "postac": "Kalina", "rejestr": "rzeczowy", "tiki": ["liczy na głos", "krótkie pytania"], "rytm": "urywany", "slownictwo": "techniczny żargon kartografa" },
+    { "postac": "Eron", "rejestr": "formalny", "tiki": ["cytuje prawo"], "rytm": "powolny", "slownictwo": "biurokratyczny" }
+  ],
+  "glosariusz": [
+    { "nazwa": "Cytadela", "kategoria": "lokacja", "odmiana": { "M": "Cytadela", "D": "Cytadeli", "C": "Cytadeli", "B": "Cytadelę", "N": "Cytadelą", "Ms": "Cytadeli", "W": "Cytadelo" }, "warianty_zakazane": ["Citadel"], "opis": "Forteca namiestnika." },
+    { "nazwa": "Pas Łomów", "kategoria": "lokacja", "odmiana": { "M": "Pas Łomów", "D": "Pasa Łomów", "C": "Pasowi Łomów", "B": "Pas Łomów", "N": "Pasem Łomów", "Ms": "Pasie Łomów", "W": "Pasie Łomów" }, "warianty_zakazane": ["Belt"], "opis": "Pole asteroid." },
+    { "nazwa": "Wena", "kategoria": "imie", "odmiana": { "M": "Wena", "D": "Weny", "C": "Wenie", "B": "Wenę", "N": "Weną", "Ms": "Wenie", "W": "Weno" }, "warianty_zakazane": ["Vena"], "opis": "Zaginiona siostra Kaliny." }
+  ],
+  "kanon_fabularny": {
+    "RO": true,
+    "rozdzialy": [ { "nr": 1, "tytul": "Pas" }, { "nr": 2, "tytul": "Cytadela" } ],
+    "beaty": ["incydent inicjujacy", "prog I aktu", "midpoint", "czarna chwila", "kulminacja", "rozwiazanie"],
+    "sceny": [
+      { "id": "R1S1", "rozdzial": 1, "pov": "Kalina", "cel": "odebrać zlecenie mapy", "konflikt": "kupiec ostrzega o Cytadeli", "zwrot": "zlecenie dotyczy siostry", "value": "+", "status": "planowana" },
+      { "id": "R1S2", "rozdzial": 1, "pov": "Kalina", "cel": "wyruszyć w Pas", "konflikt": "sabotaż skafandra", "zwrot": "ktoś ją śledzi", "value": "-", "status": "planowana" },
+      { "id": "R2S1", "rozdzial": 2, "pov": "Eron", "cel": "przejąć mapy", "konflikt": "rada się waha", "zwrot": "wie, że Kalina ma mapę", "value": "-", "status": "planowana" },
+      { "id": "R2S2", "rozdzial": 2, "pov": "Kalina", "cel": "dostać się do Cytadeli", "konflikt": "burza piaskowa", "zwrot": "wpada w pułapkę", "value": "-", "status": "planowana" }
+    ]
+  },
+  "os_czasu": [ { "RUNTIME": true, "scena": "R1S1", "dzien_fabularny": "1", "kolejnosc": 1 } ],
+  "setup_payoff": [
+    { "RUNTIME": true, "id": "SP01", "opis": "blizna na dłoni Kaliny", "typ": "strzelba", "scena_zasiewu": "R1S1", "scena_splaty": "", "status": "otwarty" },
+    { "RUNTIME": true, "id": "SP02", "opis": "mapa gwiezdna siostry", "typ": "glowny", "scena_zasiewu": "R1S1", "scena_splaty": "", "status": "otwarty" }
+  ],
+  "fakty": [ { "RUNTIME": true, "id": "F01", "tresc": "Wena zaginęła w Cytadeli", "typ": "zdarzenie", "zrodlo_scena": "R1S1", "pewnosc": "kanon", "zrodlo_ref": "" } ],
+  "zrodla": [ { "RUNTIME": true, "id": "Z01", "dotyczy": "F01", "zrodlo": "konspekt", "url": "", "data": "2026-01-01", "notatka": "z konspektu" } ],
+  "temat": { "RO": true, "temat": "wina i wybaczenie", "pytanie_dramatyczne": "czy można odkupić porzucenie?", "motywy": ["pył", "mapa", "krew"] },
+  "log_ciaglosci": []
+}

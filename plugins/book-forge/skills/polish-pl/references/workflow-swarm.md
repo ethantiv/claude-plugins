@@ -1,0 +1,67 @@
+# Skrypt roju agentów (Workflow) — korekta PL + walidacja nazw
+
+Uruchamiany na **tekście PO humanizerze** (humanizer uruchamia się wcześniej, w głównej sesji). `args`: `{ proza, karta_stylu, glosariusz }`, gdzie `proza` to scena po humanizerze, `karta_stylu` to karta głosu narratora z biblii, a `glosariusz` to nazwy własne z odmianą i wariantami zakazanymi.
+
+```javascript
+export const meta = {
+  name: 'book-forge-polish-pl',
+  description: 'Korekta polonistyczna na tekscie po humanizerze + walidacja nazw z glosariusza',
+  phases: [ { title: 'Korekta PL' }, { title: 'Kontrola' }, { title: 'Walidacja nazw' } ],
+}
+
+// Workflow bywa, że podaje `args` jako string JSON, nie jako obiekt — parsuj odpornie
+let A
+try { A = typeof args === 'string' ? JSON.parse(args) : (args || {}) }
+catch (e) { throw new Error('args podane jako string, ale to nie poprawny JSON ('+e.message+'). Przekaż obiekt albo poprawny JSON.') }
+const STYL = A.karta_stylu, GLOS = A.glosariusz || []
+let proza = A.proza
+
+const ROLE = `Jesteś korektorem i redaktorem języka polskiego z uchem do prozy. Pracujesz na tekście, który właśnie przeszedł przez humanizer (narzędzie oparte na ANGIELSKICH wzorcach), więc twoim zadaniem jest naprawić to, co humanizer mógł zepsuć, i doprowadzić tekst do naturalnej, poprawnej polszczyzny. Zachowaj rejestr i rytm z karty stylu. KARTA STYLU/GŁOSU:\n${JSON.stringify(STYL)}`
+
+const KOREKTA = { type:'object', required:['text','zmiany'], properties:{
+  text:{type:'string'}, words:{type:'number'},
+  zmiany:{type:'array',items:{type:'object',required:['kategoria','przyklad'],properties:{kategoria:{type:'string'},przyklad:{type:'string'}}}},
+  nowe_aiizmy:{type:'array',items:{type:'string'}} } }
+const NAZWY = { type:'object', required:['text','przywrocone'], properties:{
+  text:{type:'string'},
+  przywrocone:{type:'array',items:{type:'object',required:['bylo','jest'],properties:{bylo:{type:'string'},jest:{type:'string'}}}},
+  uwagi:{type:'array',items:{type:'string'}} } }
+
+phase('Korekta PL')
+const kor = await agent(
+  `${ROLE}\n\nPopraw tekst: (1) INTERPUNKCJA DIALOGOWA PO POLSKU (nie cudzysłów angielski) — twarde reguły: każda kwestia od nowego akapitu zaczyna się od pauzy „— ” (U+2014) i spacji; didaskalia z czasownikiem mowy po pauzie i MAŁĄ literą („— Nie pójdę — powiedziała.”, „— Już?! — krzyknął.”); gdy po kwestii jest samodzielne zdanie narracji BEZ czasownika mowy — kwestię domknij kropką, narrację od WIELKIEJ litery („— Nie pójdę. — Odwróciła się do okna.”); wtrącenie w środku kwestii: „— Wejdź — rzucił — i zamknij drzwi.”; akapit na każdą zmianę mówiącego; myśli kursywą/cudzysłowem, bez pauzy. (2) aspekt czasowników (dok./niedok.); (3) naturalny szyk (usuń kalkowany SVO, nadmiar zaimków ja/mój); (4) eliminacja kalk składniowych i AI-izmów (np. „wydaje się być” → „wydaje się”, „w oparciu o” → „na podstawie”); (5) redukcja przysłówków przy czasownikach mowienia („powiedział cicho” → mocniejszy czasownik lub akcja). NIE zmieniaj zdarzeń ani nazw własnych. Zwróć text, words, zmiany (kategorie z przykładem) i nowe_aiizmy (wykryte do czarnej listy).\n\nTEKST:\n${proza}`,
+  {label:'korekta-pl',phase:'Korekta PL',schema:KOREKTA})
+proza = kor.text
+
+phase('Kontrola')
+const kon = await agent(
+  `${ROLE}\n\nNiezależna kontrola: przeczytaj tekst świeżym okiem i wyłap resztki — anglicyzmy, kalki, sztywne zdania, miejsca, gdzie zgubiono rejestr z karty stylu. Popraw je zachowując sens i zdarzenia. Zwróć text, words, zmiany (co jeszcze poprawiono), nowe_aiizmy.\n\nTEKST:\n${proza}`,
+  {label:'kontrola',phase:'Kontrola',schema:KOREKTA})
+if (kon && kon.text) proza = kon.text
+
+phase('Walidacja nazw')
+const naz = await agent(
+  `Jesteś redaktorem nazewnictwa. Sprawdź każdą nazwę własną w tekście wobec glosariusza i przywróć poprawną formę/odmianę, jeśli humanizer lub korekta ją zmieniły. Pilnuj wariantów zakazanych. NIE zmieniaj niczego poza nazwami.\n\nGLOSARIUSZ:\n${JSON.stringify(GLOS)}\n\nTEKST:\n${proza}\n\nZwróć text (z poprawnymi nazwami), przywrocone (lista bylo→jest) i uwagi.`,
+  {label:'walidacja-nazw',phase:'Walidacja nazw',schema:NAZWY})
+if (naz && naz.text) proza = naz.text
+
+return {
+  text: proza,
+  zmiany: [...(kor.zmiany||[]), ...(kon&&kon.zmiany||[])],
+  nowe_aiizmy: [...new Set([...(kor.nowe_aiizmy||[]), ...(kon&&kon.nowe_aiizmy||[])])],
+  przywrocone_nazwy: (naz&&naz.przywrocone)||[],
+}
+```
+
+## Przed rojem agentów (główna sesja): humanizer NAJPIERW
+
+Zanim uruchomisz ten rój agentów, uruchom `/humanizer:humanizer` na surowej (po `continuity-check`) prozie sceny — z poleceniem: zachowaj rejestr z karty stylu, nie ruszaj nazw z glosariusza, zachowaj polską interpunkcję dialogową i przecinek dziesiętny. Dopiero wynik humanizera podaj jako `args.proza`.
+
+## Po powrocie roju agentów
+
+1. Nadpisz `.book-forge/sceny/<id>.md` wygładzoną wersją (opcjonalnie kopia `.book-forge/sceny/<id>.v2.md`).
+2. Zapisz `.book-forge/korekta-<id>.md` (kategorie zmian, przywrócone nazwy, propozycje AI-izmów do czarnej listy w `polish-style.md` — autor decyduje o dopisaniu).
+3. Pokaż autorowi podsumowanie. Szczegóły: `build-and-verify.md`.
+
+## Postępowanie awaryjne
+Brak Workflow → korektor i walidator nazw jako agenty `Task` (po humanizerze w głównej sesji).
