@@ -14,6 +14,16 @@
       "name": "babysit-pr",
       "description": "Local equivalent of autofix-pr: monitor and fix the current PR (CI failures, review comments, merge conflicts) in the local Claude Code session instead of a remote cloud session",
       "source": "./plugins/babysit-pr"
+    },
+    {
+      "name": "read-arxiv-paper",
+      "description": "Download arXiv paper LaTeX source, analyze it, and produce a project-contextualized summary",
+      "source": "./plugins/read-arxiv-paper"
+    },
+    {
+      "name": "roadmap",
+      "description": "Generate docs/ROADMAP.md via an agent swarm: many perspectives propose features, a product-manager panel scores them for usefulness, sellability and wow-factor",
+      "source": "./plugins/roadmap"
     }
   ]
 }

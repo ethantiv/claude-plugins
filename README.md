@@ -1,6 +1,6 @@
 # claude-plugins
 
-Publiczny **marketplace wtyczek do [Claude Code](https://claude.com/claude-code)**. Dodajesz go raz, potem instalujesz wtyczki jedną komendą. Działają w terminalu, aplikacji desktopowej i rozszerzeniach IDE.
+Publiczny **Marketplace wtyczek do [Claude Code](https://claude.com/claude-code)**. Dodajesz go raz, potem instalujesz wtyczki jedną komendą. Działają w terminalu, aplikacji desktopowej i rozszerzeniach IDE.
 
 ## Wtyczki
 
@@ -8,6 +8,8 @@ Publiczny **marketplace wtyczek do [Claude Code](https://claude.com/claude-code)
 | --- | --- | --- |
 | **book-forge** | polski | 12-etapowy pipeline do pisania powieści rojem agentów: od luki rynkowej i pomysłu, przez konspekt i „biblię książki", po pisanie, redakcję i pakiet wydawniczy. Każdy etap kończy obowiązkowa redakcja na naturalną polszczyznę (bez AI-slopu). |
 | **babysit-pr** | uniwersalna | Lokalny odpowiednik `autofix-pr`: monitoruje bieżący pull request i naprawia go w sesji Claude Code – błędy CI, komentarze z review proszące o zmiany, konflikty scalania. |
+| **read-arxiv-paper** | uniwersalna | Pobiera źródło LaTeX artykułu z arXiv, analizuje je i tworzy streszczenie osadzone w kontekście Twojego projektu. |
+| **roadmap** | uniwersalna | Generuje `docs/ROADMAP.md` rojem agentów: wiele perspektyw proponuje funkcje, a panel product managerów ocenia je pod kątem przydatności, sprzedawalności i efektu „wow". |
 
 ## Instalacja
 
@@ -73,12 +75,20 @@ npx agent-browser open example.com
 **babysit-pr**
 - **`gh`** (GitHub CLI, zalogowane), **`jq`**, **`git`** dostępne w `PATH`.
 
+**read-arxiv-paper**
+- **`curl`** i **`tar`** (zwykle są w systemie) – pobranie i rozpakowanie źródła z arXiv.
+
+**roadmap**
+- Narzędzie **Workflow** (rój agentów); bez niego skill ma zapasowe wywołanie agentów `Task`.
+
 ## Użycie
 
 Po instalacji każda wtyczka udostępnia swoje skille jako komendy `/<wtyczka>:<skill>`.
 
 - **book-forge** – pełny pipeline opisany w [`plugins/book-forge/README.md`](plugins/book-forge/README.md); wizualny przewodnik po 12 etapach: [`przewodnik.html`](plugins/book-forge/przewodnik.html). Start: `/book-forge:market-report` (lub lekki `/book-forge:idea-spark`).
 - **babysit-pr** – wywołaj `/babysit-pr` na gałęzi z otwartym PR, żeby monitorować i naprawiać CI, review i konflikty lokalnie.
+- **read-arxiv-paper** – `/read-arxiv-paper:read-arxiv-paper` z URL-em lub ID artykułu (np. `2401.12345`); dostajesz streszczenie w kontekście repo.
+- **roadmap** – `/roadmap:roadmap` zbiera pomysły rojem agentów i zapisuje `docs/ROADMAP.md`.
 
 ## Licencja
 

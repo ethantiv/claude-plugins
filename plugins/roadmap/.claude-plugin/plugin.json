@@ -1,0 +1,8 @@
+{
+  "name": "roadmap",
+  "version": "0.4.0",
+  "description": "Generate docs/ROADMAP.md via an agent swarm: many perspectives propose features, a product-manager panel scores them for usefulness, sellability and wow-factor",
+  "author": {
+    "name": "Mirek Zaniewicz"
+  }
+}
