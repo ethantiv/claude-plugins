@@ -86,7 +86,7 @@ npx agent-browser open example.com
 Po instalacji każda wtyczka udostępnia swoje skille jako komendy `/<wtyczka>:<skill>`.
 
 - **book-forge** – pełny pipeline opisany w [`plugins/book-forge/README.md`](plugins/book-forge/README.md); wizualny przewodnik po 12 etapach: [`przewodnik.html`](plugins/book-forge/przewodnik.html). Start: `/book-forge:market-report` (lub lekki `/book-forge:idea-spark`).
-- **babysit-pr** – wywołaj `/babysit-pr` na gałęzi z otwartym PR, żeby monitorować i naprawiać CI, review i konflikty lokalnie.
+- **babysit-pr** – wywołaj `/babysit-pr` na gałęzi z otwartym PR, żeby monitorować i naprawiać CI, review i konflikty lokalnie. Dla ciągłego pilnowania uruchom go w pętli, np. `/loop 10m /babysit-pr` – Claude sprawdza PR co 10 minut.
 - **read-arxiv-paper** – `/read-arxiv-paper:read-arxiv-paper` z URL-em lub ID artykułu (np. `2401.12345`); dostajesz streszczenie w kontekście repo.
 - **roadmap** – `/roadmap:roadmap` zbiera pomysły rojem agentów i zapisuje `docs/ROADMAP.md`.
 
