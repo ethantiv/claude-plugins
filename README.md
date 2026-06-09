@@ -59,7 +59,7 @@ npx skills add https://github.com/softaworks/agent-toolkit --skill humanizer
 npx skills add https://github.com/vercel-labs/agent-browser --skill agent-browser
 ```
 
-agent-browser ma dwie warstwy: **skill** to integracja z Claude Code (powyższa komenda `npx skills add`), a **CLI** to samo narzędzie sterujące przeglądarką, którego skill używa pod spodem. Potrzebujesz obu — CLI (z pobraną przeglądarką) instalujesz tak:
+agent-browser ma dwie warstwy: **skill** to integracja z Claude Code (powyższa komenda `npx skills add`), a **CLI** to samo narzędzie sterujące przeglądarką, którego skill używa pod spodem. **Skill nie zadziała bez CLI** — to nie alternatywa, tylko zależność, więc CLI zainstaluj koniecznie (najlepiej najpierw). CLI z pobraną przeglądarką instalujesz tak:
 
 ```bash
 npm install -g agent-browser      # wszystkie platformy
