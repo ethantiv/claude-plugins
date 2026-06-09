@@ -50,7 +50,14 @@ Obie wtyczki potrzebują działającego Claude Code. Poza tym:
 - **Node.js** – walidacja generowanych artefaktów HTML (`node --check`).
 - Narzędzie **Workflow** (rój agentów); bez niego skille mają zapasowe wywołanie agentów `Task`.
 - Skill **`/humanizer:humanizer`** – obowiązkowy przebieg redakcji językowej.
-- CLI **agent-browser** (`npm i -g agent-browser && agent-browser install`) – research i weryfikacja realiów.
+- Skill **agent-browser** – research i weryfikacja realiów; strona projektu: [agent-browser.dev](https://agent-browser.dev).
+
+Oba skille zainstalujesz komendami:
+
+```bash
+npx skills add https://github.com/softaworks/agent-toolkit --skill humanizer
+npx skills add https://github.com/vercel-labs/agent-browser --skill agent-browser
+```
 
 **babysit-pr**
 - **`gh`** (GitHub CLI, zalogowane), **`jq`**, **`git`** dostępne w `PATH`.
