@@ -17,20 +17,20 @@ W sesji Claude Code uruchom komendy (`/plugin` to wbudowana komenda Claude Code)
 
 ```text
 /plugin marketplace add ethantiv/claude-plugins
-/plugin install book-forge@claude-plugins
-/plugin install babysit-pr@claude-plugins
-/plugin install read-arxiv-paper@claude-plugins
-/plugin install roadmap@claude-plugins
+/plugin install book-forge@ethantiv-plugins
+/plugin install babysit-pr@ethantiv-plugins
+/plugin install read-arxiv-paper@ethantiv-plugins
+/plugin install roadmap@ethantiv-plugins
 ```
 
 Albo z terminala, przez CLI:
 
 ```bash
 claude plugin marketplace add ethantiv/claude-plugins
-claude plugin install book-forge@claude-plugins
-claude plugin install babysit-pr@claude-plugins
-claude plugin install read-arxiv-paper@claude-plugins
-claude plugin install roadmap@claude-plugins
+claude plugin install book-forge@ethantiv-plugins
+claude plugin install babysit-pr@ethantiv-plugins
+claude plugin install read-arxiv-paper@ethantiv-plugins
+claude plugin install roadmap@ethantiv-plugins
 ```
 
 Instaluj tylko to, czego potrzebujesz; wtyczki są od siebie niezależne. Po instalacji sprawdź stan:
@@ -44,7 +44,7 @@ claude plugin marketplace list
 Marketplace jest dodawany przez `git clone`, więc wtyczki aktualizują się przy odświeżeniu marketplace'u, bez ponownej instalacji:
 
 ```bash
-claude plugin marketplace update claude-plugins
+claude plugin marketplace update ethantiv-plugins
 ```
 
 ## Wymagania
