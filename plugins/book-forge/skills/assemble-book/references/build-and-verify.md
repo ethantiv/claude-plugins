@@ -22,7 +22,7 @@ def klucz(s):
     tom, roz, sc = m.groups()
     return (int(tom) if tom else 1, int(roz), int(sc))
 sceny = sorted(sceny, key=klucz)
-out, last_ch, total = [], None, 0
+out, last_ch, total, znaki = [], None, 0, 0
 tytuly = {c.get('nr'): c.get('tytul') for c in b.get('kanon_fabularny',{}).get('rozdzialy',[])} if isinstance(b.get('kanon_fabularny',{}).get('rozdzialy'),list) else {}
 for s in sceny:
     ch = s.get('rozdzial')
@@ -34,14 +34,29 @@ for s in sceny:
     if os.path.exists(p):
         txt = open(p, encoding='utf-8').read().strip()
         total += len(txt.split())
+        znaki += len(txt)
         out.append(txt+'\n')
     else:
         out.append(f"_[BRAK SCENY {s['id']}]_\n")
 title = b.get('meta',{}).get('tytul','Książka')
 gatunek = b.get('meta',{}).get('subgatunek') or b.get('meta',{}).get('gatunek','')
-naglowek = f"# {title}\n\n> Maszynopis: {total} słów · {len(set(s.get('rozdzial') for s in sceny))} rozdziałów · {len(sceny)} scen{(' · '+gatunek) if gatunek else ''}\n"
-open(bible.book_path('ksiazka.md'),'w',encoding='utf-8').write(naglowek+''.join(out))
-print('złożono', bible.book_path('ksiazka.md'), '—', total, 'słów,', len(sceny), 'scen')
+logline = b.get('meta',{}).get('logline','')
+
+# arkusz wydawniczy = 40 000 znaków ze spacjami — jednostka polskiego rynku wydawniczego
+arkusze = round(znaki / 40000, 1)
+NORMY = [('krymina', '8–12'), ('thriller', '8–12'), ('romans', '7–10'), ('fantas', '10–16'),
+         ('science', '10–16'), ('sf', '10–16'), ('space', '10–16'), ('young adult', '6–9'),
+         ('ya', '6–9'), ('obyczaj', '8–12'), ('poradnik', '5–8'), ('reporta', '6–10')]
+norma = next((n for klucz_n, n in NORMY if klucz_n in gatunek.lower()), '8–12')
+
+strona_tyt = [f"# {title}", '']
+if logline: strona_tyt += [f"*{logline}*", '']
+strona_tyt += [f"> Maszynopis: {total} słów · {znaki} znaków ze spacjami · **{arkusze} arkuszy wydawniczych** "
+               f"(norma dla „{gatunek or 'powieści'}”: {norma} ark.) · "
+               f"{len(set(s.get('rozdzial') for s in sceny))} rozdziałów · {len(sceny)} scen", '']
+open(bible.book_path('ksiazka.md'),'w',encoding='utf-8').write('\n'.join(strona_tyt)+''.join(out))
+print('złożono', bible.book_path('ksiazka.md'), '—', total, 'słów,', znaki, 'znaków =', arkusze,
+      'arkuszy (norma', norma + '),', len(sceny), 'scen')
 PY
 ```
 
@@ -71,6 +86,46 @@ PY
 ```
 
 `freeze_canon`/`render_index` regenerują widok (`index.md`) po zapisie.
+
+## Echo-hunter + work-lista `redakcja-todo.md`
+
+Po złożeniu uruchom detektor powtórzeń i scal jego wynik z problemami przeglądu całości w jedną work-listę. Plik jest **w całości regenerowany** przy każdym przebiegu (jak `index.md`) — to assemble-book jest jego właścicielem; `revise-scene`/`polish-pl` tylko czytają.
+
+```bash
+python3 ${CLAUDE_PLUGIN_ROOT}/scripts/echo.py --json > "$TMPDIR/echo.json" || true   # exit 1 = są echa (to dane, nie błąd)
+python3 - "$SYNT_JSON" "$TMPDIR/echo.json" "$PLUGIN_ROOT" << 'PY'
+import json, sys, os
+sys.path.insert(0, os.path.join(sys.argv[3], 'scripts'))
+import bible
+synt = json.load(open(sys.argv[1], encoding='utf-8'))
+echo = json.load(open(sys.argv[2], encoding='utf-8')) if os.path.exists(sys.argv[2]) else {}
+
+L = ['<!-- GENEROWANE przez assemble-book + echo.py — NIE EDYTUJ RĘCZNIE, plik jest nadpisywany -->',
+     '# Work-lista redakcyjna', '', '## CAŁOŚĆ']
+for p in synt.get('problemy', []):
+    gdzie = f" ({p['gdzie']})" if p.get('gdzie') else ''
+    L.append(f"- [ ] [całość/{p.get('waga','?')}] {p.get('opis','')}{gdzie}")
+for z in synt.get('zasiewy_otwarte', []):
+    L.append(f"- [ ] [zasiew] bez wypłaty: {z}")
+for lk in synt.get('luki_luku', []):
+    L.append(f"- [ ] [łuk] {lk}")
+
+per = echo.get('per_scena', {})
+for sid in sorted(per):
+    e = per[sid]
+    L += ['', f'## {sid}']
+    for fr in e.get('ngramy', []):
+        L.append(f'- [ ] [echo] powtórzona fraza: „{fr}”')
+    for u in e.get('ulubience', []):
+        L.append(f'- [ ] [echo] słowo-ulubieniec: {u}')
+    if e.get('otwarcia'):
+        L.append(f"- [ ] [echo] powtórzone otwarcia akapitów: {e['otwarcia']}")
+
+todo = bible.work_path('redakcja-todo.md')
+open(todo, 'w', encoding='utf-8').write('\n'.join(L) + '\n')
+print('work-lista:', todo, '—', sum(1 for x in L if x.startswith('- [ ]')), 'pozycji')
+PY
+```
 
 ## DATA dla HTML
 

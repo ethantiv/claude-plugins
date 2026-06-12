@@ -29,8 +29,11 @@ const SYNT = { type:'object', required:['werdykt_gotowosci','problemy','zasiewy_
   setup_payoff_finalny:{type:'array',items:{type:'object',properties:{id:{type:'string'},status:{type:'string'}}}} } }
 
 phase('Przeglady')
+// beaty z kanonu wybranej struktury (kishōtenketsu, 7 punktów…) — trójakt to tylko fallback, nie norma
+const BEATY = (Array.isArray(K.beaty) && K.beaty.length) ? K.beaty
+  : ['incydent inicjujący','próg I aktu','środek','czarna chwila','kulminacja','rozwiązanie']
 const WYMIARY = [
-  'Łuk fabularny: czy beaty są domknięte (incydent inicjujący → próg I aktu → środek → czarna chwila → kulminacja → rozwiązanie), brak urwanych wątków.',
+  `Łuk fabularny: czy beaty WYBRANEJ struktury są domknięte (${BEATY.join(' → ')}), brak urwanych wątków. Oceniaj wobec tej struktury, nie wciskaj trójaktu.`,
   'Łuk postaci: czy przemiana protagonisty się realizuje (rana → kłamstwo → zmiana); czy poboczni mają domknięcia.',
   'Zasiewy: przejdź setup_payoff i streszczenia; wskaż KAŻDY zasiew bez wypłaty (strzelba, która nie wypaliła).',
   'Tempo: rozkład wartości +/– i długości scen; wskaż miejsca, gdzie za długo na jednym rejestrze, zapadnięcia napięcia, zbyt nagłe skoki.',

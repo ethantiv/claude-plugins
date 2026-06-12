@@ -17,14 +17,15 @@ Status: ✅ gotowe · 🔜 planowane (mapa: `shared/roadmap.md`).
 | 4 | `/book-forge:opening` | ✅ | Mocny początek: 3 warianty pierwszej sceny w głosie z biblii, ocena fabularna, kontrola ciągłości, werdykt. `poczatek-<slug>.html` + `.book-forge/poczatek.md`. |
 | 5 | `/book-forge:outline-to-scenes` | ✅ | Konspekt → siatka scen (cel→konflikt→zwrot, wartość +/–), beaty, oś czasu, rejestr zasiewów. Zapisuje do biblii; siatka scen scalona do `konspekt-<slug>.html` jako zakładka „Sceny” (bez osobnego pliku). |
 | 6 | `/book-forge:world-research` | ✅ | Weryfikacja realiów przez agent-browser/WebSearch (na żądanie z luk scen), adwersaryjna weryfikacja faktów, zapis do kanonu z cytowaniem (fakty + rejestr źródeł). Bez osobnych plików — wynik żyje w biblii. |
-| 7 | `/book-forge:write-scene` | ✅ | Proza jednej sceny, sekwencyjnie, w głosie z biblii; po napisaniu robi handoff do `continuity-check` (propozycje w pamięci → zapis do biblii). `.book-forge/sceny/<id>.md`. Bez humanizera (ten przychodzi w `polish-pl`). |
+| 7 | `/book-forge:write-scene` | ✅ | Proza jednej sceny, sekwencyjnie, w głosie z biblii; preflight `bible.py check-stage`, wyciąg anty-amnezji ze streszczeń w kanonie; po napisaniu robi handoff do `continuity-check` (propozycje w pamięci → zapis do biblii). `.book-forge/sceny/<id>.md`. Bez humanizera (ten przychodzi w `polish-pl`). |
+| 7–10T | `/book-forge:forge-scenes` | ✅ | **Tryb taśmowy pętli scen**: pytania RAZ na początku (zakres, długość, limit rewizji), potem sekwencyjnie `write-scene` → `revise-scene` → `continuity-check` → `polish-pl` dla N kolejnych scen; twardy stop tylko na konflikcie RO / wyczerpanym limicie. Postęp po każdej scenie z `bible.py status`. |
 | 8 | `/book-forge:revise-scene` | ✅ | Pętla pogłębienie prozą → dev-edit „na ślepo” (PASS/FIX), z limitem prób i `accept-with-debt`. Poprawiona `.book-forge/sceny/<id>.md` + notatka QA. |
-| 9 | `/book-forge:continuity-check` | ✅ | Bramka spójności i jedyny etap zapisujący do kanonu: audyt vs biblia, RO → CONFLICT (blokada), RUNTIME → write-back. Aktualizacja biblii (kanon + `log_ciaglosci`); bez plików raportu. |
+| 9 | `/book-forge:continuity-check` | ✅ | Bramka spójności i jedyny etap **prozy** zapisujący do kanonu: audyt vs biblia, RO → CONFLICT (blokada), RUNTIME → write-back + **streszczenie sceny** do agregatu `streszczenia` (wyciąg anty-amnezji). Aktualizacja biblii (kanon + `log_ciaglosci`); bez plików raportu. |
 | 10 | `/book-forge:polish-pl` | ✅ | Finalna polszczyzna: humanizer NAJPIERW (zakotwiczony stylem), potem korekta polonistyczna + walidacja nazw z glosariusza. Wygładzona `.book-forge/sceny/<id>.md` + `.book-forge/korekta-<id>.md`. |
-| 11 | `/book-forge:assemble-book` | ✅ | Złożenie scen w rozdziały i całą książkę + przeglądy całości (łuk fabularny i postaci, wypłata zasiewów, tempo, motyw, oś czasu); zamrożenie kanonu working→published. `ksiazka.md` + interaktywny HTML. |
+| 11 | `/book-forge:assemble-book` | ✅ | Złożenie scen w rozdziały i całą książkę + przeglądy całości (łuk fabularny i postaci, wypłata zasiewów, tempo, motyw, oś czasu); metryki polskiego rynku (znaki, **arkusze wydawnicze** vs norma subgatunku), detektor powtórzeń `echo.py` i work-lista `.book-forge/redakcja-todo.md`; zamrożenie kanonu working→published. `ksiazka.md` (ze stroną tytułową) + interaktywny HTML. |
 | 12 | `/book-forge:publishing-package` | ✅ | Pakiet wydawniczy: logline, elevator pitch, opis z okładki (bez spoilerów), synopsis (z zakończeniem), list do agenta, comp titles „dla czytelników X i Y”. `pakiet.md` + interaktywny HTML. |
 
-**Pipeline jest kompletny** — od pomysłu (etap 1) po gotowy maszynopis i materiały do wysyłki (etap 12). Etap 1 ma dwa warianty: pełny `market-report` (z badaniem rynku) i lekki `idea-spark` (sam kwestionariusz, bez researchu); oba produkują `.book-forge/pomysl.json`, więc dalsze etapy działają tak samo niezależnie od wyboru.
+**Pipeline jest kompletny** — od pomysłu (etap 1) po gotowy maszynopis i materiały do wysyłki (etap 12). Etap 1 ma dwa warianty: pełny `market-report` (z badaniem rynku) i lekki `idea-spark` (sam kwestionariusz, bez researchu); oba produkują `.book-forge/pomysl.json`, więc dalsze etapy działają tak samo niezależnie od wyboru. Pętlę scen (etapy 7–10) można prowadzić ręcznie albo taśmowo przez `forge-scenes` (pytania raz, stop tylko na decyzjach autora). Stan projektu w każdej chwili: `python3 scripts/bible.py status` (sceny wg statusu, słowa vs budżet, otwarte zasiewy); kontrakt wejścia etapu przed drogim rojem: `bible.py check-stage <etap>`.
 
 ## Układ katalogu książki
 
@@ -49,6 +50,7 @@ mojaksiazka/
    ├─ pomysl.json
    ├─ konspekt.md  poczatek.md
    ├─ korekta-<id>.md
+   ├─ redakcja-todo.md            work-lista z przeglądu całości (regenerowana)
    ├─ seria.md                    (tylko tryb serii)
    ├─ biblia/**/*.md              kanon — źródło prawdy
    └─ sceny/<id>.md  <id>.qa.md
@@ -79,11 +81,12 @@ je pod tomem: `BOOK_DIR=tom-NN/`, `WORK=tom-NN/.book-forge/`, `BIBLE_DIR=tom-NN/
 | 7 | `write-scene` | `.book-forge/sceny/<id>.md` | ⚪ | Proza pojedynczej sceny; po napisaniu **handoff do continuity-check** (propozycje w pamięci, bez pliku) |
 | 8 | `revise-scene` | `.book-forge/sceny/<id>.md` (nadpisana) | ⚪ | Pogłębiona / zredagowana scena |
 | 8 | `revise-scene` | `.book-forge/sceny/<id>.qa.md` | ⚪ | Notatka QA (werdykt, oceny, dziennik rund, dług) |
-| 9 | `continuity-check` | *(zapis RUNTIME do `.book-forge/biblia/` + `log_ciaglosci`)* | 🔵 | **Jedyny etap z prawem zapisu** do kanonu — **bez plików raportu** (podsumowanie tylko w czacie) |
+| 9 | `continuity-check` | *(zapis RUNTIME do `.book-forge/biblia/` + `log_ciaglosci` + streszczenie sceny do `streszczenia`)* | 🔵 | **Jedyny etap prozy z prawem zapisu** do kanonu — **bez plików raportu** (podsumowanie tylko w czacie) |
 | 10 | `polish-pl` | `.book-forge/sceny/<id>.md` (wygładzona) | ⚪ | Finalna polszczyzna |
 | 10 | `polish-pl` | `.book-forge/korekta-<id>.md` | ⚪ | Raport zmian językowych |
-| 11 | `assemble-book` | `ksiazka.md` | ⚪ | Cała książka (rozdziały + sceny, deterministyczne złożenie) — **w korzeniu** |
+| 11 | `assemble-book` | `ksiazka.md` | ⚪ | Cała książka (strona tytułowa z metrykami: słowa, znaki, arkusze wydawnicze; rozdziały + sceny, deterministyczne złożenie) — **w korzeniu** |
 | 11 | `assemble-book` | `ksiazka-<slug>.html` | 🟢 | Interaktywny przegląd całości |
+| 11 | `assemble-book` | `.book-forge/redakcja-todo.md` | ⚪ | Work-lista redakcyjna (problemy przeglądu całości + echa z `echo.py` per scena) — **regenerowana w całości** przy każdym przebiegu; czytają ją `revise-scene`/`polish-pl` |
 | 11 | `assemble-book` | *(aktualizacja `.book-forge/biblia/`, freeze `working`→`published`)* | 🔵 | Finalne statusy zasiewów / łuków, zamrożenie kanonu |
 | 12 | `publishing-package` | `pakiet.md` | ⚪ | Logline, blurb, synopsis, list do agenta, comps — **w korzeniu** |
 | 12 | `publishing-package` | `pakiet-<slug>.html` | 🟢 | Interaktywny pakiet wydawniczy |
@@ -145,6 +148,10 @@ flowchart TD
     BIBLIA --> S6
     S6 --> BIBLIA
 
+    %% --- Etapy 7-10: taśma (opcjonalny orkiestrator) ---
+    FS["7–10 · forge-scenes (taśma)"]:::stage
+    FS -. "pętla per scena" .-> S7
+
     %% --- Etap 7 ---
     S7["7 · write-scene"]:::stage
     BIBLIA --> S7
@@ -177,6 +184,9 @@ flowchart TD
     S11 --> BIBLIA
     S11 --> KSIAZKA["ksiazka.md (korzeń)"]:::prose
     S11 --> KSIAZKAH["ksiazka-SLUG.html"]:::human
+    S11 --> TODO[".book-forge/redakcja-todo.md"]:::prose
+    TODO -. "cele poprawek" .-> S8
+    TODO -. "cele korekty" .-> S10
 
     %% --- Etap 12 ---
     S12["12 · publishing-package"]:::stage
@@ -217,8 +227,9 @@ book-forge/
     biblia-spec.md         # specyfikacja biblii książki (wspólny stan)
     roadmap.md             # mapa etapów pipeline'u
   scripts/
-    bible.py               # biblioteka kanonu-wiki (jedyne I/O do .book-forge/biblia/; load_all, write_entity, append_record, validate…)
-    tests/                 # fixture + test E2E round-trip (python3 scripts/tests/test_bible.py)
+    bible.py               # biblioteka kanonu-wiki (jedyne I/O do .book-forge/biblia/; load_all, write_entity, append_record, update_meta, validate, check-stage, status…)
+    echo.py                # detektor powtórzeń frazowych (n-gramy, słowa-ulubieńcy, otwarcia akapitów) — zasila redakcja-todo
+    tests/                 # fixture + testy E2E (python3 scripts/tests/test_bible.py, test_echo.py)
   skills/market-report/    # etap 1  (SKILL + szablon + workflow + build-and-verify)
   skills/idea-spark/       # etap 1  (wariant lekki: kwestionariusz → 5 pomysłów, bez badania rynku)
   skills/outline/          # etap 2
@@ -227,6 +238,7 @@ book-forge/
   skills/outline-to-scenes/ # most: konspekt → siatka scen
   skills/world-research/   # research realiów do kanonu (z cytowaniem)
   skills/write-scene/      # proza: pojedyncza scena (sekwencyjnie)
+  skills/forge-scenes/     # tryb taśmowy pętli 7-10 (orkiestrator bez własnego roju)
   skills/revise-scene/     # pogłębienie + dev-edit (pętla generuj→oceń)
   skills/continuity-check/ # bramka kanonu (jedyny zapis do biblii)
   skills/polish-pl/        # finalna polszczyzna (humanizer → korekta PL)

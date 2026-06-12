@@ -12,10 +12,10 @@ Zapis wykonuje skrypt, nie agent, i przechodzi **wyłącznie przez `bible.py`** 
 
 ```bash
 python3 - "$PLAN_JSON" "$PLUGIN_ROOT" << 'PY'
-import json, sys, os
+import hashlib, json, sys, os
 sys.path.insert(0, os.path.join(sys.argv[2], "scripts"))
 import bible
-plan = json.load(open(sys.argv[1], encoding="utf-8"))   # obiekt {id, plan:{zapis, log, konflikty}}
+plan = json.load(open(sys.argv[1], encoding="utf-8"))   # obiekt {id, plan:{zapis, log, konflikty, streszczenie}}
 sid = plan["id"]; z = plan["plan"]["zapis"]; log = plan["plan"]["log"]
 
 # Audyt RO jest teraz w bibliotece (bible.ro_snapshot / assert_ro_unchanged) — gwarancja po stronie biblioteki, nie skryptu
@@ -54,6 +54,16 @@ for sp in z.get("setup_payoff", []):
 
 # 6. status sceny w kanonie fabularnym
 bible.set_scene_status(sid, "zweryfikowana")
+
+# 6b. streszczenie sceny → agregat (update-or-append po scenie; hash prozy pozwala
+#     konsumentom wykryć nieaktualność po polish-pl). Bramka i tak czytała prozę.
+streszczenie = plan["plan"].get("streszczenie", "")
+proza_path = bible.work_path("sceny", sid + ".md")
+if streszczenie and os.path.exists(proza_path):
+    proza = open(proza_path, encoding="utf-8").read()
+    bible.append_record("streszczenia", {"RUNTIME": True, "scena": sid,
+        "streszczenie": streszczenie, "slowa": len(proza.split()),
+        "hash": hashlib.sha256(proza.encode("utf-8")).hexdigest()[:12]})
 
 # 7. log ciaglosci — JAKO OSTATNI (znacznik domknięcia bramki)
 bible.append_log({"RUNTIME": True, **log})

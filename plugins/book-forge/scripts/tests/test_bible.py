@@ -54,7 +54,7 @@ def _populate(bible, b):
         bible.write_entity("glosariusz", g, ro_guard=False)
     kf = b.get("kanon_fabularny", {})
     bible.write_scene_grid(kf.get("rozdzialy", []), kf.get("beaty", []), kf.get("sceny", []), force=True)
-    for sec in ("os_czasu", "setup_payoff", "fakty", "zrodla"):
+    for sec in ("os_czasu", "streszczenia", "setup_payoff", "fakty", "zrodla"):
         for rec in b.get(sec, []):
             bible.append_record(sec, rec)
     for e in b.get("log_ciaglosci", []):
@@ -70,6 +70,10 @@ def main():
         os.environ["BIBLE_DIR"] = os.path.join(work, "biblia")
         bible.BIBLE_DIR = os.environ["BIBLE_DIR"]
         os.makedirs(bible.BIBLE_DIR, exist_ok=True)
+        # work_path/book_path liczą ścieżki względem CWD — w teście kieruj je do tempdir,
+        # żeby check_stage/book_status nie czytały (ani nie śmieciły) w katalogu repo
+        bible.BOOK_DIR = work
+        bible.WORK_DIR = os.path.join(work, ".book-forge/")
 
         original = json.load(open(os.path.join(HERE, "fixture-biblia.json"), encoding="utf-8"))
 
@@ -82,7 +86,7 @@ def main():
         loaded = bible.load_all()
         check("round-trip kształtu == fixture", _norm(loaded) == _norm(original),
               "load_all() różni się od oryginału")
-        check("round-trip: 16 sekcji", set(loaded) == set(original))
+        check("round-trip: 17 sekcji", set(loaded) == set(original))
         check("round-trip: _stan zachowany",
               any(p.get("_stan", {}).get("lokalizacja") == "Pas Łomów" for p in loaded["postacie"]))
         check("round-trip: kolejność scen", [s["id"] for s in loaded["kanon_fabularny"]["sceny"]]
@@ -120,6 +124,30 @@ def main():
         check("setup_payoff: status zaktualizowany",
               [x for x in sp if x["id"] == "SP01"][0]["status"] == "domkniety")
 
+        # 5c'. streszczenia: update-or-append po (scena,) — ponowna bramka aktualizuje, nie dubluje
+        s1 = bible.append_record("streszczenia", {"RUNTIME": True, "scena": "R1S2",
+                                                  "streszczenie": "Eron gubi trop.", "slowa": 900, "hash": "h1"})
+        check("streszczenia: append nowej sceny", s1["action"] == "append", str(s1))
+        s2 = bible.append_record("streszczenia", {"RUNTIME": True, "scena": "R1S2",
+                                                  "streszczenie": "Eron gubi trop, ale znajduje mapę.", "slowa": 1050, "hash": "h2"})
+        check("streszczenia: update po rewizji (ta sama scena)", s2["action"] == "update", str(s2))
+        st = bible.load_all()["streszczenia"]
+        check("streszczenia: brak duplikatu sceny", len([x for x in st if x["scena"] == "R1S2"]) == 1)
+        check("streszczenia: treść zaktualizowana",
+              [x for x in st if x["scena"] == "R1S2"][0]["hash"] == "h2")
+
+        # 5c''. update_meta: whitelist RUNTIME singletonu meta
+        m1 = bible.update_meta("liczba_scen", 4)
+        check("update_meta liczba_scen = WRITE", m1["status"] == "WRITE", str(m1))
+        m2 = bible.update_meta("budzet_slow", 90000)
+        check("update_meta budzet_slow = WRITE", m2["status"] == "WRITE", str(m2))
+        meta_po = bible.load_all()["meta"]
+        check("update_meta zapisał oba pola", meta_po.get("liczba_scen") == 4 and meta_po.get("budzet_slow") == 90000)
+        check("update_meta nie clobberuje reszty meta", meta_po.get("tytul") == "Pył i Pamięć")
+        m3 = bible.update_meta("tytul", "Nowy tytuł")
+        check("update_meta pole RO → CONFLICT", m3["status"] == "CONFLICT", str(m3))
+        check("update_meta RO niezmienione", bible.load_all()["meta"]["tytul"] == "Pył i Pamięć")
+
         # 5d. set_scene_status + log
         bible.set_scene_status("R1S1", "zweryfikowana")
         check("set_scene_status",
@@ -154,6 +182,8 @@ def main():
         os.environ["BIBLE_DIR"] = tom2_dir
         bible.BIBLE_DIR = tom2_dir
 
+        check("update_meta MISS bez meta.md", bible.update_meta("liczba_scen", 1)["status"] == "MISS")
+
         imp = bible.import_published(tom1_dir)
         check("seria: import_published OK", imp["status"] == "OK" and imp["stron"] > 0, str(imp))
         names = [p["imie"] for p in bible.load_all().get("postacie", [])]
@@ -162,10 +192,27 @@ def main():
               all(p.get("_inherited") for p in bible.load_all()["postacie"]))
         r = bible.write_entity("postac", {"imie": "Kalina", "opis_fizyczny": "inna"})
         check("seria: write_entity na dziedziczonej → INHERITED_RO", r.get("status") == "INHERITED_RO", str(r))
-        u = bible.update_runtime("postac", "Kalina", "_stan.lokalizacja", "X")
-        check("seria: update_runtime na dziedziczonej → INHERITED_RO", u.get("status") == "INHERITED_RO", str(u))
-        check("seria: dziedziczona Kalina niezmieniona",
-              [p for p in bible.load_all()["postacie"] if p["imie"] == "Kalina"][0]["opis_fizyczny"] == "drobna, blizna na dłoni")
+
+        # regresja: index tomu 2 linkuje encje dziedziczone — walidator nie może
+        # zgłaszać wiszących wikilinków (strony żyją w _dziedziczone/)
+        bible.render_index()
+        braki_t2 = bible.validate_canon()
+        check("seria: walidator czysty w tomie 2 po render_index", braki_t2 == [], "; ".join(braki_t2))
+
+        # copy-on-write: RUNTIME dziedziczonej postaci materializuje stronę własną,
+        # RO zostaje verbatim, a warstwa _dziedziczone/ jest nietknięta
+        u = bible.update_runtime("postac", "Kalina", "_stan.lokalizacja", "Pas Łomów II")
+        check("seria: update_runtime copy-on-write → WRITE", u.get("status") == "WRITE" and u.get("zmaterializowano"), str(u))
+        own_kalina = os.path.join(tom2_dir, "postacie", "kalina.md")
+        check("seria: strona własna zmaterializowana", os.path.exists(own_kalina))
+        kalina2 = [p for p in bible.load_all()["postacie"] if p["imie"] == "Kalina"][0]
+        check("seria: RUNTIME spatchowany po materializacji", kalina2["_stan"]["lokalizacja"] == "Pas Łomów II")
+        check("seria: RO dziedziczonej Kaliny niezmienione", kalina2["opis_fizyczny"] == "drobna, blizna na dłoni")
+        check("seria: zmaterializowana strona bez _inherited", not kalina2.get("_inherited"))
+        inh_fm, _ = bible._read_page(os.path.join("_dziedziczone", "postacie", "kalina.md"))
+        check("seria: warstwa _dziedziczone nietknięta",
+              inh_fm["_stan"]["lokalizacja"] == "Cytadela" and inh_fm.get("_inherited") is True, str(inh_fm))
+        check("seria: walidator czysty po materializacji", bible.validate_canon() == [])
         bible.write_entity("postac", {"imie": "Norn", "rola": "nowy", "luk": "plan", "opis_fizyczny": "y"}, ro_guard=False)
         names2 = sorted(p["imie"] for p in bible.load_all()["postacie"])
         check("seria: nowa postać tomu 2 współistnieje z dziedziczoną", "Norn" in names2 and "Kalina" in names2, str(names2))
@@ -177,6 +224,16 @@ def main():
         check("seria: read_series None gdy brak pliku", bible.read_series() is None)
         bible.write_series({"RO": True, "tytul_serii": "Cykl", "tomy": 3, "tom_aktywny": 2})
         check("seria: write/read_series round-trip", (bible.read_series() or {}).get("tomy") == 3)
+
+        # 6a. book_path/work_path — układ katalogów trybu serii
+        old_book, old_work = bible.BOOK_DIR, bible.WORK_DIR
+        bible.BOOK_DIR, bible.WORK_DIR = "tom-02/", "tom-02/.book-forge/"
+        check("book_path w trybie serii", bible.book_path("ksiazka.md") == os.path.join("tom-02/", "ksiazka.md"))
+        check("work_path w trybie serii",
+              bible.work_path("sceny", "T2R1S1.md") == os.path.join("tom-02/.book-forge/", "sceny", "T2R1S1.md"))
+        bible.BOOK_DIR = ""
+        check("book_path pojedynczej książki", bible.book_path("ksiazka.md") == "ksiazka.md")
+        bible.BOOK_DIR, bible.WORK_DIR = old_book, old_work
 
         os.environ["BIBLE_DIR"] = tom1_dir  # przywróć tom 1 do dalszych testów walidatora
         bible.BIBLE_DIR = tom1_dir
@@ -195,6 +252,46 @@ def main():
 
         # 5i. new_id kontynuuje numerację (po wcześniejszym F02)
         check("new_id fakty kolejne (F03)", bible.new_id("fakty") == "F03", bible.new_id("fakty"))
+
+        # 6b. check_stage: preflight wejścia etapów (na kanonie z fixture, bez plików prozy)
+        cs = bible.check_stage("write-scene")
+        check("check_stage write-scene OK (siatka kompletna)", cs["ok"], "; ".join(cs["braki"]))
+        cs = bible.check_stage("revise-scene")
+        check("check_stage revise-scene bez id → brak", not cs["ok"] and any("podaj id" in x for x in cs["braki"]), str(cs))
+        cs = bible.check_stage("revise-scene", "R1S1")
+        check("check_stage revise-scene bez prozy → brak", not cs["ok"], str(cs))
+        cs = bible.check_stage("outline")
+        check("check_stage outline bez pomysl.json → brak", not cs["ok"], str(cs))
+        cs = bible.check_stage("publishing-package")
+        check("check_stage publishing bez ksiazka.md → brak", not cs["ok"], str(cs))
+        raised_cs = False
+        try:
+            bible.check_stage("nieznany-etap")
+        except ValueError:
+            raised_cs = True
+        check("check_stage nieznany etap → ValueError", raised_cs)
+
+        # napisz prozę R1S1 → preflight revise-scene przechodzi, a status ją widzi
+        sc_dir = bible.work_path("sceny")
+        os.makedirs(sc_dir, exist_ok=True)
+        with open(os.path.join(sc_dir, "R1S1.md"), "w", encoding="utf-8") as f:
+            f.write("Kalina weszła do archiwum portu. " * 50)
+        check("check_stage revise-scene z prozą OK", bible.check_stage("revise-scene", "R1S1")["ok"])
+
+        # 6c. book_status: dashboard
+        st = bible.book_status()
+        check("status: tytuł i kanon", st["tytul"] == "Pył i Pamięć" and st["kanon"] in ("working", "published"))
+        check("status: sceny razem", st["sceny"]["razem"] == 4, str(st["sceny"]))
+        check("status: słowa policzone i budżet z meta",
+              st["slowa"]["per_scena"].get("R1S1", 0) > 0 and st["slowa"]["budzet"] == 90000)
+        check("status: procent budżetu", isinstance(st["slowa"]["procent"], int))
+        check("status: otwarte zasiewy nie zawierają domkniętych",
+              all(z["id"] != "SP01" for z in st["zasiewy_otwarte"]), str(st["zasiewy_otwarte"]))
+        with open(bible.work_path("korekta-R1S1.md"), "w", encoding="utf-8") as f:
+            f.write("# korekta\n")
+        st2 = bible.book_status()
+        check("status: korekta-<id>.md ⇒ wygladzona", st2["sceny"]["wg_statusu"].get("wygladzona", 0) == 1,
+              str(st2["sceny"]["wg_statusu"]))
 
         # 7. walidator: czysto, potem zepsuty frontmatter
         braki = bible.validate_canon()
@@ -222,6 +319,18 @@ def main():
             f.write("---\n{zepsuty json}\n---\nproza\n")
         braki2 = bible.validate_canon()
         check("walidator wykrywa zepsuty frontmatter", any("zepsuty frontmatter" in x for x in braki2))
+
+        # 7c. urwany frontmatter (--- bez domknięcia) → ValueError, walidator raportuje
+        with open(bad, "w", encoding="utf-8") as f:
+            f.write('---\n{"imie": "Kalina"}\n')
+        braki3 = bible.validate_canon()
+        check("walidator wykrywa urwany frontmatter", any("bez domknięcia" in x for x in braki3), "; ".join(braki3))
+        raised_fm = False
+        try:
+            bible._split_frontmatter('---\n{"a": 1}\n')
+        except ValueError:
+            raised_fm = True
+        check("_split_frontmatter rzuca na urwanej stronie", raised_fm)
 
     finally:
         shutil.rmtree(work, ignore_errors=True)

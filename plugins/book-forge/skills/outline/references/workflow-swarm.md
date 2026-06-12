@@ -19,8 +19,10 @@ catch (e) { throw new Error('args podane jako string, ale to nie poprawny JSON (
 const IDEA = A.idea                          // { t, en, op, hook, gap, comps, protagonista }
 const G = A.genre
 const R = A.reader
+if (!IDEA || !G || !R) throw new Error('Brak idea/genre/reader w args — przerwij, nie uruchamiaj roju z pustym wejściem (uruchom etap 1 albo podaj pomysł).')
 const V = (A.verdict && typeof A.verdict === 'object') ? A.verdict : {}   // { rationale, whyNow, positioning }
 const B = (A.brief && typeof A.brief === 'object') ? A.brief : {}          // brief autora z etapu 1
+if (!Object.keys(B).length) log('UWAGA: brak briefu z etapu 1 — konspekt powstaje bez tonu, tabu i konwencji autora (degradacja, nie błąd)')
 const SUBG  = B.subgenre || ''               // podgatunek/nurt
 const CONV  = Array.isArray(B.conventions) ? B.conventions : []           // konwencje/obietnice gatunkowe
 const FORM  = B.form || ''                   // non-fiction: 'poradnik'|'reportaz'|'esej'|'pamietnik'; '' = fikcja
@@ -101,9 +103,9 @@ const szkielety = (await parallel(STRUKTURY.map((s,i)=>()=>
     {label:`szkielet:${i+1}`,phase:'Struktura',schema:SKELETON})))).filter(Boolean)
 
 const oceny = await parallel(szkielety.map((sz)=>async()=>{
-  const votes=(await parallel([1,2,3].map(()=>()=>
+  const votes=(await parallel([1,2,3].map((nr)=>()=>
     agent(`${ROLE}\n\nOceń szkielet pod kątem dopasowania do gatunku ${G} i siły obietnic rozdziałów. Szkielet:\n${JSON.stringify(sz)}\n\nDaj fit (1-5), promiseStrength (1-5), originality (1-5), verdict keep|kill, why.`,
-      {label:`ocena-struktury:${sz.structureName.slice(0,18)}`,phase:'Struktura',schema:JUDGE})))).filter(Boolean)
+      {label:`ocena-struktury:${nr}:${sz.structureName.slice(0,14)}`,phase:'Struktura',schema:JUDGE})))).filter(Boolean)
   const avg=votes.reduce((s,v)=>s+(v.fit+v.promiseStrength+(v.originality||3)),0)/(votes.length||1)
   return {sz, avg, keeps:votes.filter(v=>v.verdict==='keep').length, votes}
 }))

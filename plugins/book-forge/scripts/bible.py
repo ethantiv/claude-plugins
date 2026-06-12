@@ -4,7 +4,7 @@
 Źródłem prawdy jest frontmatter w kompaktowym JSON (między liniami `---`). Strony
 encji/sekcji są frontmatter-only; pełną treść markdown mają tylko `index.md`
 (katalog) i `log.md` (kronika). `load_all()` skleja to drzewo w jeden obiekt
-(16 sekcji wg `shared/biblia-spec.md`), z którego czytają skille.
+(17 sekcji wg `shared/biblia-spec.md`), z którego czytają skille.
 
 Standalone, tylko biblioteka standardowa (brak pyyaml). Wołane z poziomu skilli
 przez `${CLAUDE_PLUGIN_ROOT}/scripts/bible.py` (CLI) albo importowane.
@@ -39,7 +39,8 @@ def work_path(*parts):
 SECTION_ORDER = [
     "kanon", "meta", "swiat", "postacie", "antagonista", "stawka",
     "glos_narratora", "glosy_postaci", "glosariusz", "kanon_fabularny",
-    "os_czasu", "setup_payoff", "fakty", "zrodla", "temat", "log_ciaglosci",
+    "os_czasu", "streszczenia", "setup_payoff", "fakty", "zrodla", "temat",
+    "log_ciaglosci",
 ]
 
 # Singletony: jedna sekcja = jeden plik (frontmatter = obiekt sekcji verbatim).
@@ -55,6 +56,7 @@ SWIAT_FILE = os.path.join("swiat", "_swiat.md")
 # Agregaty list RUNTIME: frontmatter = {"items": [...]}.
 AGGREGATES = {
     "os_czasu": os.path.join("fabula", "os-czasu.md"),
+    "streszczenia": os.path.join("fabula", "streszczenia.md"),
     "setup_payoff": os.path.join("fabula", "zasiewy.md"),
     "fakty": os.path.join("fabula", "fakty.md"),
     "zrodla": os.path.join("fabula", "zrodla.md"),
@@ -167,6 +169,13 @@ def _read_page_merged(rel):
     return fm, body
 
 
+def _page_exists(rel):
+    """Czy strona istnieje w warstwie własnej LUB dziedziczonej (own-wins)."""
+    if os.path.exists(os.path.join(BIBLE_DIR, rel)):
+        return True
+    return _has_inherit() and os.path.exists(os.path.join(_inherit_dir(), rel))
+
+
 def _is_inherited(rel):
     """True, gdy strona istnieje WYŁĄCZNIE w warstwie dziedziczonej (RO poprzedniego tomu)."""
     if not _has_inherit():
@@ -242,7 +251,7 @@ def _read_kanon_scalar():
 
 
 def load_all():
-    """Skleja drzewo `biblia/**/*.md` w jeden obiekt (16 sekcji wg biblia-spec.md)."""
+    """Skleja drzewo `biblia/**/*.md` w jeden obiekt (17 sekcji wg biblia-spec.md)."""
     b = {}
     b["kanon"] = _read_kanon_scalar()
 
@@ -353,7 +362,13 @@ def update_runtime(kind, name, field, value):
     """Patch pola RUNTIME encji. Pole spoza whitelisty RUNTIME → CONFLICT
     (nic nie zapisuje). Nieistniejąca encja → MISS (nic nie zapisuje, nie rzuca —
     żeby zła nazwa w propozycji nie wysadziła całego write-backu bramki).
-    Obsługuje ścieżkę kropkową w obrębie _stan."""
+    Obsługuje ścieżkę kropkową w obrębie _stan.
+
+    Encja dziedziczona (zamknięty tom): copy-on-write — strona materializuje się
+    do warstwy własnej (pola RO skopiowane verbatim, bez _inherited) i dopiero
+    wtedy dostaje patch RUNTIME. To realizuje own-wins ze spec: postać z tomu 1
+    może zmienić _stan w tomie 2, a jej RO pozostaje nietknięte (whitelist +
+    assert_ro_unchanged pilnują tego twardo)."""
     root = field.split(".", 1)[0]
     if root not in RUNTIME_FIELDS.get(kind, set()):
         return {"status": "CONFLICT", "pole": field,
@@ -363,9 +378,10 @@ def update_runtime(kind, name, field, value):
     except KeyError:
         return {"status": "MISS", "pole": field,
                 "powod": f"brak encji {kind}:{name}"}
-    if fm.get("_inherited"):  # encja dziedziczona z zamkniętego tomu — RUNTIME też zablokowany
-        return {"status": "INHERITED_RO", "pole": field,
-                "powod": f"{kind}:{name} pochodzi z zamkniętego tomu (RO)"}
+    materialized = False
+    if fm.get("_inherited"):
+        fm = {k: v for k, v in fm.items() if k != "_inherited"}
+        materialized = True
     if "." in field:
         sub = field.split(".", 1)[1]
         fm.setdefault(root, {})[sub] = value
@@ -375,6 +391,31 @@ def update_runtime(kind, name, field, value):
     slug = fm.get("_slug") or slugify(fm.get(spec["name"], ""))
     _write_page(os.path.join(spec["dir"], slug + ".md"), fm,
                 _render_entity_body(kind, fm))
+    res = {"status": "WRITE", "pole": field}
+    if materialized:
+        res["zmaterializowano"] = True
+    return res
+
+
+# Jedyne pola singletonu meta, które wolno patchować po seedowaniu biblii
+# (producent: outline-to-scenes po write_scene_grid). Reszta meta to RO.
+META_RUNTIME_FIELDS = {"budzet_slow", "liczba_scen"}
+
+
+def update_meta(field, value):
+    """Patch pojedynczego pola RUNTIME singletonu meta (read-modify-write,
+    bez clobberowania reszty — dlatego nie write_section). Pole spoza
+    META_RUNTIME_FIELDS → CONFLICT. Brak meta.md → MISS. Meta dziedziczone
+    z zamkniętego tomu → copy-on-write jak update_runtime."""
+    if field not in META_RUNTIME_FIELDS:
+        return {"status": "CONFLICT", "pole": field,
+                "powod": f"pole meta.{field} nie jest RUNTIME (RO singletonu meta)"}
+    fm, _ = _read_page_merged(SINGLETONS["meta"])
+    if fm is None:
+        return {"status": "MISS", "pole": field, "powod": "brak meta.md w biblii"}
+    fm = {k: v for k, v in fm.items() if k != "_inherited"}
+    fm[field] = value
+    _write_page(SINGLETONS["meta"], fm)
     return {"status": "WRITE", "pole": field}
 
 
@@ -391,7 +432,7 @@ def new_id(section):
 
 def append_record(section, record, dedup_keys=None):
     """Append do agregatu RUNTIME z dedup + auto-id. Domyślny dedup:
-    fakty=(tresc,zrodlo_scena); os_czasu=(scena,) update-or-append;
+    fakty=(tresc,zrodlo_scena); os_czasu/streszczenia=(scena,) update-or-append;
     setup_payoff=(id,) update-or-append; zrodla=(id,) lub brak."""
     rel = AGGREGATES[section]
     fm, _ = _read_page(rel)
@@ -399,6 +440,7 @@ def append_record(section, record, dedup_keys=None):
     defaults = {
         "fakty": ("tresc", "zrodlo_scena"),
         "os_czasu": ("scena",),
+        "streszczenia": ("scena",),
         "setup_payoff": ("id",),
         "zrodla": ("id",),
     }
@@ -419,7 +461,7 @@ def append_record(section, record, dedup_keys=None):
             return tuple(r.get(k) for k in keys)
         for i, it in enumerate(items):
             if sig(it) == sig(record):
-                if section in ("os_czasu", "setup_payoff"):
+                if section in ("os_czasu", "setup_payoff", "streszczenia"):
                     items[i] = {**it, **record}
                     action = "update"
                 else:
@@ -543,6 +585,7 @@ def render_index():
         kf = b["kanon_fabularny"]
         aggr.append(("fabula/sceny", "RO", f"{len(kf.get('sceny', []))} scen, {len(kf.get('rozdzialy', []))} rozdz."))
     for sec, label in (("setup_payoff", "fabula/zasiewy"), ("os_czasu", "fabula/os-czasu"),
+                       ("streszczenia", "fabula/streszczenia"),
                        ("fakty", "fabula/fakty"), ("zrodla", "fabula/zrodla")):
         if sec in b:
             aggr.append((label, "RT", f"{len(b[sec])} rekordów"))
@@ -688,10 +731,169 @@ def validate_canon():
     for path in glob.glob(os.path.join(BIBLE_DIR, "**", "*.md"), recursive=True):
         with open(path, encoding="utf-8") as f:
             for link in re.findall(r"\[\[([a-z0-9/_-]+?)(?:\|[^\]]*)?\]\]", f.read()):
-                target = os.path.join(BIBLE_DIR, link + ".md")
-                if not os.path.exists(target):
+                if not _page_exists(link + ".md"):
                     braki.append(f"wiszący wikilink [[{link}]] w {os.path.basename(path)}")
     return braki
+
+
+# --------------------------------------------------------------------------- #
+# Preflight etapów i dashboard (czysty odczyt)
+# --------------------------------------------------------------------------- #
+STAGE_CHECKS = ("outline", "book-bible", "opening", "outline-to-scenes", "write-scene",
+                "revise-scene", "continuity-check", "polish-pl", "assemble-book",
+                "publishing-package")
+
+
+def _check_pomysl(braki):
+    p = work_path("pomysl.json")
+    if not os.path.exists(p):
+        braki.append(f"brak {p} — uruchom etap 1 (market-report albo idea-spark)")
+        return
+    try:
+        with open(p, encoding="utf-8") as f:
+            d = json.load(f)
+    except (json.JSONDecodeError, UnicodeDecodeError) as e:
+        braki.append(f"{p} nie parsuje się jako JSON ({e})")
+        return
+    idea = d.get("idea") or {}
+    if not (idea.get("t") and idea.get("op")):
+        braki.append(f"{p}: pomysł bez tytułu roboczego (idea.t) lub streszczenia (idea.op)")
+    for k in ("genre", "reader"):
+        if not d.get(k):
+            braki.append(f"{p}: brak pola {k}")
+
+
+def _check_konspekt(braki):
+    p = work_path("konspekt.md")
+    if not os.path.exists(p) or not open(p, encoding="utf-8").read().strip():
+        braki.append(f"brak lub pusty {p} — uruchom etap 2 (outline)")
+
+
+def _check_biblia(braki):
+    if not os.path.isdir(BIBLE_DIR):
+        braki.append(f"brak biblii {BIBLE_DIR} — uruchom etap 3 (book-bible)")
+        return
+    for luka in validate_canon():
+        braki.append(f"biblia: {luka}")
+
+
+def _grid_scenes():
+    return (load_all().get("kanon_fabularny") or {}).get("sceny", [])
+
+
+def check_stage(etap, scena=None):
+    """Deterministyczny preflight WEJŚCIA etapu — woła go skill przed drogim rojem.
+    → {"ok": bool, "etap": etap, "braki": [str]}. Ścieżki przez work_path/book_path,
+    więc tryb serii (BOOK_DIR/WORK/BIBLE_DIR) działa automatycznie."""
+    if etap not in STAGE_CHECKS:
+        raise ValueError(f"nieznany etap: {etap} (znane: {', '.join(STAGE_CHECKS)})")
+    braki = []
+    if etap == "outline":
+        _check_pomysl(braki)
+    elif etap == "book-bible":
+        _check_pomysl(braki)
+        _check_konspekt(braki)
+    elif etap == "opening":
+        _check_biblia(braki)
+    elif etap == "outline-to-scenes":
+        _check_biblia(braki)
+        _check_konspekt(braki)
+    elif etap == "write-scene":
+        _check_biblia(braki)
+        sceny = _grid_scenes() if os.path.isdir(BIBLE_DIR) else []
+        if not sceny:
+            braki.append("brak siatki scen w kanonie — uruchom etap 5 (outline-to-scenes)")
+        for s in sceny:
+            for pole in ("cel", "konflikt", "zwrot", "pov"):
+                if not s.get(pole):
+                    braki.append(f"scena {s.get('id', '?')}: puste pole {pole} na karcie")
+    elif etap in ("revise-scene", "continuity-check", "polish-pl"):
+        if not scena:
+            braki.append("podaj id sceny (np. R1S2)")
+        else:
+            p = work_path("sceny", scena + ".md")
+            if not os.path.exists(p):
+                braki.append(f"brak prozy {p} — uruchom etap 7 (write-scene) dla {scena}")
+    elif etap == "assemble-book":
+        _check_biblia(braki)
+        sceny = _grid_scenes() if os.path.isdir(BIBLE_DIR) else []
+        if not sceny:
+            braki.append("brak siatki scen w kanonie")
+        for s in sceny:
+            sid = s.get("id", "?")
+            if not os.path.exists(work_path("sceny", sid + ".md")):
+                braki.append(f"brak prozy sceny {sid}")
+    elif etap == "publishing-package":
+        if not os.path.exists(book_path("ksiazka.md")):
+            braki.append(f"brak {book_path('ksiazka.md')} — uruchom etap 11 (assemble-book)")
+    return {"ok": not braki, "etap": etap, "braki": braki}
+
+
+def _scene_words(sid):
+    p = work_path("sceny", sid + ".md")
+    if not os.path.exists(p):
+        return None
+    with open(p, encoding="utf-8") as f:
+        return len(f.read().split())
+
+
+def book_status():
+    """Dashboard projektu (czysty odczyt — zero zapisu). „Wygładzona" to status
+    wyświetlany: istnieje korekta-<id>.md (marker polish-pl), karta w kanonie
+    zostaje nietknięta."""
+    b = load_all()
+    sceny = (b.get("kanon_fabularny") or {}).get("sceny", [])
+    log = b.get("log_ciaglosci", [])
+    logged = {e.get("scena") for e in log}
+
+    wg_statusu, per_scena, bez_logu = {}, {}, []
+    for s in sceny:
+        sid = s.get("id", "?")
+        st = s.get("status", "planowana")
+        if os.path.exists(work_path(f"korekta-{sid}.md")):
+            st = "wygladzona"
+        wg_statusu[st] = wg_statusu.get(st, 0) + 1
+        w = _scene_words(sid)
+        if w is not None:
+            per_scena[sid] = w
+            if sid not in logged:
+                bez_logu.append(sid)
+
+    suma = sum(per_scena.values())
+    budzet = (b.get("meta") or {}).get("budzet_slow") or 0
+    zasiewy = [{"id": z.get("id"), "opis": z.get("opis", ""), "scena_zasiewu": z.get("scena_zasiewu", "")}
+               for z in b.get("setup_payoff", []) if z.get("status") != "domkniety"]
+
+    return {
+        "tytul": (b.get("meta") or {}).get("tytul", ""),
+        "kanon": b.get("kanon", "working"),
+        "sceny": {"razem": len(sceny), "wg_statusu": wg_statusu},
+        "slowa": {"per_scena": per_scena, "suma": suma, "budzet": budzet,
+                  "procent": round(100 * suma / budzet) if budzet else None},
+        "zasiewy_otwarte": zasiewy,
+        "sceny_bez_logu": bez_logu,
+        "ostatnie_werdykty": [{"scena": e.get("scena", ""), "werdykt": e.get("werdykt", "")}
+                              for e in log[-5:]],
+    }
+
+
+def _render_status(st):
+    lines = [f"Książka: „{st['tytul']}”  ·  kanon: {st['kanon']}"]
+    sc = st["sceny"]
+    statusy = "  ".join(f"{k}: {v}" for k, v in sorted(sc["wg_statusu"].items()))
+    lines.append(f"Sceny: {sc['razem']}  ({statusy or 'brak siatki'})")
+    sl = st["slowa"]
+    cel = f" / {sl['budzet']} ({sl['procent']}%)" if sl["budzet"] else " (bez budżetu w meta)"
+    lines.append(f"Słowa: {sl['suma']}{cel}")
+    if st["zasiewy_otwarte"]:
+        lines.append(f"Zasiewy otwarte ({len(st['zasiewy_otwarte'])}): "
+                     + ", ".join(f"{z['id']} ({z['opis'][:40]})" for z in st["zasiewy_otwarte"]))
+    if st["sceny_bez_logu"]:
+        lines.append("Sceny z prozą bez wpisu w logu ciągłości: " + ", ".join(st["sceny_bez_logu"]))
+    if st["ostatnie_werdykty"]:
+        lines.append("Ostatnie werdykty: " + ", ".join(f"{e['scena']}={e['werdykt']}"
+                                                       for e in st["ostatnie_werdykty"] if e["scena"]))
+    return "\n".join(lines)
 
 
 # --------------------------------------------------------------------------- #
@@ -699,9 +901,24 @@ def validate_canon():
 # --------------------------------------------------------------------------- #
 def _cli(argv):
     if not argv:
-        print("użycie: bible.py {validate|render-index|dump|freeze|import-published <kat>|series}")
+        print("użycie: bible.py {validate|render-index|dump|freeze|import-published <kat>|series|check-stage <etap> [<id-sceny>]|status [--json]}")
         return 2
     cmd = argv[0]
+    if cmd == "check-stage":
+        if len(argv) < 2:
+            print("użycie: bible.py check-stage <etap> [<id-sceny>]  (etapy: " + ", ".join(STAGE_CHECKS) + ")")
+            return 2
+        try:
+            res = check_stage(argv[1], argv[2] if len(argv) > 2 else None)
+        except ValueError as e:
+            print(str(e))
+            return 2
+        print(json.dumps(res, ensure_ascii=False))
+        return 0 if res["ok"] else 1
+    if cmd == "status":
+        st = book_status()
+        print(json.dumps(st, ensure_ascii=False, indent=2) if "--json" in argv else _render_status(st))
+        return 0
     if cmd == "import-published":
         if len(argv) < 2:
             print("użycie: bible.py import-published <katalog_biblii_poprzedniego_tomu>")

@@ -80,9 +80,10 @@ if (adher.naprawic && adher.naprawic.length) {
 
 phase('Redakcja PL')
 const red = await agent(
-  `Jesteś redaktorem języka polskiego. Wyczyść tekst sceny: usuń anglicyzmy i kalki, AI-slop, popraw interpunkcję dialogową (myślnik, nie cudzysłów angielski), zadbaj o aspekt czasowników i naturalny szyk. NIE wygładzaj „pod humanizer” (to później) i NIE ruszaj nazw własnych z glosariusza ani zdarzeń. Zwróć text i words.`,
+  `Jesteś redaktorem języka polskiego. Wyczyść tekst sceny: usuń anglicyzmy i kalki, AI-slop, popraw interpunkcję dialogową (myślnik, nie cudzysłów angielski), zadbaj o aspekt czasowników i naturalny szyk. NIE wygładzaj „pod humanizer” (to później) i NIE ruszaj nazw własnych z glosariusza ani zdarzeń. Zwróć text i words.\n\nTEKST:\n${final.text}`,
   {label:'redakcja-pl',phase:'Redakcja PL',schema:DRAFT})
-if (red && red.text) final = red
+// guard: przyjmij redakcję tylko, gdy zwróciła pełnoprawny tekst (nie skrót/halucynację)
+if (red && red.text && red.text.length >= final.text.length * 0.7) final = red
 
 phase('Propozycje')
 const prop = await agent(

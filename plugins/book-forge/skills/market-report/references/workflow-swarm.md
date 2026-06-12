@@ -188,7 +188,7 @@ const SEDZIOWIE = [
 const ocenione = await parallel(ideas.map((idea)=>async()=>{
   const votes=(await parallel(SEDZIOWIE.map((s)=>()=>
     agent(`${ROLE}\n\nWcielasz się w rolę: ${s.n}. ${s.l}\n\nPomysł:\n${JSON.stringify(idea)}\n\nLuki:\n${JSON.stringify(luki.gaps)}\n\nZweryfikuj realia rynku (WebSearch). Oceń też ODRÓŻNIALNOŚĆ od obecnej fali: pomysł, który tylko dosiada przegrzanego trendu (np. kolejna starsza bohaterka przy rynku już nimi nasyconym), dostaje KARĘ do oceny, nie premię — świeżość ma wartość. Wystaw ocenę 1-10 (może być ułamkowa) z uzasadnieniem, mocnymi stronami i ryzykami.`,
-      {label:`ocena:${idea.t.slice(0,16)}`,phase:'Ocena',schema:OCENA})))).filter(Boolean)
+      {label:`ocena:${s.n.slice(0,12)}:${idea.t.slice(0,12)}`,phase:'Ocena',schema:OCENA})))).filter(Boolean)
   const avg=votes.reduce((s,v)=>s+v.score,0)/(votes.length||1)
   return {...idea, votes, avgScore:Math.round(avg*10)/10}
 }))

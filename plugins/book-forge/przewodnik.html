@@ -293,7 +293,7 @@ details.faq summary:focus-visible{outline-offset:-3px}
     <div class="reqs">
       <div class="req reveal"><div class="t">Workflow</div><div class="d">Silnik roju agentów. Bez niego skille mają zapas: równoległe agenty <span class="mono">Task</span>.</div></div>
       <div class="req reveal"><div class="t">/humanizer:humanizer</div><div class="d">Obowiązkowy przebieg redakcji — usuwa wzorce „pisma AI”.</div></div>
-      <div class="req reveal"><div class="t">agent-browser</div><div class="d"><span class="mono">npm i -g agent-browser</span> — research i weryfikacja realiów oraz polskich wydań tytułów.</div></div>
+      <div class="req reveal"><div class="t">agent-browser</div><div class="d"><span class="mono">npm i -g agent-browser &amp;&amp; agent-browser install</span> — research i weryfikacja realiów oraz polskich wydań tytułów.</div></div>
       <div class="req reveal"><div class="t">Node.js + Python 3</div><div class="d">Walidacja artefaktów: <span class="mono">node --check</span> na HTML, <span class="mono">bible.py validate</span> na kanonie.</div></div>
     </div>
 
@@ -348,13 +348,13 @@ details.faq summary:focus-visible{outline-offset:-3px}
   <div class="wrap">
     <div class="sec-kick reveal">Ścieżka od pomysłu do wysyłki</div>
     <h2 class="reveal">Dwanaście <em>etapów</em></h2>
-    <p class="sec-intro reveal">Idziesz po kolei. Każdy kafelek to jedno polecenie — kliknij komendę, by ją skopiować. Numer w obwódce to miejsce w pipelinie; obwódka <b>złota</b> oznacza etap pisania prozy.</p>
+    <p class="sec-intro reveal">Idziesz po kolei. Każdy kafelek to jedno polecenie — kliknij komendę, by ją skopiować. Numer w obwódce to miejsce w pipelinie; obwódka <b>złota</b> oznacza etap pisania prozy. Do tego dwa <b>warianty</b>: lekki start bez badania rynku (<span class="mono">1L · idea-spark</span>) i tryb taśmowy pętli scen (<span class="mono">forge-scenes</span>).</p>
 
     <div class="phasebar reveal" id="phasebar">
-      <button class="phasebtn on" data-f="all">Wszystkie<span class="c">12</span></button>
-      <button class="phasebtn" data-f="I">I · Pomysł<span class="c">2</span></button>
+      <button class="phasebtn on" data-f="all">Wszystkie<span class="c">14</span></button>
+      <button class="phasebtn" data-f="I">I · Pomysł<span class="c">3</span></button>
       <button class="phasebtn" data-f="II">II · Fundament<span class="c">1</span></button>
-      <button class="phasebtn" data-f="III">III · Pisanie scen<span class="c">7</span></button>
+      <button class="phasebtn" data-f="III">III · Pisanie scen<span class="c">8</span></button>
       <button class="phasebtn" data-f="IV">IV · Złożenie i wydanie<span class="c">2</span></button>
     </div>
 
@@ -372,12 +372,22 @@ details.faq summary:focus-visible{outline-offset:-3px}
           <div class="io"><span><b>Wejście</b>gatunek + czytelnik</span><span class="out"><b>Wynik</b>raport HTML + pomysl.json</span></div>
         </article>
         <article class="stage reveal">
+          <span class="node">1L</span>
+          <div class="stage-top">
+            <button class="cmd" data-cmd="/book-forge:idea-spark">/book-forge:idea-spark<span class="cp">kopiuj</span></button>
+            <span class="badge">wariant — bez badania rynku</span>
+          </div>
+          <h3>Iskra pomysłu</h3>
+          <p>Lekka alternatywa etapu 01: rój generuje 5 pomysłów z roboczymi tytułami z samego kwestionariusza autora (bez WebSearch i agent-browser), ocenia je redaktorsko i wybiera zwycięzcę. Produkuje <b>ten sam</b> <span class="mono">pomysl.json</span>, więc dalsze etapy działają identycznie — wybierasz 01 albo 1L, nie oba.</p>
+          <div class="io"><span><b>Wejście</b>kwestionariusz autora</span><span class="out"><b>Wynik</b>idea-spark HTML + pomysl.json</span></div>
+        </article>
+        <article class="stage reveal">
           <span class="node">02</span>
           <div class="stage-top">
             <button class="cmd" data-cmd="/book-forge:outline">/book-forge:outline<span class="cp">kopiuj</span></button>
           </div>
           <h3>Konspekt rozdział po rozdziale</h3>
-          <p>Na bazie zwycięskiego pomysłu rój buduje fundament (przesłanka, motyw, łuk), dobiera strukturę, rozpisuje 12–15 rozdziałów (obietnica, haczyk, zwrot, przejście emocjonalne) i tnie wypełniacze.</p>
+          <p>Na bazie zwycięskiego pomysłu rój buduje fundament (przesłanka, motyw, łuk), dobiera strukturę, rozpisuje rozdziały w liczbie wyprowadzonej z gatunku i tempa (obietnica, haczyk, zwrot, przejście emocjonalne) i tnie wypełniacze.</p>
           <div class="io"><span><b>Wejście</b>pomysl.json z etapu 1</span><span class="out"><b>Wynik</b>konspekt.md + HTML</span></div>
         </article>
       </div>
@@ -457,7 +467,7 @@ details.faq summary:focus-visible{outline-offset:-3px}
             <span class="badge canon">jedyny zapis</span>
           </div>
           <h3>Kontrola ciągłości — bramka kanonu</h3>
-          <p>Rój audytorów porównuje scenę z biblią (nazwy i odmiana, opisy postaci, chronologia, POV, zasady świata, zasiewy). Synteza klasyfikuje każdą propozycję: CONFLICT (łamie pola RO — blokuje), WRITE (nowy RUNTIME — zapis) albo OK (już jest, spójne). To <b>jedyny</b> etap z prawem zapisu do biblii.</p>
+          <p>Rój audytorów porównuje scenę z biblią (nazwy i odmiana, opisy postaci, chronologia, POV, zasady świata, zasiewy). Synteza klasyfikuje każdą propozycję: CONFLICT (łamie pola RO — blokuje), WRITE (nowy RUNTIME — zapis) albo OK (już jest, spójne). Zapisuje też streszczenie sceny do kanonu (wyciąg anty-amnezji dla kolejnych scen). To <b>jedyny etap prozy</b> z prawem zapisu do biblii.</p>
           <div class="io"><span><b>Wejście</b>gotowa scena</span><span class="out"><b>Wynik</b>bez plików (podsumowanie w czacie)</span><span class="bib"><b>Biblia</b>write-back RUNTIME + log_ciaglosci</span></div>
         </article>
         <article class="stage write reveal">
@@ -470,9 +480,19 @@ details.faq summary:focus-visible{outline-offset:-3px}
           <p>Najpierw <span class="mono">/humanizer:humanizer</span> (zakotwiczony kartą stylu z biblii), POTEM korekta polonistyczna i walidacja nazw z glosariusza. Ta mikrokolejność jest krytyczna — humanizer bazuje na wzorcach angielskich, więc polski musi być ostatni.</p>
           <div class="io"><span><b>Wejście</b>scena po ciągłości</span><span class="out"><b>Wynik</b>wygładzona scena + raport</span><span class="bib"><b>Biblia</b>karta stylu, glosariusz</span></div>
         </article>
+        <article class="stage write reveal">
+          <span class="node">7–10</span>
+          <div class="stage-top">
+            <button class="cmd" data-cmd="/book-forge:forge-scenes">/book-forge:forge-scenes<span class="cp">kopiuj</span></button>
+            <span class="badge">tryb taśmowy</span>
+          </div>
+          <h3>Taśma scen</h3>
+          <p>Orkiestrator pętli: pyta o wszystko RAZ (zakres, długość, limit rewizji), po czym prowadzi kolejne sceny przez pełny łańcuch <code>07 → 08 → 09 → 10</code> bez powtarzania pytań — z twardym stopem tylko na konflikcie RO lub wyczerpanym limicie prób. Po każdej scenie pokazuje postęp (<span class="mono">bible.py status</span>: X/N scen, słowa vs budżet).</p>
+          <div class="io"><span><b>Wejście</b>zakres scen (np. „kolejne 3”)</span><span class="out"><b>Wynik</b>N scen po pełnym łańcuchu</span><span class="bib"><b>Biblia</b>zapis wyłącznie przez bramkę 09</span></div>
+        </article>
         <div class="loopnote reveal">
           <div class="t">Pętla na każdą scenę</div>
-          <p>Etapy <code>07 → 08 → 09 → 10</code> powtarzasz dla <b>każdej sceny</b> z siatki. Proza idzie sekwencyjnie (scena N widzi N-1), a research (06) uruchamiasz tylko wtedy, gdy scena zgłosi lukę. Gdy wszystkie sceny są napisane, zweryfikowane i wygładzone — przechodzisz do złożenia.</p>
+          <p>Etapy <code>07 → 08 → 09 → 10</code> powtarzasz dla <b>każdej sceny</b> z siatki — ręcznie albo taśmowo przez <code>/book-forge:forge-scenes</code>. Proza idzie sekwencyjnie (scena N widzi N-1), a research (06) uruchamiasz tylko wtedy, gdy scena zgłosi lukę. Gdy wszystkie sceny są napisane, zweryfikowane i wygładzone — przechodzisz do złożenia.</p>
         </div>
       </div>
     </div>
@@ -488,8 +508,8 @@ details.faq summary:focus-visible{outline-offset:-3px}
             <span class="badge canon">working→published</span>
           </div>
           <h3>Złożenie książki</h3>
-          <p>Rój składa sceny w rozdziały i całą książkę, a potem robi przeglądy nad CAŁOŚCIĄ: domknięcie łuku fabularnego i łuku postaci, wypłata wszystkich zasiewów, tempo, motyw, oś czasu. Może zamrozić kanon working→published.</p>
-          <div class="io"><span><b>Wejście</b>wygładzone sceny</span><span class="out"><b>Wynik</b>ksiazka.md + HTML</span><span class="bib"><b>Biblia</b>finalny status</span></div>
+          <p>Rój składa sceny w rozdziały i całą książkę, a potem robi przeglądy nad CAŁOŚCIĄ: domknięcie łuku fabularnego i łuku postaci, wypłata wszystkich zasiewów, tempo, motyw, oś czasu. Maszynopis dostaje metryki polskiego rynku (znaki ze spacjami, <b>arkusze wydawnicze</b> vs norma gatunku), a detektor <span class="mono">echo.py</span> wyłapuje powtórzone frazy i słowa-ulubieńców — problemy lądują w work-liście <span class="mono">redakcja-todo.md</span> dla poprawek scen. Może zamrozić kanon working→published.</p>
+          <div class="io"><span><b>Wejście</b>wygładzone sceny</span><span class="out"><b>Wynik</b>ksiazka.md + HTML + redakcja-todo.md</span><span class="bib"><b>Biblia</b>finalny status</span></div>
         </article>
         <article class="stage reveal">
           <span class="node">12</span>
@@ -517,13 +537,13 @@ details.faq summary:focus-visible{outline-offset:-3px}
       <div class="layer reveal">
         <div class="tag">Strony kanonu</div>
         <h3>Kanon-wiki</h3>
-        <div class="fn mono">biblia/**/*.md</div>
+        <div class="fn mono">.book-forge/biblia/**/*.md</div>
         <p>Zdekomponowane strony: jedna encja (postać, lokacja, nazwa) = jeden plik. Strony są <b>frontmatter-only</b> — cała „prawda” siedzi w kompaktowym JSON, który edytor renderuje jako tabelę właściwości. Całe I/O idzie przez <span class="mono">scripts/bible.py</span> — żaden etap nie pisze do biblii ręcznie.</p>
       </div>
       <div class="layer reveal">
         <div class="tag">Katalog i kronika</div>
         <h3>Indeks + log</h3>
-        <div class="fn mono">biblia/index.md · biblia/log.md</div>
+        <div class="fn mono">.book-forge/biblia/index.md · .book-forge/biblia/log.md</div>
         <p>index.md to generowany spis wszystkich stron — punkt wejścia człowieka i agenta. log.md to kronika ciągłości, do której bramka tylko dopisuje (nigdy nie przepisuje historii).</p>
       </div>
     </div>
@@ -538,7 +558,7 @@ details.faq summary:focus-visible{outline-offset:-3px}
         <p>To, co narasta w trakcie: nowe fakty, hasła glosariusza, status zasiewów, log ciągłości. Tu można dopisywać — ale tylko przez jedną bramkę.</p>
       </div>
     </div>
-    <div class="gate reveal">Etapy pisania tylko <b>czytają i proponują</b>. Jedyny zapis do kanonu idzie przez <b>/book-forge:continuity-check</b> — to chroni spójność.</div>
+    <div class="gate reveal">Etapy pisania tylko <b>czytają i proponują</b>. Jedyny zapis do kanonu w pętli prozy idzie przez <b>/book-forge:continuity-check</b> — to chroni spójność (etapy planowania, jak siatka scen czy research, mają własne, wąskie uprawnienia).</div>
   </div>
 </section>
 <hr class="rule">
@@ -570,20 +590,23 @@ details.faq summary:focus-visible{outline-offset:-3px}
       <div class="body mono">
 <span class="ln"><span class="co"># Faza I — znajdź pomysł i rozpisz plan</span></span>
 <span class="ln"><span class="pr">&gt;</span> <span class="cm">/book-forge:market-report</span>  <span class="co"># gatunek + czytelnik → raport HTML</span></span>
+<span class="ln"><span class="co">#   (szybciej, bez badania rynku: /book-forge:idea-spark)</span></span>
 <span class="ln"><span class="pr">&gt;</span> <span class="cm">/book-forge:outline</span>        <span class="co"># zwycięski pomysł → konspekt</span></span>
 <span class="ln"> </span>
 <span class="ln"><span class="co"># Faza II — połóż fundament (raz)</span></span>
-<span class="ln"><span class="pr">&gt;</span> <span class="cm">/book-forge:book-bible</span>     <span class="ar">→ biblia/ (kanon-wiki)</span></span>
+<span class="ln"><span class="pr">&gt;</span> <span class="cm">/book-forge:book-bible</span>     <span class="ar">→ .book-forge/biblia/ (kanon-wiki)</span></span>
 <span class="ln"> </span>
 <span class="ln"><span class="co"># Faza III — pisz scena po scenie</span></span>
 <span class="ln"><span class="pr">&gt;</span> <span class="cm">/book-forge:opening</span>           <span class="co"># mocne otwarcie, 3 warianty</span></span>
-<span class="ln"><span class="pr">&gt;</span> <span class="cm">/book-forge:outline-to-scenes</span> <span class="co"># rozdziały → siatka scen</span></span>
+<span class="ln"><span class="pr">&gt;</span> <span class="cm">/book-forge:outline-to-scenes</span> <span class="co"># rozdziały → siatka scen + budżet słów</span></span>
 <span class="ln"><span class="co">#   dla KAŻDEJ sceny powtarzaj:</span></span>
 <span class="ln"><span class="pr">&gt;</span> <span class="cm">/book-forge:write-scene</span> R1S1</span>
 <span class="ln"><span class="pr">&gt;</span> <span class="cm">/book-forge:revise-scene</span> R1S1   <span class="co"># pętla pogłębienia</span></span>
 <span class="ln"><span class="pr">&gt;</span> <span class="cm">/book-forge:continuity-check</span> R1S1 <span class="ar">→ zapis do kanonu</span></span>
 <span class="ln"><span class="pr">&gt;</span> <span class="cm">/book-forge:polish-pl</span> R1S1       <span class="co"># humanizer → korekta PL</span></span>
+<span class="ln"><span class="co">#   …albo taśmowo, pytania raz: /book-forge:forge-scenes „kolejne 3”</span></span>
 <span class="ln"><span class="co">#   (luka w realiach? → /book-forge:world-research)</span></span>
+<span class="ln"><span class="co">#   (gdzie jestem? → bible.py status: sceny, słowa vs budżet, zasiewy)</span></span>
 <span class="ln"> </span>
 <span class="ln"><span class="co"># Faza IV — złóż i przygotuj do wysyłki</span></span>
 <span class="ln"><span class="pr">&gt;</span> <span class="cm">/book-forge:assemble-book</span>     <span class="ar">→ ksiazka.md</span></span>
@@ -600,8 +623,8 @@ details.faq summary:focus-visible{outline-offset:-3px}
     <div class="sec-kick reveal">Drobne pytania</div>
     <h2 class="reveal">Zanim odejdziesz <em>od kowadła</em></h2>
     <div class="reveal">
-      <details class="faq"><summary><span class="pl"></span>Muszę uruchamiać polecenia po kolei?</summary><div class="ans">Tak, to pipeline — każdy etap karmi się wynikiem poprzedniego. Fundament (biblia) kładziesz raz; etapy <code>07–10</code> powtarzasz dla każdej sceny. Możesz wrócić do wcześniejszego polecenia, jeśli chcesz coś przerobić.</div></details>
-      <details class="faq"><summary><span class="pl"></span>Gdzie lądują pliki?</summary><div class="ans">W katalogu roboczym (cwd): raporty i przeglądy jako interaktywny HTML, treści jako <code>.md</code>, a stan projektu w <code>biblia/</code>. Otwórz pliki HTML w przeglądarce.</div></details>
+      <details class="faq"><summary><span class="pl"></span>Muszę uruchamiać polecenia po kolei?</summary><div class="ans">Tak, to pipeline — każdy etap karmi się wynikiem poprzedniego. Fundament (biblia) kładziesz raz; etapy <code>07–10</code> powtarzasz dla każdej sceny (ręcznie albo taśmowo przez <code>/book-forge:forge-scenes</code>). Możesz wrócić do wcześniejszego polecenia, jeśli chcesz coś przerobić.</div></details>
+      <details class="faq"><summary><span class="pl"></span>Gdzie lądują pliki?</summary><div class="ans">W korzeniu katalogu książki zostaje tylko to, co dla człowieka: prezentacyjne pliki HTML oraz finalne <code>ksiazka.md</code> i <code>pakiet.md</code>. Cała mechanika robocza chowa się do ukrytego <code>.book-forge/</code> — tam żyją <code>pomysl.json</code>, <code>konspekt.md</code>, proza scen (<code>sceny/&lt;id&gt;.md</code>), work-lista <code>redakcja-todo.md</code>, a kanon w <code>.book-forge/biblia/</code>.</div></details>
       <details class="faq"><summary><span class="pl"></span>Czemu proza idzie scena po scenie, a nie cała naraz?</summary><div class="ans">Bo scena N musi widzieć scenę N-1 — inaczej traci ciągłość. Rój pracuje równolegle tylko tam, gdzie to bezpieczne: research, krytyka, warianty. Sama proza jest sekwencyjna.</div></details>
       <details class="faq"><summary><span class="pl"></span>Co, jeśli scena łamie wcześniejsze ustalenie?</summary><div class="ans">Bramka <code>/book-forge:continuity-check</code> zgłosi to jako CONFLICT i nie nadpisze pola RO. Decydujesz: poprawić scenę albo świadomie zmienić kanon. Błąd nie wsiąka po cichu.</div></details>
       <details class="faq"><summary><span class="pl"></span>Działa dla mojego gatunku?</summary><div class="ans">Tak — pipeline jest uniwersalny. Steruje nim para „specjalizacja/pasja” + „docelowy czytelnik”, którą podajesz na starcie. Fantastyka, kryminał, romans, literatura faktu — ten sam warsztat.</div></details>
@@ -617,7 +640,7 @@ details.faq summary:focus-visible{outline-offset:-3px}
       <p>Kompletny pipeline do tworzenia powieści rojem agentów — napisany naturalnie po polsku, ze spójnością opartą na biblii książki.</p>
     </div>
     <div class="ver">
-      wersja <b>1.7.1</b><br>12 etapów &bull; pipeline kompletny<br>autor: Mirek Zaniewicz
+      wersja <b>1.9.0</b><br>12 etapów + 2 warianty &bull; pipeline kompletny<br>autor: Mirek Zaniewicz
     </div>
   </div>
 </footer>

@@ -24,7 +24,7 @@ Odwrotna kolejność (korekta PL przed humanizerem) jest błędem — humanizer 
 
 ## Krok 1 — wejście
 
-1. Wczytaj prozę `.book-forge/sceny/<id>.md` (najlepiej po `continuity-check`). Wczytaj kanon: `b = bible.load_all()` (przez `${CLAUDE_PLUGIN_ROOT}/scripts/bible.py`) i weź **kartę głosu narratora** (rejestr, rytm, zwroty, czego unikać) i **glosariusz** (nazwy + odmiana + warianty zakazane). Domyślnie ostatnia scena zweryfikowana, jeszcze niewygładzona; pozwól wskazać id (`AskUserQuestion`).
+1. **Preflight:** `python3 ${CLAUDE_PLUGIN_ROOT}/scripts/bible.py check-stage polish-pl <id>`. Potem wczytaj prozę `.book-forge/sceny/<id>.md` (najlepiej po `continuity-check`). Wczytaj kanon: `b = bible.load_all()` i weź **kartę głosu narratora** (rejestr, rytm, zwroty, czego unikać) i **glosariusz** (nazwy + odmiana + warianty zakazane). Jeśli istnieje `.book-forge/redakcja-todo.md`, sprawdź sekcję `## <id>` — pozycje `[echo]` (powtórzone frazy, słowa-ulubieńcy) to konkretne cele tej korekty. Domyślnie ostatnia scena zweryfikowana, jeszcze niewygładzona — „niewygładzona" znaczy: **brak pliku `.book-forge/korekta-<id>.md`** (raport korekty jest de facto markerem wygładzenia; kanon nie ma osobnego statusu „wygładzona"). Pozwól wskazać id (`AskUserQuestion`).
 2. Sprawdź w logu, że scena przeszła `continuity-check` (PASS). Jeśli ma otwarty CONFLICT — ostrzeż; wygładzanie nieuzgodnionej sceny jest przedwczesne.
 
 **Rola ekspercka:** korektor i redaktor języka polskiego z uchem do prozy.

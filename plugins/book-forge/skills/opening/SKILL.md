@@ -46,9 +46,9 @@ Zbuduj (szczegóły: **`references/build-and-verify.md`**):
 1. **`poczatek-<slug>.html`** — interaktywny widok ze szablonu `${CLAUDE_PLUGIN_ROOT}/skills/opening/assets/opening-template.html` (zakładki: trzy warianty; każdy z prozą, liczbą słów, haczykiem i oceną). Waliduj `node --check` + podgląd w agent-browser.
 2. **`.book-forge/poczatek.md`** — wybrany (rekomendowany) wariant jako tekst do dalszej pracy.
 
-## Krok 5 — propozycja dopisów do biblii (przez bramkę)
+## Krok 5 — propozycje dopisów do biblii (bez zapisu)
 
-Jeśli warianty wprowadzają **nowe** nazwy/fakty/szczegóły postaci, **zaproponuj** je jako dopisy do pól RUNTIME biblii (`fakty`, `glosariusz`, `_stan`). Zapisuj je do kanonu (przez `bible.py`: `append_record`/`write_entity`/`update_runtime`) **dopiero po potwierdzeniu autora** (`AskUserQuestion`) — to namiastka bramki `continuity-check`, dopóki nie powstanie. Pól RO nie ruszaj.
+Jeśli wybrany wariant wprowadza **nowe** nazwy/fakty/szczegóły postaci, zbierz je w obiekt `propozycje` (jak Krok 3 w `write-scene`) i **pokaż autorowi w podsumowaniu — niczego nie zapisuj do kanonu**. Ten etap, jak każdy etap prozy, tylko czyta i proponuje. Zapis nastąpi naturalnie dalej w pipeline: `outline-to-scenes` ustawi `proza_zrodlo` na karcie sceny otwierającej, `write-scene` rozwinie otwarcie i zrobi handoff, a bramka `continuity-check` (jedyny etap prozy z prawem zapisu) zweryfikuje i dopisze ustalenia — także te z otwarcia.
 
 ## Krok 6 — podsumowanie
 
@@ -65,7 +65,7 @@ Pokaż autorowi: ścieżki plików, rekomendowany wariant z uzasadnieniem, oceny
 | Ocena | Kryteria fabularne (haczyk, głos, POV, pokazuj nie opowiadaj, tempo) |
 | Spójność | Kontrola względem biblii; CONFLICT zamiast cichej zmiany |
 | Redakcja | Humanizer NAJPIERW, korekta PL + walidacja nazw OSTATNIA |
-| Wynik | `poczatek-<slug>.html` + `.book-forge/poczatek.md`; propozycje runtime do biblii |
+| Wynik | `poczatek-<slug>.html` + `.book-forge/poczatek.md`; propozycje runtime tylko w podsumowaniu (zapis robi później `continuity-check`) |
 
 ## Najczęstsze błędy
 

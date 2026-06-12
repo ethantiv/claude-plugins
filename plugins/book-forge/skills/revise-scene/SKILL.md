@@ -24,8 +24,9 @@ Etap **„pogłębienie + dev-edit”**: po `write-scene` (treść), przed `cont
 
 ## Krok 1 — wejście
 
-1. Wczytaj szkic `.book-forge/sceny/<id>.md`, a kanon przez `b = bible.load_all()` (przez `${CLAUDE_PLUGIN_ROOT}/scripts/bible.py`): kartę sceny z `b['kanon_fabularny']['sceny']` i **wyciąg** z biblii (karta głosu narratora, głosy obecnych postaci, stawka, łuk postaci, istotne zasady świata, glosariusz). Domyślnie pierwsza scena ze szkicem bez statusu „po rewizji”; pozwól wskazać id (`AskUserQuestion`).
-2. Dopytaj `AskUserQuestion`: maksymalna liczba prób (domyślnie 3) i czego autor szczególnie pilnuje (np. tempo, podtekst).
+1. **Preflight:** `python3 ${CLAUDE_PLUGIN_ROOT}/scripts/bible.py check-stage revise-scene <id>` — brak prozy = przerwij z czytelnym komunikatem zamiast wykładać rój. Potem wczytaj szkic `.book-forge/sceny/<id>.md`, a kanon przez `b = bible.load_all()`: kartę sceny z `b['kanon_fabularny']['sceny']` i **wyciąg** z biblii (karta głosu narratora, głosy obecnych postaci, stawka, łuk postaci, istotne zasady świata, glosariusz). Domyślnie pierwsza scena ze szkicem i statusem innym niż `zweryfikowana` (priorytet: `do-rewizji` — sceny oflagowane przez `world-research`); pozwól wskazać id (`AskUserQuestion`).
+2. Jeśli istnieje `.book-forge/redakcja-todo.md` (work-lista z przeglądu całości w `assemble-book`), wczytaj sekcję `## <id>` i sekcję `## CAŁOŚĆ` — pozycje dotyczące tej sceny przekaż do roju jako dodatkowe cele rewizji (to pętla zwrotna całość→scena).
+3. Dopytaj `AskUserQuestion`: maksymalna liczba prób (domyślnie 3) i czego autor szczególnie pilnuje (np. tempo, podtekst).
 
 **Rola pogłębiającego:** powieściopisarz wzmacniający scenę środkami prozy. **Rola krytyka:** redaktor prowadzący czytający na ślepo.
 

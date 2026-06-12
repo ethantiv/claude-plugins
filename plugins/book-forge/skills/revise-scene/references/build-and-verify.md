@@ -43,7 +43,7 @@ Nie uruchamiaj `/humanizer:humanizer`. Kolejność: treść (`write-scene`) → 
 - **Werdykt** z pętli: `PASS` albo `FIX` z `accept-with-debt`. Każdy dług zgłoś autorowi (to świadomy kompromis, nie cicha porażka — zasada „fail loud”).
 - **Oceny** dev-edit: pokaż wynik per kryterium; oznacz słabe (np. < 3) jako ryzyka.
 - **Zgodność z kartą sceny**: po rewizji scena nadal realizuje cel i zwrot z karty (pogłębienie nie powinno dodać zdarzeń spoza karty).
-- **Brak zapisu do kanonu**: potwierdź, że kanon `.book-forge/biblia/` nie został zmieniony — `git status --porcelain .book-forge/biblia/` ma być puste.
+- **Brak zapisu do kanonu**: potwierdź, że kanon `.book-forge/biblia/` nie został zmieniony. Nie używaj gita (katalog książki nie musi być repo); porównaj snapshot sprzed roju: `find .book-forge/biblia -name '*.md' -exec md5sum {} + | sort | md5sum` — suma przed i po ma być identyczna.
 - **Nazwy własne**: szybki audyt zgodności z glosariuszem (jak w `write-scene`).
 
 Jeśli wyczerpano limit prób bez PASS, scena zostaje z adnotacją `accept-with-debt` w QA — to wejście do decyzji autora lub do ponownej rewizji z jego uwagami.

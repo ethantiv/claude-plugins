@@ -18,7 +18,8 @@ const POV = A.pov || 'trzecioosobowa ograniczona', CZAS = A.czas || 'przeszły'
 const SUB = A.subgenre || G, TOMY = A.tomy || 1
 const OUT = A.outline || '', EX = A.existing || null
 
-const ROLE = `Jesteś showrunnerem powieści i strażnikiem kanonu. Gatunek: ${G} (${SUB}). Czytelnik: ${R}. POV: ${POV}, czas: ${CZAS}. Pomysł: ${JSON.stringify(I)}. Konspekt (skrót): ${OUT}. Buduj świat logiczny i spójny; nazwy własne podawaj z PEŁNĄ polską odmianą. Gdy trzeba zweryfikować twardy filar świata, użyj WebSearch/agent-browser (lekko, tylko fundamenty). Pisz po polsku, naturalnie.${EX ? '\\nISTNIEJĄCA BIBLIA (pola RO traktuj jako ustalone, tylko uzupełniaj braki):\\n'+JSON.stringify(EX) : ''}`
+const SERIA = TOMY > 1 ? `\nTo SERIA ${TOMY}-tomowa: projektuj łuki postaci i zasiewy z rozpiętością wielotomową (co domyka się w tomie 1, co dojrzewa w kolejnych — spójnie z luk_nadrzedny/zasiewy_miedzytomowe z seria.md), a zasady świata tak, by uniosły całą serię, nie jeden tom.` : ''
+const ROLE = `Jesteś showrunnerem powieści i strażnikiem kanonu. Gatunek: ${G} (${SUB}). Czytelnik: ${R}. POV: ${POV}, czas: ${CZAS}. Pomysł: ${JSON.stringify(I)}. Konspekt (skrót): ${OUT}. Buduj świat logiczny i spójny; nazwy własne podawaj z PEŁNĄ polską odmianą. Gdy trzeba zweryfikować twardy filar świata, użyj WebSearch/agent-browser (lekko, tylko fundamenty). Pisz po polsku, naturalnie.${SERIA}${EX ? '\\nISTNIEJĄCA BIBLIA (pola RO traktuj jako ustalone, tylko uzupełniaj braki):\\n'+JSON.stringify(EX) : ''}`
 
 // schematy sekcji (skrocone; rozszerz pola wg biblia-spec.md)
 const S_SWIAT = { type:'object', required:['lokacje','zasady'], properties:{
@@ -59,11 +60,16 @@ const spojna = await agent(
      glos_narratora:{type:'object'}, glosy_postaci:{type:'array'}, glosariusz:{type:'array'}, temat:{type:'object'}}}})
 
 phase('Redakcja PL')
+// ten sam schema co synteza — pusty {type:'object'} pozwoliłby redaktorowi po cichu zgubić sekcje kanonu
+const SEKCJE = ['swiat','postacie','antagonista','stawka','glos_narratora','glosy_postaci','glosariusz','temat']
 const red = await agent(
   `Jesteś redaktorem języka polskiego. Przepisz partie OPISOWE biblii na naturalną polszczyznę (bez anglicyzmów, AI-slopu; cudzysłowy „ ”). NIE ruszaj nazw własnych z glosariusza ani ich odmiany. Zwróć tę samą strukturę.\n\n${JSON.stringify(spojna)}`,
-  {label:'redakcja',phase:'Redakcja PL',schema:{type:'object'}})
+  {label:'redakcja',phase:'Redakcja PL',
+   schema:{type:'object',required:SEKCJE,properties:{
+     swiat:{type:'object'}, postacie:{type:'array'}, antagonista:{type:'object'}, stawka:{type:'object'},
+     glos_narratora:{type:'object'}, glosy_postaci:{type:'array'}, glosariusz:{type:'array'}, temat:{type:'object'}}}})
 
-return red && red.swiat ? red : spojna
+return red && SEKCJE.every(k => red[k]) ? red : spojna
 ```
 
 ## Po powrocie roju (główna sesja)

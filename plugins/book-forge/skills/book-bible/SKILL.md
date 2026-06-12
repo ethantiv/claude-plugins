@@ -50,7 +50,7 @@ Pokaż autorowi: ścieżki obu plików, liczbę postaci, zasad świata i haseł 
 
 | Aspekt | Reguła |
 | --- | --- |
-| Wejście | `market-report-*.html` + `.book-forge/konspekt.md` + decyzje (POV, czas, tomy) |
+| Wejście | `.book-forge/pomysl.json` (fallback: HTML etapu 1) + `.book-forge/konspekt.md` + decyzje (POV, czas, tomy) |
 | Silnik | Rój agentów (`references/workflow-swarm.md`) |
 | Wynik | zdekomponowany kanon-wiki `.book-forge/biblia/**/*.md` + `.book-forge/biblia/index.md` (katalog) |
 | Warstwy | Frontmatter stron = prawda; treść stron i `index.md` = pochodna, generowane przez `bible.py` |

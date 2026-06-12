@@ -21,7 +21,7 @@ Tak jak w etapie 1: liczy się **poprawna, naturalna polszczyzna**, bez AI-slopu
 1. Znajdź wejście z etapu 1. **Najpierw** szukaj `.book-forge/pomysl.json` (deterministyczny artefakt danych — `idea`, `brief`, `verdict`, `genre`, `reader`); jeśli istnieje, czytaj z niego. **Fallback:** `market-report-*.html` i wyłuskanie obiektu `DATA`. Jeśli jest kilka raportów albo żadnego — zapytaj o ścieżkę przez `AskUserQuestion` (argument traktuj jako podpowiedź).
 2. Z `.book-forge/pomysl.json` (lub z obiektu `DATA` w HTML) wyciągnij:
 - **gatunek** i **docelowego czytelnika** (placeholdery/nagłówek),
-- **zwycięski pomysł** (`ideas` z `winner:true`): `t`, `en`, `op` (streszczenie), `hook`, `gap`, `comps`, `protagonista`,
+- **zwycięski pomysł** — w `pomysl.json` to pojedynczy obiekt `idea`; w HTML to element `ideas[]` z `winner:true`. Pola: `t`, `en`, `op` (streszczenie), `hook`, `gap` (brak w wariancie idea-spark), `comps`, `protagonista`,
 - **brief autora** (`DATA.brief`): `subgenre`, `conventions`, `protagonist`, `protAge`, `protType`, `form`, `format`, `tone`, `spice`, `taboo`, `market` — decyzje z etapu 1, które konspekt ma respektować. **Cały brief przekazujesz do roju** (Krok 3) — bez tego rój pisze konspekt na ślepo wobec tych decyzji. `subgenre` steruje długością, strukturą i `comps`; `conventions` to obietnice, które rozdziały MUSZĄ dowieźć; `format` (`pojedyncza` vs `trylogia`/`seria`) wpływa na łuk: w trybie serii tom 1 zostawia celowo otwarte zasiewy nadrzędne i nie domyka łuku serii (patrz `${CLAUDE_PLUGIN_ROOT}/shared/biblia-spec.md`); `form` (non-fiction) zmienia ramę (łuk czytelnika, nie bohatera); `protagonista`/`tone` zakotwicz w fundamencie i rozdziałach.
 - **werdykt** (`verdict`): `rationale`, `whyNow`, `positioning`.
 3. Potwierdź interaktywnie (`AskUserQuestion`), który pomysł rozwijać — domyślnie zwycięzca; pozwól wybrać wicemistrza lub wskazać inny.
@@ -57,7 +57,7 @@ Po powrocie roju **wywołaj `/humanizer:humanizer`** na całej prozie konspektu 
 
 Zbuduj dwa artefakty (szczegóły: **`references/build-and-verify.md`**):
 
-1. **`.book-forge/konspekt.md`** — kanoniczny plik dla etapu 3 (pisanie początku). Markdown: tytuł, przesłanka, transformacja, motyw, struktura, łuk emocjonalny, a potem rozdziały (obietnica, kluczowe punkty, haczyk, zwrot, emocja).
+1. **`.book-forge/konspekt.md`** — kanoniczny plik dla kolejnych etapów (3: `book-bible`, 4: `opening`, 5: `outline-to-scenes`). Markdown: tytuł, przesłanka, transformacja, motyw, struktura, łuk emocjonalny, a potem rozdziały (obietnica, kluczowe punkty, haczyk, zwrot, emocja).
 2. **`konspekt-<slug>.html`** — interaktywny widok ze szablonu `${CLAUDE_PLUGIN_ROOT}/skills/outline/assets/outline-template.html` (zakładki: fundament — z łukiem emocjonalnym jako kartą — i rozdziały; rozwijane karty rozdziałów). Wstrzyknij `DATA` i podstaw placeholdery; **zwaliduj** `node --check` + podgląd w agent-browser.
 
 Jeśli istnieje już `.book-forge/konspekt.md`, zapytaj o nadpisanie (`AskUserQuestion`).
@@ -70,7 +70,7 @@ Pokaż autorowi: ścieżki obu plików, tytuł książki, liczbę rozdziałów, 
 
 | Aspekt | Reguła |
 | --- | --- |
-| Wejście | Raport `market-report-*.html` z etapu 1 (zwycięski pomysł) |
+| Wejście | `.book-forge/pomysl.json` z etapu 1 (fallback: `market-report-*.html` / `idea-spark-*.html`) |
 | Parametry | Interaktywnie: długość i liczba rozdziałów (rekomendacja z gatunku/podgatunku, nie stała), transformacja |
 | Silnik | Rój agentów przez Workflow (`references/workflow-swarm.md`) |
 | Rola agentów | Mistrz architektury książek, 50+ bestsellerów |

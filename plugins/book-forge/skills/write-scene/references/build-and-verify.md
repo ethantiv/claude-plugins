@@ -50,6 +50,6 @@ Nie uruchamiaj `/humanizer:humanizer`. Kolejność redakcji prozy (patrz `${CLAU
   print('Sprawdź ręcznie nazwy z glosariusza w tekście; formy kanoniczne:', len(formy))
   PY
   ```
-- **Brak zapisu do kanonu**: potwierdź, że kanon `.book-forge/biblia/` nie został zmieniony przez ten etap — `git status --porcelain .book-forge/biblia/` ma być puste (zmienia go dopiero `continuity-check`).
+- **Brak zapisu do kanonu**: potwierdź, że kanon `.book-forge/biblia/` nie został zmieniony przez ten etap (zmienia go dopiero `continuity-check`). Nie używaj gita (katalog książki nie musi być repo, a `.book-forge/` bywa w gitignore — fałszywe „czysto"); zamiast tego zrób snapshot PRZED uruchomieniem roju i porównaj po: `find .book-forge/biblia -name '*.md' -exec md5sum {} + | sort | md5sum` — suma przed i po ma być identyczna.
 
 Scena niezgodna z kartą wraca do poprawy; po N próbach (np. 3) eskaluj do autora albo zapisz z adnotacją „do poprawy” (nie wpuszczaj cichej, nieskończonej pętli).

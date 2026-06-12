@@ -11,7 +11,8 @@ To etap planowania, więc tworzy on wyjściowy kanon fabularny (siatkę scen). Z
 Zapisz przez bibliotekę (nie ręczne sklejanie). Najpierw zrzuć wynik roju do pliku tymczasowego, potem rozłóż przez `bible.py`; na końcu `render_index()`:
 
 ```bash
-python3 - "$RESULT_JSON" "$PLUGIN_ROOT" "$FORCE" << 'PY'
+# BUDZET_SLOW: odpowiedź autora z Kroku 1 (puste = nie nadpisuj istniejącego budżetu)
+python3 - "$RESULT_JSON" "$PLUGIN_ROOT" "$FORCE" "${BUDZET_SLOW:-}" << 'PY'
 import json, sys, os
 sys.path.insert(0, os.path.join(sys.argv[2], 'scripts'))
 import bible
@@ -27,6 +28,11 @@ if g.get('status') == 'GUARD':
 # setup_payoff/os_czasu to agregaty RUNTIME (rozwija je continuity-check) — append z dedup, nie nadpisanie
 for sp in res.get('setup_payoff', []): bible.append_record('setup_payoff', sp)
 for oc in res.get('os_czasu', []):     bible.append_record('os_czasu', oc)
+
+# łańcuch budżetu słów: jedyny producent meta.liczba_scen / meta.budzet_slow (konsumuje write-scene)
+bible.update_meta('liczba_scen', len(res['scenes']))
+if len(sys.argv) > 4 and sys.argv[4].isdigit():
+    bible.update_meta('budzet_slow', int(sys.argv[4]))
 
 bible.render_index()
 print('zaktualizowano kanon-wiki:', len(res['scenes']), 'scen')

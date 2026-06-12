@@ -42,9 +42,9 @@ const findings = pytania.length ? (await parallel(pytania.map((p,i)=>()=>
 
 phase('Weryfikacja')
 const ustalone = findings.filter(f=>f.ustalono)
-const werdykty = ustalone.length ? (await parallel(ustalone.map(f=>()=>
+const werdykty = ustalone.length ? (await parallel(ustalone.map((f,i)=>()=>
   agent(`Jesteś sceptycznym fact-checkerem. Sprawdź to ustalenie: czy źródło jest wiarygodne, czy potwierdza je drugie niezależne źródło, czy nie ma sprzeczności. Rygor: ${RYGOR}.\n\nUSTALENIE:\n${JSON.stringify(f)}\n\nZwróć q, keep (true tylko gdy wiarygodne i spełnia rygor), drugie_zrodlo (bool), powod.`,
-    {label:`weryfikacja`,phase:'Weryfikacja',schema:VERD})))).filter(Boolean) : []
+    {label:`weryfikacja:${i+1}`,phase:'Weryfikacja',schema:VERD})))).filter(Boolean) : []
 const potwierdzone = ustalone.filter(f=>{ const v=werdykty.find(w=>w.q===f.q); return v && v.keep })
 
 phase('Integracja')

@@ -18,8 +18,8 @@ Ten etap **nie przepisuje prozy** (sceny są już po `polish-pl`). Składa i **a
 
 ## Krok 1 — wejście
 
-1. Zbierz sceny z katalogu `.book-forge/sceny/` (pliki `*.md` po `polish-pl`). Z kanonu-wiki przez `bible.load_all()` weź: `kanon_fabularny` (sceny + beaty + rozdziały), `setup_payoff`, `os_czasu`, łuki postaci, motyw, kartę głosu. Z konspektu — tytuły rozdziałów.
-2. Sprawdź kompletność: które sceny są napisane i `zweryfikowana`/wygładzone, a których brak. Brakujące zgłoś — nie składaj książki z dziurami po cichu.
+1. **Preflight:** `python3 ${CLAUDE_PLUGIN_ROOT}/scripts/bible.py check-stage assemble-book` — wylistuje sceny z siatki bez plików prozy; przy brakach pokaż je autorowi zanim ruszy rój. Potem zbierz sceny z katalogu `.book-forge/sceny/` (pliki po id z siatki, po `polish-pl`). Z kanonu-wiki przez `bible.load_all()` weź: `kanon_fabularny` (sceny + beaty + rozdziały), `setup_payoff`, `os_czasu`, **`streszczenia`** (gotowe streszczenia scen z bramki ciągłości — to one idą do roju jako `args.sceny`, nie streszczaj prozy od nowa), łuki postaci, motyw, kartę głosu. Z konspektu — tytuły rozdziałów.
+2. Sprawdź kompletność: które sceny są napisane i `zweryfikowana`/wygładzone, a których brak. Scena jest „wygładzona", gdy istnieje **`.book-forge/korekta-<id>.md`** (raport `polish-pl` to de facto marker — kanon nie ma osobnego statusu). Brakujące zgłoś — nie składaj książki z dziurami po cichu.
 3. Dopytaj `AskUserQuestion`: czy składamy całość czy zakres, oraz czy po czystym przeglądzie **zamrozić kanon** (`working` → `published`).
 
 **Rola ekspercka:** redaktor prowadzący patrzący na książkę jako całość.
@@ -37,9 +37,13 @@ Uruchom rój według **`references/workflow-swarm.md`**. Przeglądy nad całośc
 
 Synteza zbiera audyty w **werdykt gotowości** + listę problemów (otwarte zasiewy, luki łuku, zapadnięcia tempa).
 
-## Krok 3 — złożenie maszynopisu
+## Krok 3 — złożenie maszynopisu (z metrykami polskiego rynku)
 
-Złóż sceny w kolejności (rozdział, potem scena) w **`ksiazka.md`**: nagłówki rozdziałów (tytuły z konspektu), sceny pod nimi, liczby słów. To deterministyczne (skrypt), nie agent. Szczegóły: **`references/build-and-verify.md`**.
+Złóż sceny w kolejności (rozdział, potem scena) w **`ksiazka.md`**: strona tytułowa (tytuł, logline, metryki), nagłówki rozdziałów (tytuły z konspektu), sceny pod nimi. Skrypt liczy też **znaki ze spacjami i arkusze wydawnicze** (1 arkusz = 40 000 znaków — w tej jednostce rozmawiają polskie wydawnictwa; słowa to jednostka rynku anglosaskiego) i porównuje z normą długości dla subgatunku. To deterministyczne (skrypt), nie agent. Szczegóły: **`references/build-and-verify.md`**.
+
+## Krok 3b — echo-hunter i work-lista redakcyjna
+
+Po złożeniu uruchom detektor powtórzeń: `python3 ${CLAUDE_PLUGIN_ROOT}/scripts/echo.py --json` (powtórzone frazy, słowa-ulubieńcy, identyczne otwarcia akapitów — najbardziej rozpoznawalny ślad prozy pisanej scena po scenie). Następnie zbuduj **`.book-forge/redakcja-todo.md`** — work-listę redakcyjną scalającą problemy z przeglądu całości (Krok 2) i echa per scena. Plik jest **regenerowany w całości przy każdym przebiegu** (idempotentnie, jak `index.md`) — rozwiązane problemy znikają przy kolejnym audycie. Z niej korzystają `revise-scene`/`polish-pl` przy poprawkach. Skrypt: **`references/build-and-verify.md`**.
 
 ## Krok 4 — aktualizacja biblii i zamrożenie kanonu
 
@@ -49,7 +53,7 @@ Zapisz do biblii finalne statusy (przez `${CLAUDE_PLUGIN_ROOT}/scripts/bible.py`
 
 ## Krok 5 — artefakty i podsumowanie
 
-`ksiazka.md` + interaktywny `ksiazka-<slug>.html` (ze szablonu `${CLAUDE_PLUGIN_ROOT}/skills/assemble-book/assets/book-template.html`): rozdziały i sceny, krzywa wartości całości, macierz zasiewów, przeglądy. Pokaż autorowi: łączną liczbę słów, werdykt gotowości, otwarte zasiewy i luki łuku do domknięcia, oraz czy kanon zamrożono.
+`ksiazka.md` + interaktywny `ksiazka-<slug>.html` (ze szablonu `${CLAUDE_PLUGIN_ROOT}/skills/assemble-book/assets/book-template.html`): rozdziały i sceny, krzywa wartości całości, macierz zasiewów, przeglądy. Pokaż autorowi: łączną liczbę słów, **znaki i arkusze wydawnicze vs norma subgatunku**, werdykt gotowości, otwarte zasiewy i luki łuku do domknięcia, najgłośniejsze echa z echo-huntera, ścieżkę `redakcja-todo.md` oraz czy kanon zamrożono.
 
 ## Quick reference
 
@@ -60,7 +64,9 @@ Zapisz do biblii finalne statusy (przez `${CLAUDE_PLUGIN_ROOT}/scripts/bible.py`
 | Proza | NIE przepisywana — tylko składana i audytowana |
 | Audyty | Łuk fabularny i postaci, zasiewy, tempo, motyw, oś czasu |
 | Biblia | Finalne statusy; promocja `working`→`published` (czysto + zgoda) |
-| Wynik | `ksiazka.md` + `ksiazka-<slug>.html` |
+| Metryki | Słowa + znaki ze spacjami + **arkusze wydawnicze** (40 tys. znaków) vs norma subgatunku |
+| Echa | `echo.py` po złożeniu; wyniki w podsumowaniu i w work-liście |
+| Wynik | `ksiazka.md` + `ksiazka-<slug>.html` + `.book-forge/redakcja-todo.md` (regenerowana) |
 | Walidacja | Kompletność scen, każdy zasiew z wypłatą, `bible.py validate`, JS HTML |
 
 ## Najczęstsze błędy
