@@ -1,8 +1,9 @@
 # Budowa raportu HTML i walidacja — idea-spark
 
 Szablon: `${CLAUDE_PLUGIN_ROOT}/skills/idea-spark/assets/idea-spark-template.html`. Ma 3
-placeholdery tekstowe i jeden punkt wstrzyknięcia danych. To **odchudzony** wariant raportu
-`market-report`: tylko zakładki „5 pomysłów" i „Werdykt" (bez bestsellerów i luk rynkowych).
+placeholdery tekstowe i jeden punkt wstrzyknięcia danych. Trzy zakładki: **„Trzon wizji"**
+(stały fundament autora — kierunek, bohaterowie, świat), **„5 fabuł"** (warianty fabuły w ramach
+trzonu) i **„Werdykt"** — bez bestsellerów i luk rynkowych (to wariant bez badania rynku).
 
 ## Placeholdery tekstowe
 
@@ -33,7 +34,13 @@ const DATA = {
     comps:["",""],   // orientacyjne tytuły porównawcze (z wiedzy, nie weryfikowane w sieci)
     protagonista:"", // profil bohatera (np. „kobieta, ~40, była śledcza") — niesie decyzję do outline/book-bible
     votes:[ ["Redaktor prowadzący",7.4], ["Marketing",7.5], ["Czytelnik docelowy",7.4], ["Adwokat innowacji",7.6] ]
-  } ],                                                // 5 pomysłów
+  } ],                                                // 5 fabuł (wspólny trzon, różne fabuły)
+  trzon: {           // STAŁY trzon autora — TYLKO do panelu „Trzon wizji" w HTML; NIE trafia do pomysl.json (kontrakt!)
+    dramaticQ:"", theme:"", emotion:"",          // kierunek i temat
+    antagonist:"", relation:"", arc:"",          // bohaterowie (poza profilem protagonisty — ten jest w brief)
+    setting:"", realism:"", mood:"", scale:"",   // świat
+    ramy:{ conflictType:"", ending:"", pace:"", seed:"" }  // ramy fabuły (preferencje, nie gotowa fabuła)
+  },
   brief: {           // brief autora z Kroku 1 — dziedziczony przez outline (etap 2) i book-bible (etap 3)
     subgenre:"",     // podgatunek/nurt (warstwa adaptacyjna) lub '' (bez preferencji)
     conventions:[],  // konwencje/obietnice gatunkowe (multiSelect) lub []
@@ -62,7 +69,7 @@ const DATA = {
 
 ## Mapowanie z wyniku roju
 
-Rój zwraca `{ ideas:[...], winner:{...}, brief:{...} }`.
+Rój zwraca `{ ideas:[...], winner:{...}, brief:{...}, trzon:{...} }`.
 
 - `DATA.ideas` ← `ideas` (każdy): `score` ← `avgScore`; `silnik` ← `silnik` (przepisz 1:1);
   `protagonista` ← `protagonista`
@@ -71,6 +78,9 @@ Rój zwraca `{ ideas:[...], winner:{...}, brief:{...} }`.
   której `t` odpowiada `winner.winnerTitle` (fallback: najwyższe `avgScore`); ustaw `runner:true`
   tam, gdzie `t` = `winner.runnerTitle`. Kolejność tablicy `ideas` ustala „kolejność roboczą"
   w UI (sortowanie domyślne jest po ocenie).
+- `DATA.trzon` ← `trzon` (przepisz 1:1). To **tylko** materiał na panel „Trzon wizji" — puste
+  pola pomiń (render je opuszcza). **NIE kopiuj `trzon` do `pomysl.json`** (Krok 5 SKILL.md) —
+  jego treść jest już wtopiona w `idea.op/silnik/protagonista` zwycięzcy.
 - `DATA.brief` ← `brief` (przepisz 1:1 — to dane sterujące, NIE redaguj). To kanał
   dziedziczenia decyzji autora do outline i book-bible.
 - `DATA.verdict`: `title`←`winner.winnerTitle`, `titleEn`← `en` zwycięskiego pomysłu,
@@ -112,14 +122,14 @@ Gdy `node --check` zgłasza błąd, sprawdź najpierw, czy `$DATA_JSON` to popra
 2. **Render** — otwórz w agent-browser i policz elementy:
    ```bash
    agent-browser open "file://$PWD/$OUT"
-   agent-browser eval "JSON.stringify({ideas:document.querySelectorAll('#idealist .idea').length, winner:!!document.querySelector('.idea.winner'), tabs:document.querySelectorAll('nav.tabs .tab').length})"
+   agent-browser eval "JSON.stringify({ideas:document.querySelectorAll('#idealist .idea').length, winner:!!document.querySelector('.idea.winner'), tabs:document.querySelectorAll('nav.contents .tab').length, trzon:document.querySelector('#trzonwrap').children.length})"
    ```
-Oczekiwane: ideas 5, winner true, tabs 2.
-3. **Zrzut ekranu** — zrób zrzut zakładek „pomysły” i „werdykt”, przeczytaj tekst (czy brzmi
-   po polsku, bez anglicyzmów), potem `agent-browser close`.
+Oczekiwane: ideas 5, winner true, tabs 3, trzon ≥ 1 (panel „Trzon wizji" niepusty).
+3. **Zrzut ekranu** — zrób zrzut zakładek „Trzon wizji”, „5 fabuł” i „Werdykt”, przeczytaj tekst
+   (czy brzmi po polsku, bez anglicyzmów; czy trzon jest wspólny dla fabuł), potem `agent-browser close`.
 
 ## Interaktywność (jest w szablonie — nie usuwaj)
 
-Dwie zakładki (pomysły / werdykt), sortowanie pomysłów (wg oceny / kolejności roboczej),
-animowane paski ocen sędziów, podświetlony zwycięzca, podtytuły „oryg. …”, przecinki
+Trzy zakładki (trzon wizji / 5 fabuł / werdykt), sortowanie fabuł (wg oceny / kolejności
+roboczej), animowane paski ocen sędziów, podświetlony zwycięzca, podtytuły „oryg. …”, przecinki
 dziesiętne. Logika renderująca czyta `DATA` — wystarczy poprawne dane.

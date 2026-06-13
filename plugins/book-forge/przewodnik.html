@@ -350,7 +350,7 @@ details.faq summary:focus-visible{outline-offset:-3px}
   <div class="wrap">
     <div class="sec-kick reveal">Ścieżka od pomysłu do wysyłki</div>
     <h2 class="reveal">Dwanaście <em>etapów</em></h2>
-    <p class="sec-intro reveal">Idziesz po kolei. Każdy kafelek to jedno polecenie — kliknij komendę, by ją skopiować. Numer w obwódce to miejsce w pipelinie; obwódka <b>złota</b> oznacza etap pisania prozy. Do tego dwa <b>warianty</b>: lekki start bez badania rynku (<span class="mono">1L · idea-spark</span>) i tryb taśmowy pętli scen (<span class="mono">forge-scenes</span>).</p>
+    <p class="sec-intro reveal">Idziesz po kolei. Każdy kafelek to jedno polecenie — kliknij komendę, by ją skopiować. Numer w obwódce to miejsce w pipelinie; obwódka <b>złota</b> oznacza etap pisania prozy. Do tego dwa <b>warianty</b>: autorski start, w którym sam projektujesz trzon powieści (<span class="mono">1L · idea-spark</span>), i tryb taśmowy pętli scen (<span class="mono">forge-scenes</span>).</p>
 
     <div class="phasebar reveal" id="phasebar">
       <button class="phasebtn on" data-f="all">Wszystkie<span class="c">14</span></button>
@@ -377,11 +377,11 @@ details.faq summary:focus-visible{outline-offset:-3px}
           <span class="node">1L</span>
           <div class="stage-top">
             <button class="cmd" data-cmd="/book-forge:idea-spark">/book-forge:idea-spark<span class="cp">kopiuj</span></button>
-            <span class="badge">wariant — bez badania rynku</span>
+            <span class="badge">wariant — autorski trzon</span>
           </div>
           <h3>Iskra pomysłu</h3>
-          <p>Lekka alternatywa etapu 01: rój generuje 5 pomysłów z samego kwestionariusza autora (bez WebSearch i agent-browser) — przez te same <b>soczewki twórcze</b> i z <b>silnikiem premisy</b>, ocenia je redaktorsko z <b>adwokatem innowacji</b> i wybiera zwycięzcę. Produkuje <b>ten sam</b> <span class="mono">pomysl.json</span>, więc dalsze etapy działają identycznie — wybierasz 01 albo 1L, nie oba.</p>
-          <div class="io"><span><b>Wejście</b>kwestionariusz autora</span><span class="out"><b>Wynik</b>idea-spark HTML + pomysl.json</span></div>
+          <p>Autorska alternatywa etapu 01: w szczegółowym kwestionariuszu sam ustalasz <b>trzon</b> powieści — kierunek, bohaterów i świat — a rój generuje <b>5 wariantów fabuły</b> w tych ramach (bez WebSearch i agent-browser), przez te same <b>soczewki twórcze</b> i z <b>silnikiem premisy</b>, ocenia je z <b>adwokatem innowacji</b> i wybiera zwycięzcę. Produkuje <b>ten sam</b> <span class="mono">pomysl.json</span>, więc dalsze etapy działają identycznie — wybierasz 01 albo 1L, nie oba.</p>
+          <div class="io"><span><b>Wejście</b>szczegółowy kwestionariusz (trzon)</span><span class="out"><b>Wynik</b>idea-spark HTML (trzon + 5 fabuł) + pomysl.json</span></div>
         </article>
         <article class="stage reveal">
           <span class="node">02</span>
@@ -592,7 +592,7 @@ details.faq summary:focus-visible{outline-offset:-3px}
       <div class="body mono">
 <span class="ln"><span class="co"># Faza I — znajdź pomysł i rozpisz plan</span></span>
 <span class="ln"><span class="pr">&gt;</span> <span class="cm">/book-forge:market-report</span>  <span class="co"># gatunek + czytelnik → raport HTML</span></span>
-<span class="ln"><span class="co">#   (szybciej, bez badania rynku: /book-forge:idea-spark)</span></span>
+<span class="ln"><span class="co">#   (sam zaprojektuj trzon, bez badania rynku: /book-forge:idea-spark)</span></span>
 <span class="ln"><span class="pr">&gt;</span> <span class="cm">/book-forge:outline</span>        <span class="co"># zwycięski pomysł → konspekt</span></span>
 <span class="ln"> </span>
 <span class="ln"><span class="co"># Faza II — połóż fundament (raz)</span></span>

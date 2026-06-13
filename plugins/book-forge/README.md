@@ -11,7 +11,7 @@ Status: ✅ gotowe · 🔜 planowane (mapa: `shared/roadmap.md`).
 | # | Polecenie | Status | Co robi |
 | --- | --- | --- | --- |
 | 1 | `/book-forge:market-report` | ✅ | Interaktywny raport HTML: 10 bestsellerów niszy, 3 luki rynkowe, 5 pomysłów (z **silnikiem premisy**, generowanych przez soczewki twórcze), ocena 1–10 z **adwokatem innowacji**, wybór zwycięzcy. |
-| 1L | `/book-forge:idea-spark` | ✅ | **Lekki wariant etapu 1** (bez badania rynku): 5 pomysłów z kwestionariusza (z **silnikiem premisy** i soczewkami twórczymi), ocena rzemieślnicza z **adwokatem innowacji** (bez WebSearch), wybór zwycięzcy. `idea-spark-<gatunek>.html` + `.book-forge/pomysl.json`. |
+| 1L | `/book-forge:idea-spark` | ✅ | **Autorski wariant etapu 1** (bez badania rynku): autor w szczegółowym kwestionariuszu ustala **trzon** (kierunek, bohaterowie, świat), a rój generuje **5 wariantów fabuły** w jego ramach (z **silnikiem premisy** i soczewkami twórczymi), ocenia rzemieślniczo z **adwokatem innowacji** (bez WebSearch) i wybiera zwycięzcę. `idea-spark-<gatunek>.html` (trzon + 5 fabuł + werdykt) + `.book-forge/pomysl.json`. |
 | 2 | `/book-forge:outline` | ✅ | Konspekt rozdział po rozdziale (`.book-forge/konspekt.md` + interaktywny HTML) na bazie zwycięskiego pomysłu; każdy rozdział z **subwersją** standardowego beatu i **kotwicą** emocjonalną, struktura wybierana z realną wagą oryginalności. |
 | 3 | `/book-forge:book-bible` | ✅ | Biblia książki: jedno źródło prawdy (świat, postacie z **profilem chaosu**, głosy, glosariusz z odmianą, kanon, fakty). Zdekomponowany kanon-wiki `.book-forge/biblia/**/*.md` + `.book-forge/biblia/index.md`. |
 | 4 | `/book-forge:opening` | ✅ | Mocny początek: 3 warianty pierwszej sceny w głosie z biblii, ocena fabularna, kontrola ciągłości, werdykt. `poczatek-<slug>.html` + `.book-forge/poczatek.md`. |
@@ -25,7 +25,7 @@ Status: ✅ gotowe · 🔜 planowane (mapa: `shared/roadmap.md`).
 | 11 | `/book-forge:assemble-book` | ✅ | Złożenie scen w rozdziały i całą książkę + przeglądy całości (łuk fabularny i postaci, wypłata zasiewów, tempo, motyw, oś czasu); metryki polskiego rynku (znaki, **arkusze wydawnicze** vs norma subgatunku), detektor powtórzeń `echo.py` i work-lista `.book-forge/redakcja-todo.md`; zamrożenie kanonu working→published. `ksiazka.md` (ze stroną tytułową) + interaktywny HTML. |
 | 12 | `/book-forge:publishing-package` | ✅ | Pakiet wydawniczy: logline, elevator pitch, opis z okładki (bez spoilerów), synopsis (z zakończeniem), list do agenta, comp titles „dla czytelników X i Y”. `pakiet.md` + interaktywny HTML. |
 
-**Pipeline jest kompletny** — od pomysłu (etap 1) po gotowy maszynopis i materiały do wysyłki (etap 12). Etap 1 ma dwa warianty: pełny `market-report` (z badaniem rynku) i lekki `idea-spark` (sam kwestionariusz, bez researchu); oba produkują `.book-forge/pomysl.json`, więc dalsze etapy działają tak samo niezależnie od wyboru. Pętlę scen (etapy 7–10) można prowadzić ręcznie albo taśmowo przez `forge-scenes` (pytania raz, stop tylko na decyzjach autora). Stan projektu w każdej chwili: `python3 scripts/bible.py status` (sceny wg statusu, słowa vs budżet, otwarte zasiewy); kontrakt wejścia etapu przed drogim rojem: `bible.py check-stage <etap>`.
+**Pipeline jest kompletny** — od pomysłu (etap 1) po gotowy maszynopis i materiały do wysyłki (etap 12). Etap 1 ma dwa warianty: `market-report` (rynek podsuwa pomysł — z badaniem rynku) i `idea-spark` (autor sam projektuje trzon, a rój wariantuje fabułę — bez researchu); oba produkują `.book-forge/pomysl.json`, więc dalsze etapy działają tak samo niezależnie od wyboru. Pętlę scen (etapy 7–10) można prowadzić ręcznie albo taśmowo przez `forge-scenes` (pytania raz, stop tylko na decyzjach autora). Stan projektu w każdej chwili: `python3 scripts/bible.py status` (sceny wg statusu, słowa vs budżet, otwarte zasiewy); kontrakt wejścia etapu przed drogim rojem: `bible.py check-stage <etap>`.
 
 ## Układ katalogu książki
 
@@ -67,7 +67,7 @@ je pod tomem: `BOOK_DIR=tom-NN/`, `WORK=tom-NN/.book-forge/`, `BIBLE_DIR=tom-NN/
 |------|-------|----------|-----|------|
 | 1 | `market-report` | `market-report-<gatunek>.html` | 🟢 | Raport rynkowy do oglądania |
 | 1 | `market-report` | `.book-forge/pomysl.json` | 🔵 | Deterministyczny most → etapy 2–3 (zwycięski pomysł, brief, verdict, genre, reader) |
-| 1L | `idea-spark` | `idea-spark-<gatunek>.html` | 🟢 | Lekki raport do oglądania (2 zakładki: 5 pomysłów + werdykt) |
+| 1L | `idea-spark` | `idea-spark-<gatunek>.html` | 🟢 | Raport do oglądania (3 zakładki: trzon wizji + 5 fabuł + werdykt) |
 | 1L | `idea-spark` | `.book-forge/pomysl.json` | 🔵 | Ten sam most → etapy 2–3 co `market-report` (wariant bez badania rynku, bez pola `gap`) |
 | 2 | `outline` | `.book-forge/konspekt.md` | ⚪ | Konspekt rozdział po rozdziale (źródło dla dalszych etapów) |
 | 2 | `outline` | `konspekt-<slug>.html` | 🟢 | Interaktywny konspekt dla autora |
@@ -231,7 +231,7 @@ book-forge/
     echo.py                # detektor powtórzeń frazowych (n-gramy, słowa-ulubieńcy, otwarcia akapitów) — zasila redakcja-todo
     tests/                 # fixture + testy E2E (python3 scripts/tests/test_bible.py, test_echo.py)
   skills/market-report/    # etap 1  (SKILL + szablon + workflow + build-and-verify)
-  skills/idea-spark/       # etap 1  (wariant lekki: kwestionariusz → 5 pomysłów, bez badania rynku)
+  skills/idea-spark/       # etap 1  (wariant autorski: trzon → 5 wariantów fabuły, bez badania rynku)
   skills/outline/          # etap 2
   skills/book-bible/       # fundament: biblia
   skills/opening/          # etap pisania: mocny początek

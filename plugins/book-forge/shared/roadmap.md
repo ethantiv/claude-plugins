@@ -7,7 +7,7 @@ Status: ✅ gotowe · 🔜 planowane.
 | # | Polecenie | Status | Cel | Rola biblii |
 | --- | --- | --- | --- | --- |
 | 1 | `market-report` | ✅ | Luki rynkowe + zwycięski pomysł (raport HTML) | — |
-| 1L | `idea-spark` | ✅ | Lekki wariant etapu 1: 5 pomysłów z kwestionariusza, bez badania rynku (ten sam `.book-forge/pomysl.json`) | — |
+| 1L | `idea-spark` | ✅ | Autorski wariant etapu 1: autor projektuje trzon (kierunek/bohaterowie/świat), rój generuje 5 wariantów fabuły, bez badania rynku (ten sam `.book-forge/pomysl.json`) | — |
 | 2 | `outline` | ✅ | Konspekt rozdział po rozdziale (`.book-forge/konspekt.md`) | — |
 | 3 | `book-bible` | ✅ | Jedno źródło prawdy ZANIM padnie pierwsze zdanie prozy | **tworzy** całość |
 | 4 | `opening` | ✅ | Mocny początek: 3 warianty pierwszej sceny | czyta wszystko; proponuje runtime |
