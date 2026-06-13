@@ -1,6 +1,6 @@
 # Skrypt roju agentów (Workflow) — korekta PL + walidacja nazw
 
-Uruchamiany na **tekście PO humanizerze** (humanizer uruchamia się wcześniej, w głównej sesji). `args`: `{ proza, karta_stylu, glosariusz }`, gdzie `proza` to scena po humanizerze, `karta_stylu` to karta głosu narratora z biblii, a `glosariusz` to nazwy własne z odmianą i wariantami zakazanymi.
+Uruchamiany na **tekście PO humanizerze** (humanizer uruchamia się wcześniej, w głównej sesji). `args`: `{ proza, karta_stylu, glosariusz, celowe_odstepstwa }`, gdzie `proza` to scena po humanizerze, `karta_stylu` to karta głosu narratora z biblii, `glosariusz` to nazwy własne z odmianą i wariantami zakazanymi, a `celowe_odstepstwa` to lista fragmentów z fazy Disruption (revise-scene), których korekta NIE ma wygładzać.
 
 ```javascript
 export const meta = {
@@ -14,9 +14,11 @@ let A
 try { A = typeof args === 'string' ? JSON.parse(args) : (args || {}) }
 catch (e) { throw new Error('args podane jako string, ale to nie poprawny JSON ('+e.message+'). Przekaż obiekt albo poprawny JSON.') }
 const STYL = A.karta_stylu, GLOS = A.glosariusz || []
+const ODST = Array.isArray(A.celowe_odstepstwa) ? A.celowe_odstepstwa : []   // chronione fragmenty z fazy Disruption
 let proza = A.proza
 
-const ROLE = `Jesteś korektorem i redaktorem języka polskiego z uchem do prozy. Pracujesz na tekście, który właśnie przeszedł przez humanizer (narzędzie oparte na ANGIELSKICH wzorcach), więc twoim zadaniem jest naprawić to, co humanizer mógł zepsuć, i doprowadzić tekst do naturalnej, poprawnej polszczyzny. Zachowaj rejestr i rytm z karty stylu. KARTA STYLU/GŁOSU:\n${JSON.stringify(STYL)}`
+const OCHRONA = ODST.length ? `\n\nCHRONIONE ODSTĘPSTWA (z fazy disruption — to CELOWA szorstkość/zaburzenie; NIE wygładzaj ich, NIE „naprawiaj” rytmu ani składni; wolno tylko poprawić ewidentny błąd ortografii lub odmianę nazwy własnej): ${JSON.stringify(ODST)}.` : ''
+const ROLE = `Jesteś korektorem i redaktorem języka polskiego z uchem do prozy. Pracujesz na tekście, który właśnie przeszedł przez humanizer (narzędzie oparte na ANGIELSKICH wzorcach), więc twoim zadaniem jest naprawić to, co humanizer mógł zepsuć, i doprowadzić tekst do naturalnej, poprawnej polszczyzny. Zachowaj rejestr i rytm z karty stylu. KARTA STYLU/GŁOSU:\n${JSON.stringify(STYL)}${OCHRONA}`
 
 const KOREKTA = { type:'object', required:['text','zmiany'], properties:{
   text:{type:'string'}, words:{type:'number'},
@@ -55,7 +57,7 @@ return {
 
 ## Przed rojem agentów (główna sesja): humanizer NAJPIERW
 
-Zanim uruchomisz ten rój agentów, uruchom `/humanizer:humanizer` na surowej (po `continuity-check`) prozie sceny — z poleceniem: zachowaj rejestr z karty stylu, nie ruszaj nazw z glosariusza, zachowaj polską interpunkcję dialogową i przecinek dziesiętny. Dopiero wynik humanizera podaj jako `args.proza`.
+Zanim uruchomisz ten rój agentów, uruchom `/humanizer:humanizer` na surowej (po `continuity-check`) prozie sceny — z poleceniem: zachowaj rejestr z karty stylu, nie ruszaj nazw z glosariusza, zachowaj polską interpunkcję dialogową i przecinek dziesiętny. **Jeśli istnieje `.book-forge/sceny/<id>.qa.md` z listą `celowe_odstepstwa` (z fazy Disruption), dołącz ją do polecenia humanizera: te fragmenty to celowa szorstkość — nie wygładzaj ich.** Dopiero wynik humanizera podaj jako `args.proza` (a `celowe_odstepstwa` przekaż też do `args`).
 
 ## Po powrocie roju agentów
 

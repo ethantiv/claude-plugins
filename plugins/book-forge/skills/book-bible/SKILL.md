@@ -19,7 +19,7 @@ Dwa kryteria równorzędne. **Spójność:** nic nie może sobie przeczyć (to p
 ## Krok 1 — wejście
 
 1. Znajdź artefakty wcześniejszych etapów: **najpierw** `.book-forge/pomysl.json` (deterministyczny artefakt z etapu 1: `idea`, `brief`, `verdict`, `reader`), z fallbackiem na `market-report-*.html` (obiekt `DATA`), oraz `.book-forge/konspekt.md`. Jeśli brak lub jest kilka — zapytaj o ścieżki (`AskUserQuestion`). Biblia może powstać już po etapie 1 (sam pomysł), ale najlepiej po etapie 2.
-2. Wczytaj je (`Read`) i wyciągnij: gatunek, czytelnika, zwycięski pomysł (`t`, `en`, `op`, `hook`, `comps`, `protagonista`), **brief autora** (`DATA.brief`: `format`, `tone`, `spice`, `protagonist`, `protAge`, `taboo`, `market`), a z konspektu — fundament, strukturę, rozdziały. Brief zasila budowaną sekcję `meta` (Krok 5): `format`→`meta.tomy`/tryb serii, `tone`→`meta.ton`, `protagonista`→seed postaci; nie dubluj POV/czasu z briefu (ich tu nie ma — to decyzja tego etapu).
+2. Wczytaj je (`Read`) i wyciągnij: gatunek, czytelnika, zwycięski pomysł (`t`, `en`, `silnik`, `op`, `hook`, `comps`, `protagonista`), **brief autora** (`DATA.brief`: `format`, `form`, `tone`, `spice`, `protagonist`, `protAge`, `taboo`, `market`), a z konspektu — fundament, strukturę, rozdziały. Brief zasila budowaną sekcję `meta` (Krok 5): `format`→`meta.tomy`/tryb serii, `form`→`meta.forma` (guard non-fiction dla prozy) i sterowanie profilem chaosu postaci, `tone`→`meta.ton`, `protagonista`→seed postaci; nie dubluj POV/czasu z briefu (ich tu nie ma — to decyzja tego etapu). `form` przekaż też do roju w `args.form`.
 3. Zbierz decyzje autora przez `AskUserQuestion`: **POV** (np. trzecioosobowa ograniczona), **czas** (przeszły/teraźniejszy), **subgatunek**, **liczba tomów** (domyślnie z `brief.format`: pojedyncza→1, trylogia→3, seria→pytaj ile).
 
 **Rola ekspercka:** showrunner powieści i strażnik kanonu — ktoś, kto pilnuje, by świat i postacie były logiczne, a nazwy odmieniały się tak samo w całej książce.
@@ -32,7 +32,7 @@ Rozpoznaj stan katalogu `.book-forge/biblia/`:
 
 ## Krok 3 — rój agentów (Workflow)
 
-Uruchom rój według **`references/workflow-swarm.md`**. Agenci wypełniają sekcje z różnych ról: architekt świata (zasady z KOSZTEM), twórca postaci (want/need/rana/kłamstwo/łuk), projektant głosów (narrator + osobne idiolekty postaci), redaktor nazewnictwa (glosariusz z pełną polską odmianą i wariantami zakazanymi), strażnik motywu. Potem synteza spójności scala i usuwa sprzeczności. **Lekki research** realiów (agent-browser) tylko dla twardych filarów świata koniecznych do planowania — właściwy, ukierunkowany research zostaw na później (etap `world-research`).
+Uruchom rój według **`references/workflow-swarm.md`**. Agenci wypełniają sekcje z różnych ról: architekt świata (zasady z KOSZTEM), twórca postaci (want/need/rana/kłamstwo/łuk + **profil chaosu**: obsesja, zniekształcenie poznawcze, niechciane wspomnienie, nieudana kontrola emocji — skalowany gatunkiem, pomijany dla non-fiction), projektant głosów (narrator + osobne idiolekty postaci), redaktor nazewnictwa (glosariusz z pełną polską odmianą i wariantami zakazanymi), strażnik motywu. Potem synteza spójności scala i usuwa sprzeczności. **Lekki research** realiów (agent-browser) tylko dla twardych filarów świata koniecznych do planowania — właściwy, ukierunkowany research zostaw na później (etap `world-research`).
 
 ## Krok 4 — humanizer (główna sesja)
 

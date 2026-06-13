@@ -80,8 +80,10 @@ const LUKI = { type:'object', required:['gaps'], properties:{ gaps:{type:'array'
       k:{type:'string'},                                                    // 'Luka' | 'Ryzyko' | 'Pozycjonowanie'
       t:{type:'string'}}}}}}}}} } }
 const POMYSLY = { type:'object', required:['ideas'], properties:{ ideas:{type:'array',items:{
-  type:'object',required:['t','en','gap','log','op','hook','comps','protagonista'],properties:{
-    t:{type:'string'},en:{type:'string'},gap:{type:'string'},log:{type:'string'},op:{type:'string'},
+  type:'object',required:['t','en','gap','log','silnik','op','hook','comps','protagonista'],properties:{
+    t:{type:'string'},en:{type:'string'},gap:{type:'string'},log:{type:'string'},
+    silnik:{type:'string'},                 // silnik premisy — strukturalna sprzeczność/pytanie dramatyczne, które samo napędza konflikt
+    op:{type:'string'},
     hook:{type:'string'},comps:{type:'array',items:{type:'string'}},
     protagonista:{type:'string'}}}} } }   // profil bohatera, np. "kobieta, ~40, była śledcza" — niesie decyzję dalej (outline/book-bible)
 const OCENA = { type:'object', required:['score','rationale'], properties:{
@@ -138,17 +140,32 @@ const luki = await agent(
 // --- FAZA 3: pomysly ---
 phase('Pomysly')
 const KATY = [
-  'Pomysł w duchu czołowego tytułu kotwicznego, celujący w luki.',
-  'Pomysł „jeden bohater vs świat”, celujący w luki.',
-  'Pomysł z głęboką budową świata, celujący w luki.',
-  'Odważne skrzyżowanie gatunkowe, celujące w luki.',
-  'Pomysł oparty na momencie kulturowym, celujący w luki.',
-  'Pomysł z niedoreprezentowaną perspektywą kulturową, celujący w luki.',
-  'Pomysł maksymalnie „wiralowy” z mocnym haczykiem, celujący w luki.',
-  'Ciemny koń — śmiały, nieoczywisty pomysł.',
+  'Pomysł w duchu czołowego tytułu kotwicznego, ale z JEDNYM złamanym założeniem nurtu, celujący w luki.',
+  'Pomysł „jeden bohater vs świat”, gdzie bohater pragnie czegoś, co go zniszczy, celujący w luki.',
+  'Pomysł, w którym sam świat lub jego zasada jest źródłem nieuniknionego konfliktu, celujący w luki.',
+  'Odważne skrzyżowanie gatunkowe — mechanizm z OBCEJ dziedziny (nauka, zawód, rytuał, historia), celujący w luki.',
+  'Pomysł oparty na momencie kulturowym zderzonym z osobistą stawką bohatera, celujący w luki.',
+  'Pomysł z niedoreprezentowaną perspektywą kulturową, która NAPĘDZA fabułę, celujący w luki.',
+  'Pomysł z premisą, którą da się streścić w jednym zdaniu i opowiedzieć dalej, celujący w luki.',
+  'Ciemny koń — premisa tak nieoczywista, że konkurencja nie odważyłaby się jej kupić.',
 ]
+// Soczewki twórcze — narzędzia myślowe rotowane NA AGENTACH obok KATY (różnorodność poznawcza, nie tylko zmiana framingu)
+const SOCZEWKI = [
+  'CO JEŚLI: zmień jedno twarde założenie gatunku i wyciągnij z tego konsekwencje.',
+  'ZDERZENIE DOMEN: wstrzyknij mechanizm z obcej dziedziny (nauka, zawód, rytuał, historia) jako silnik fabuły.',
+  'INWERSJA: odwróć główną konwencję nurtu (kto poluje, kto ucieka, kto wie, kto płaci).',
+  'ESKALACJA: sytuacja startowa, która z definicji sama się pogarsza, krok po kroku.',
+  'KOLIZJA Z MOMENTEM: zderz premisę z dzisiejszym lękiem lub napięciem kulturowym.',
+  'IRONIA WBUDOWANA: bohater jest sprawcą własnego problemu (jak „idealna żona, która zaplanowała własne morderstwo”).',
+  'PYTANIE DRAMATYCZNE: zacznij od jednego pytania, na które czytelnik MUSI poznać odpowiedź.',
+  'STAWKA OSOBISTA: sprowadź globalne zagrożenie do jednej konkretnej osoby do uratowania albo zniszczenia.',
+]
+// Reguła silnika premisy — dla non-fiction (FORM) reinterpretowana, nie wyłączona
+const SILNIK_REGULA = FORM
+  ? 'centralne napięcie lub pytanie, które trzyma czytelnika (sprzeczność w temacie, mit do obalenia) — NIE wymuszaj fabularnego konfliktu'
+  : 'strukturalna sprzeczność lub ironia, która SAMA generuje konflikt — napięcie wpisane w sytuację startową, nie doklejony z zewnątrz złoczyńca'
 const propozycje = (await parallel(KATY.map((a,i)=>()=>
-  agent(`${ROLE}\n\nLuki:\n${JSON.stringify(luki.gaps)}\n\nZadanie: ${a}\n\nZaproponuj 1-2 pomysły. Dla każdego: t (POLSKI roboczy tytuł), en (oryginalny tytuł roboczy po angielsku), gap (która luka), log (logline 1 zdanie po polsku), op (streszczenie 3-4 zdania po polsku), hook (haczyk sprzedażowy po polsku, może mieć <b>), comps (3-4 tytuły porównawcze), protagonista (zwięzły profil bohatera: płeć, wiek, typ — np. „mężczyzna, ~35, były żołnierz"; zgodny z BRIEF AUTORA powyżej).`,
+  agent(`${ROLE}\n\nLuki:\n${JSON.stringify(luki.gaps)}\n\nZadanie (framing): ${a}\nSOCZEWKA TWÓRCZA (użyj jej jako narzędzia myślowego, nie ozdoby): ${SOCZEWKI[i % SOCZEWKI.length]}\n\nKażdy pomysł MUSI mieć działający SILNIK PREMISY: ${SILNIK_REGULA}. Zaproponuj 1-2 pomysły. Dla każdego: t (POLSKI roboczy tytuł), en (oryginalny tytuł roboczy po angielsku), gap (która luka), log (logline 1 zdanie po polsku), silnik (1-2 zdania — ${SILNIK_REGULA}), op (streszczenie 3-4 zdania po polsku), hook (haczyk sprzedażowy po polsku, może mieć <b>), comps (3-4 tytuły porównawcze), protagonista (zwięzły profil bohatera: płeć, wiek, typ — np. „mężczyzna, ~35, były żołnierz"; zgodny z BRIEF AUTORA powyżej).`,
     {label:`pomysl:${i+1}`,phase:'Pomysly',schema:POMYSLY})))).filter(Boolean).flatMap(r=>r.ideas)
 
 // Operacyjna definicja „zróżnicowania" — inaczej rój daje 5 wariantów jednego pomysłu (efekt kuli śnieżnej z jednej luki)
@@ -158,7 +175,7 @@ const DYWERSYFIKACJA = PROT === 'zroznicuj'
       ? `Profil bohatera jest USTALONY przez autora (${PROT}${PAGE?', '+PAGE:''}) — wszystkie pomysły go trzymają; różnicuj POZOSTAŁE osie (setting, ton, koncept, podgatunek).`
       : 'Nie więcej niż 2 z 5 pomysłów mogą dzielić ten sam profil protagonisty; reszta musi się różnić.')
 const finalisci = await agent(
-  `${ROLE}\n\nPomysły zespołu:\n${JSON.stringify(propozycje)}\n\nWybierz 5 najsilniejszych. Dopracuj pola (t, en, gap, log, op, hook, comps, protagonista). Pomysły mają być wyraziste i sprzedawalne.\n\nGUARD RÓŻNORODNOŚCI: 5 pomysłów MUSI różnić się na co najmniej 3 osiach (profil bohatera, setting, ton, podgatunek, format). ${DYWERSYFIKACJA}`,
+  `${ROLE}\n\nPomysły zespołu:\n${JSON.stringify(propozycje)}\n\nWybierz 5 najsilniejszych i PODKRĘĆ każdy z nich. PODKRĘCENIE = wyostrz silnik premisy (mocniejsza sprzeczność), podnieś stawkę, dodaj jeden nieoczywisty zwrot. ŻELAZNA REGUŁA „WZMACNIAJ, NIE PODMIENIAJ": surowy pomysł musi pozostać rozpoznawalny — wzmacniasz, nie zastępujesz go innym. Dopracuj pola (t, en, gap, log, silnik, op, hook, comps, protagonista). Pomysły mają być wyraziste, świeże i sprzedawalne.\n\nGUARD RÓŻNORODNOŚCI: 5 pomysłów MUSI różnić się na co najmniej 3 osiach (profil bohatera, setting, ton, podgatunek, format). ${DYWERSYFIKACJA}`,
   {label:'synteza:5pomyslow',phase:'Pomysly',schema:POMYSLY})
 let ideas = finalisci.ideas.slice(0,5)
 
@@ -171,7 +188,7 @@ if (PROT === 'dowolny' || PROT === 'zroznicuj') {
   if (audyt && audyt.monokultura) {
     log('Audyt różnorodności: monokultura profili bohatera — przerabiam stawkę')
     const poprawione = await agent(
-      `${ROLE}\n\nStawka jest zdominowana przez jeden profil bohatera (${audyt.dominujacy||''}). Przebuduj 5 pomysłów tak, by NIE WIĘCEJ niż 2 dzieliły ten profil — zastąp nadmiarowe duplikaty pomysłami z INNYM profilem protagonisty, trzymając gatunek ${G} i te same luki. Zachowaj najsilniejsze pomysły, podmień tylko duplikaty. Pola: t, en, gap, log, op, hook, comps, protagonista.\n\nDotychczasowe:\n${JSON.stringify(ideas)}`,
+      `${ROLE}\n\nStawka jest zdominowana przez jeden profil bohatera (${audyt.dominujacy||''}). Przebuduj 5 pomysłów tak, by NIE WIĘCEJ niż 2 dzieliły ten profil — zastąp nadmiarowe duplikaty pomysłami z INNYM profilem protagonisty, trzymając gatunek ${G} i te same luki. Zachowaj najsilniejsze pomysły, podmień tylko duplikaty. Pola: t, en, gap, log, silnik, op, hook, comps, protagonista.\n\nDotychczasowe:\n${JSON.stringify(ideas)}`,
       {label:'synteza:roznorodnosc',phase:'Pomysly',schema:POMYSLY})
     if (poprawione && poprawione.ideas && poprawione.ideas.length) ideas = poprawione.ideas.slice(0,5)
   }
@@ -184,10 +201,11 @@ const SEDZIOWIE = [
   {n:'Marketing',l:'Oceń wiralowość, łatwość pozycjonowania, siłę haczyka (BookTok/social).'},
   {n:'Czytelnik docelowy',l:'Oceń, czy KUPIŁBYŚ to i polecił; czy haczyk budzi głód.'},
   {n:'Analityk sprzedaży',l:'Oceń na podstawie realnych wyników podobnych tytułów (WebSearch).'},
+  {n:'Adwokat innowacji',l:'Oceń ODWAGĘ i świeżość: czy SILNIK premisy to realna, samonapędzająca się sprzeczność? Czy pomysł otwiera nową półkę, zamiast dosiadać przegrzanego trendu? Tu RYZYKO i nieoczywistość to PREMIA, nie kara; pomysł poprawny, lecz przewidywalny oceń NIŻEJ.'},
 ]
 const ocenione = await parallel(ideas.map((idea)=>async()=>{
   const votes=(await parallel(SEDZIOWIE.map((s)=>()=>
-    agent(`${ROLE}\n\nWcielasz się w rolę: ${s.n}. ${s.l}\n\nPomysł:\n${JSON.stringify(idea)}\n\nLuki:\n${JSON.stringify(luki.gaps)}\n\nZweryfikuj realia rynku (WebSearch). Oceń też ODRÓŻNIALNOŚĆ od obecnej fali: pomysł, który tylko dosiada przegrzanego trendu (np. kolejna starsza bohaterka przy rynku już nimi nasyconym), dostaje KARĘ do oceny, nie premię — świeżość ma wartość. Wystaw ocenę 1-10 (może być ułamkowa) z uzasadnieniem, mocnymi stronami i ryzykami.`,
+    agent(`${ROLE}\n\nWcielasz się w rolę: ${s.n}. ${s.l}\n\nPomysł:\n${JSON.stringify(idea)}\n\nLuki:\n${JSON.stringify(luki.gaps)}\n\nZweryfikuj realia rynku (WebSearch). Zwróć szczególną uwagę na pole „silnik" — pomysł bez działającego silnika premisy (płaska sytuacja, konflikt doklejony z zewnątrz) oceń niżej. Oceń też ODRÓŻNIALNOŚĆ od obecnej fali: pomysł, który tylko dosiada przegrzanego trendu (np. kolejna starsza bohaterka przy rynku już nimi nasyconym), dostaje KARĘ do oceny, nie premię — świeżość ma wartość. Wystaw ocenę 1-10 (może być ułamkowa) z uzasadnieniem, mocnymi stronami i ryzykami.`,
       {label:`ocena:${s.n.slice(0,12)}:${idea.t.slice(0,12)}`,phase:'Ocena',schema:OCENA})))).filter(Boolean)
   const avg=votes.reduce((s,v)=>s+v.score,0)/(votes.length||1)
   return {...idea, votes, avgScore:Math.round(avg*10)/10}
@@ -207,13 +225,13 @@ const REDAKCJA = `Jesteś redaktorem języka polskiego w wydawnictwie. Przepisz 
 const [redBest, redLuki, redIdeasProse, redWerdykt] = await parallel([
   ()=>agent(`${REDAKCJA}\n\nDane (10 bestsellerów):\n${JSON.stringify(bestsellers)}`,{label:'red:bestsellery',phase:'Redakcja PL',schema:BEST}),
   ()=>agent(`${REDAKCJA}\n\nDane (3 luki):\n${JSON.stringify(luki)}`,{label:'red:luki',phase:'Redakcja PL',schema:LUKI}),
-  ()=>agent(`${REDAKCJA}\n\nZredaguj TYLKO pola tekstowe tych 5 pomysłów (NIE oceniaj, NIE dodawaj głosów ani ocen). Zwróć obiekt {ideas:[{t,en,gap,log,op,hook,comps,protagonista}, ...]} z DOKŁADNIE 5 pozycjami w tej SAMEJ kolejności co wejście. Pole gap zachowaj w formacie zaczynającym się od numeru luki (np. „Luka 2 — …”). Nie zmieniaj kolejności ani liczby pomysłów.\n${JSON.stringify({ideas:scoredIdeas.map(s=>({t:s.t,en:s.en,gap:s.gap,log:s.log,op:s.op,hook:s.hook,comps:s.comps,protagonista:s.protagonista}))})}`,{label:'red:pomysly',phase:'Redakcja PL',schema:POMYSLY}),
+  ()=>agent(`${REDAKCJA}\n\nZredaguj TYLKO pola tekstowe tych 5 pomysłów (NIE oceniaj, NIE dodawaj głosów ani ocen). Zwróć obiekt {ideas:[{t,en,gap,log,silnik,op,hook,comps,protagonista}, ...]} z DOKŁADNIE 5 pozycjami w tej SAMEJ kolejności co wejście. Pole gap zachowaj w formacie zaczynającym się od numeru luki (np. „Luka 2 — …”). Nie zmieniaj kolejności ani liczby pomysłów.\n${JSON.stringify({ideas:scoredIdeas.map(s=>({t:s.t,en:s.en,gap:s.gap,log:s.log,silnik:s.silnik,op:s.op,hook:s.hook,comps:s.comps,protagonista:s.protagonista}))})}`,{label:'red:pomysly',phase:'Redakcja PL',schema:POMYSLY}),
   ()=>agent(`${REDAKCJA}\n\nDane (werdykt):\n${JSON.stringify(werdykt)}`,{label:'red:werdykt',phase:'Redakcja PL',schema:WERDYKT}),
 ])
 
 const mergedIdeas = scoredIdeas.map((s,i)=>{
   const r=(redIdeasProse && redIdeasProse.ideas && redIdeasProse.ideas[i]) || {}
-  return {...s, t:r.t||s.t, en:r.en||s.en, gap:r.gap||s.gap, log:r.log||s.log, op:r.op||s.op, hook:r.hook||s.hook, comps:(Array.isArray(r.comps)&&r.comps.length)?r.comps:s.comps, protagonista:r.protagonista||s.protagonista}
+  return {...s, t:r.t||s.t, en:r.en||s.en, gap:r.gap||s.gap, log:r.log||s.log, silnik:r.silnik||s.silnik, op:r.op||s.op, hook:r.hook||s.hook, comps:(Array.isArray(r.comps)&&r.comps.length)?r.comps:s.comps, protagonista:r.protagonista||s.protagonista}
 })
 
 return {

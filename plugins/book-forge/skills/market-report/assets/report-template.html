@@ -126,6 +126,8 @@ h2.sec::before{content:"";display:block;width:54px;height:3px;background:var(--o
 .hook{background:var(--paper);border:1px solid var(--line);padding:14px 18px;font-size:14.5px;line-height:1.55;margin-bottom:22px;border-radius:4px}
 .hook .hk{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);display:block;margin-bottom:5px}
 .hook b{color:var(--ox)}
+.silnik{font-size:14.5px;line-height:1.55;margin:0 0 16px;padding-left:14px;border-left:3px solid var(--gold)}
+.silnik .sk{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);display:block;margin-bottom:5px}
 
 .judges{display:grid;gap:11px;margin-bottom:20px}
 .jrow{display:grid;grid-template-columns:150px 1fr 40px;align-items:center;gap:14px}
@@ -319,6 +321,7 @@ function ideaHTML(idea){
       <div class="scorebox"><div class="scorenum">${fx(idea.score)}</div><div class="scorelbl">/ 10</div></div>
     </div>
     <div class="logline">${idea.log}</div>
+    ${idea.silnik?`<div class="silnik"><span class="sk">Silnik premisy</span>${idea.silnik}</div>`:''}
     <div class="opis">${idea.op}</div>
     <div class="hook"><span class="hk">Haczyk</span>${idea.hook}</div>
     <div class="judges">

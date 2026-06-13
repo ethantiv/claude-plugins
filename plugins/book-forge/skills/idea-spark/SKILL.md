@@ -129,10 +129,13 @@ Uruchom rój narzędziem **Workflow** według skryptu w **`references/workflow-s
 go i podstaw cały brief z Kroku 1 do `args`). Skrypt parsuje `args` odpornie i przerywa z błędem
 przy braku gatunku/czytelnika. Fazy:
 
-1. **Pomysły** — kilku agentów (różne kategorie) + synteza → 5 pomysłów z roboczymi tytułami,
-   z twardymi guardami różnorodności (lek na monokulturę „90% jedna bohaterka").
-2. **Ocena (bez WebSearch)** — panel 3 sędziów na pomysł (redaktor prowadzący, marketing,
-   czytelnik docelowy) → średnia 1–10. Sędziowie oceniają z rzemiosła, **nie researchują rynku**.
+1. **Pomysły** — kilku agentów (różne kategorie × rotowane **soczewki twórcze**) + synteza, która
+   **podkręca finalistów** (reguła „wzmacniaj, nie podmieniaj") → 5 pomysłów z roboczymi tytułami, każdy z
+   **silnikiem premisy** (wbudowaną sprzecznością, która sama napędza konflikt) i z twardymi guardami
+   różnorodności (lek na monokulturę „90% jedna bohaterka").
+2. **Ocena (bez WebSearch)** — panel 4 sędziów na pomysł (redaktor prowadzący, marketing,
+   czytelnik docelowy, **adwokat innowacji**) → średnia 1–10. Sędziowie oceniają z rzemiosła,
+   **nie researchują rynku**; adwokat innowacji premiuje odwagę i działający silnik, nie karze ryzyka.
 3. **Werdykt** — wybór zwycięzcy z uzasadnieniem, „dlaczego teraz”, krokami i wicemistrzem.
 4. **Redakcja językowa** — agenci przepisują CAŁĄ prozę na poprawną, naturalną polszczyznę
    (słownik z `${CLAUDE_PLUGIN_ROOT}/shared/polish-style.md`), usuwają anglicyzmy i AI-slop.
@@ -165,7 +168,7 @@ i krótką notę, że tekst przeszedł redakcję PL + humanizer **oraz że to le
 rynku** (wybór warto potwierdzić pełnym `market-report`).
 
 **Zapisz też deterministyczny artefakt danych `.book-forge/pomysl.json`** w folderze roboczym
-(utwórz `.book-forge/`, jeśli nie istnieje): `{ "idea": <zwycięski pomysł: t, en, op, hook,
+(utwórz `.book-forge/`, jeśli nie istnieje): `{ "idea": <zwycięski pomysł: t, en, silnik, op, hook,
 comps, protagonista>, "brief": DATA.brief, "verdict": DATA.verdict, "genre": "...", "reader": "..." }`.
 To **kanoniczny most** do etapów 2–3: outline i book-bible czytają najpierw `.book-forge/pomysl.json`
 (deterministycznie), a HTML traktują jako fallback. Format jest zgodny z tym, który produkuje
@@ -198,6 +201,12 @@ To **kanoniczny most** do etapów 2–3: outline i book-bible czytają najpierw 
 - **Monokultura pomysłów (np. „90% bohaterka 50–60 lat").** Naprawa: pytanie P3 (profil bohatera)
   + twarde guardy różnorodności w syntezie i audytor różnorodności przed werdyktem (wszystko w
   `references/workflow-swarm.md`). Gdy autor jawnie ustalił profil — monokultura jest OK.
+- **Pomysł bez silnika premisy** (płaska sytuacja, konflikt doklejony z zewnątrz). Naprawa: każdy
+  pomysł ma pole `silnik` — strukturalną sprzeczność, która sama generuje fabułę (jak „idealna żona,
+  która zaplanowała własne morderstwo"). Wymóg jest w prompcie generowania i u adwokata innowacji.
+- **Przewidywalność nagradzana zamiast karana.** Bezpieczny, poprawny pomysł nie jest celem. Adwokat
+  innowacji premiuje świeżość; synteza podkręca finalistów regułą „wzmacniaj, nie podmieniaj" (surowy
+  pomysł zostaje rozpoznawalny). Soczewki twórcze rozbijają jednolitość poznawczą generatorów.
 - **Hardkodowanie SF.** To skill ogólny — wszystko wynika z podanego gatunku i czytelnika.
 - **`args` jako string JSON.** Workflow bywa, że podaje `args` jako tekst, nie obiekt —
   `args.genre` wychodzi `undefined`. Naprawa: skrypt parsuje `args` odpornie w `try/catch` i

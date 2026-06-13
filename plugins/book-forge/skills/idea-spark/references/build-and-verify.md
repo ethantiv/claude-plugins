@@ -27,11 +27,12 @@ const DATA = {
     winner:true,     // dokładnie jeden true
     runner:true,     // dokładnie jeden true (wicemistrz); pozostałe pomiń pole
     log:"",          // logline (kursywa)
+    silnik:"",       // silnik premisy — strukturalna sprzeczność napędzająca konflikt
     op:"",           // streszczenie
     hook:"",         // haczyk (może mieć <b>…</b>)
     comps:["",""],   // orientacyjne tytuły porównawcze (z wiedzy, nie weryfikowane w sieci)
     protagonista:"", // profil bohatera (np. „kobieta, ~40, była śledcza") — niesie decyzję do outline/book-bible
-    votes:[ ["Redaktor prowadzący",7.4], ["Marketing",7.5], ["Czytelnik docelowy",7.4] ]
+    votes:[ ["Redaktor prowadzący",7.4], ["Marketing",7.5], ["Czytelnik docelowy",7.4], ["Adwokat innowacji",7.6] ]
   } ],                                                // 5 pomysłów
   brief: {           // brief autora z Kroku 1 — dziedziczony przez outline (etap 2) i book-bible (etap 3)
     subgenre:"",     // podgatunek/nurt (warstwa adaptacyjna) lub '' (bez preferencji)
@@ -46,7 +47,7 @@ const DATA = {
   verdict: {
     title:"",        // = winnerTitle (po polsku)
     titleEn:"",      // = en zwycięskiego pomysłu
-    score:"Średnia 7,3 &bull; najwyższa w stawce (7,4 / 7,5 / 7,4)",
+    score:"Średnia 7,5 &bull; najwyższa w stawce (7,4 / 7,5 / 7,4 / 7,6)",
     rationale:"", warn:"", whyNow:"",
     steps:["",""],   // kroki dla autora
     runner:"",       // tytuł wicemistrza (po polsku)
@@ -63,9 +64,10 @@ const DATA = {
 
 Rój zwraca `{ ideas:[...], winner:{...}, brief:{...} }`.
 
-- `DATA.ideas` ← `ideas` (każdy): `score` ← `avgScore`; `protagonista` ← `protagonista`
+- `DATA.ideas` ← `ideas` (każdy): `score` ← `avgScore`; `silnik` ← `silnik` (przepisz 1:1);
+  `protagonista` ← `protagonista`
   (przepisz 1:1); `votes` ← sparuj oceny z nazwami sędziów **w kolejności**:
-  `["Redaktor prowadzący","Marketing","Czytelnik docelowy"]`. Ustaw `winner:true` na pozycji,
+  `["Redaktor prowadzący","Marketing","Czytelnik docelowy","Adwokat innowacji"]`. Ustaw `winner:true` na pozycji,
   której `t` odpowiada `winner.winnerTitle` (fallback: najwyższe `avgScore`); ustaw `runner:true`
   tam, gdzie `t` = `winner.runnerTitle`. Kolejność tablicy `ideas` ustala „kolejność roboczą"
   w UI (sortowanie domyślne jest po ocenie).

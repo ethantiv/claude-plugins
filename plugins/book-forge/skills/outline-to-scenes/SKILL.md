@@ -19,7 +19,7 @@ Każda scena musi mieć **cel postaci → konflikt/przeszkodę → zwrot (zmiana
 ## Krok 1 — wejście
 
 1. Wczytaj `.book-forge/konspekt.md` (rozdziały) oraz kanon-wiki z `.book-forge/biblia/` przez `bible.load_all()` (wymagany — bez niego brak kontekstu postaci/świata/POV). Jeśli konspektu brak lub jest kilka kandydatów, zapytaj o ścieżki (`AskUserQuestion`).
-2. Z biblii weź: POV/czas, postacie z łukami, stawkę, motyw, zasady świata, glosariusz. Z konspektu — listę rozdziałów (obietnica, kluczowe punkty, emocja).
+2. Z biblii weź: POV/czas, postacie z łukami, stawkę, motyw, zasady świata, glosariusz. Z konspektu — listę rozdziałów (obietnica, kluczowe punkty, emocja, a jeśli są — `subwersja` i `kotwica`). Pola `subwersja`/`kotwica` przekaż w `args.chapters`, by rój zaszył je na scenie otwierającej rozdziału (honoruje je `write-scene`).
 3. Dopytaj `AskUserQuestion`: ile scen średnio na rozdział (domyślnie rój dobiera 1–3 wg potrzeby) i czy autor chce trzymać liczbę scen w ryzach (np. limit całkowity). Jeśli `meta.budzet_slow` jest puste/0, zapytaj też o **docelowy budżet słów całej książki** (zaproponuj wartość z docelowej długości w konspekcie albo normę subgatunku) — zapiszesz go w Kroku 4 i od tej pory `write-scene` liczy z niego sugerowaną długość scen.
 
 **Rola ekspercka:** architekt struktury powieści, który myśli scenami i przyczynowością, nie streszczeniem.

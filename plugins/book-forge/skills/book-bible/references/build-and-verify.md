@@ -54,6 +54,7 @@ meta = {"RO": True,
         "tomy":       m.get("tomy", 1),
         "ton":        m.get("ton")    or brief.get("tone", ""),
         "format":     m.get("format") or brief.get("format", "pojedyncza"),
+        "forma":      m.get("forma")  or brief.get("form", ""),   # non-fiction: poradnik/reportaz/esej/pamietnik; "" = fikcja (guard non-fiction dla prozy)
         "budzet_slow": m.get("budzet_slow", 0), "liczba_scen": m.get("liczba_scen", 0)}
 if not meta["logline"] or not meta["comps"]:
     print("UWAGA: meta.logline lub meta.comps puste — uzupełnij z raportu etapu 1 (DATA.brief / zwycięski pomysł)")

@@ -137,6 +137,8 @@ h2 em{font-style:italic;color:var(--gold)}
 .stage{position:relative;margin-bottom:16px;background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:22px 24px;transition:.25s}
 .stage:hover{border-color:var(--line2);background:var(--bg3)}
 .stage .node{position:absolute;left:-39px;top:24px;width:30px;height:30px;border-radius:50%;background:var(--bg);border:2px solid var(--ember);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:var(--gold2);box-shadow:0 0 0 4px var(--bg)}
+/* węzeł zakresu (np. 7–10): stadium zamiast okręgu, wyśrodkowany na tej samej osi co okrągłe węzły */
+.stage .node.range{width:auto;left:-24px;transform:translateX(-50%);padding:0 9px;border-radius:15px;font-size:11px;letter-spacing:-.01em;white-space:nowrap}
 .stage.write .node{border-color:var(--gold)}
 .stage-top{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:10px}
 .cmd{font-family:'JetBrains Mono',monospace;font-size:13.5px;font-weight:700;color:var(--gold2);background:var(--bg);border:1px solid var(--line2);border-radius:6px;padding:7px 12px 7px 14px;cursor:pointer;transition:.2s;position:relative;display:inline-flex;align-items:center;gap:9px}
@@ -368,7 +370,7 @@ details.faq summary:focus-visible{outline-offset:-3px}
             <button class="cmd" data-cmd="/book-forge:market-report">/book-forge:market-report<span class="cp">kopiuj</span></button>
           </div>
           <h3>Raport rynku</h3>
-          <p>Rój analizuje 10 bestsellerów Twojej niszy, wskazuje 3 niedoceniane luki, proponuje 5 pomysłów z roboczymi tytułami, ocenia każdy 1–10 czterema sędziami i wybiera zwycięzcę. Zapisuje też <span class="mono">pomysl.json</span> — deterministyczny most danych, z którego czytają konspekt i biblia.</p>
+          <p>Rój analizuje 10 bestsellerów Twojej niszy, wskazuje 3 niedoceniane luki i proponuje 5 pomysłów — generowanych przez <b>soczewki twórcze</b> (co jeśli, zderzenie domen, inwersja…), każdy z <b>silnikiem premisy</b> (wbudowaną sprzecznością, która sama napędza konflikt). Ocenia je pięcioma sędziami (w tym <b>adwokat innowacji</b>, który premiuje odwagę zamiast karać ryzyko) i wybiera zwycięzcę. Zapisuje też <span class="mono">pomysl.json</span> — deterministyczny most danych, z którego czytają konspekt i biblia.</p>
           <div class="io"><span><b>Wejście</b>gatunek + czytelnik</span><span class="out"><b>Wynik</b>raport HTML + pomysl.json</span></div>
         </article>
         <article class="stage reveal">
@@ -378,7 +380,7 @@ details.faq summary:focus-visible{outline-offset:-3px}
             <span class="badge">wariant — bez badania rynku</span>
           </div>
           <h3>Iskra pomysłu</h3>
-          <p>Lekka alternatywa etapu 01: rój generuje 5 pomysłów z roboczymi tytułami z samego kwestionariusza autora (bez WebSearch i agent-browser), ocenia je redaktorsko i wybiera zwycięzcę. Produkuje <b>ten sam</b> <span class="mono">pomysl.json</span>, więc dalsze etapy działają identycznie — wybierasz 01 albo 1L, nie oba.</p>
+          <p>Lekka alternatywa etapu 01: rój generuje 5 pomysłów z samego kwestionariusza autora (bez WebSearch i agent-browser) — przez te same <b>soczewki twórcze</b> i z <b>silnikiem premisy</b>, ocenia je redaktorsko z <b>adwokatem innowacji</b> i wybiera zwycięzcę. Produkuje <b>ten sam</b> <span class="mono">pomysl.json</span>, więc dalsze etapy działają identycznie — wybierasz 01 albo 1L, nie oba.</p>
           <div class="io"><span><b>Wejście</b>kwestionariusz autora</span><span class="out"><b>Wynik</b>idea-spark HTML + pomysl.json</span></div>
         </article>
         <article class="stage reveal">
@@ -387,7 +389,7 @@ details.faq summary:focus-visible{outline-offset:-3px}
             <button class="cmd" data-cmd="/book-forge:outline">/book-forge:outline<span class="cp">kopiuj</span></button>
           </div>
           <h3>Konspekt rozdział po rozdziale</h3>
-          <p>Na bazie zwycięskiego pomysłu rój buduje fundament (przesłanka, motyw, łuk), dobiera strukturę, rozpisuje rozdziały w liczbie wyprowadzonej z gatunku i tempa (obietnica, haczyk, zwrot, przejście emocjonalne) i tnie wypełniacze.</p>
+          <p>Na bazie zwycięskiego pomysłu rój buduje fundament (przesłanka, motyw, łuk, warianty zakończenia), dobiera strukturę z realną wagą oryginalności, rozpisuje rozdziały w liczbie wyprowadzonej z gatunku i tempa (obietnica, haczyk, zwrot, przejście emocjonalne, a do tego <b>subwersja</b> standardowego beatu i <b>kotwica</b> — konkretny zapamiętywalny obraz) i tnie wypełniacze oraz przewidywalne beaty.</p>
           <div class="io"><span><b>Wejście</b>pomysl.json z etapu 1</span><span class="out"><b>Wynik</b>konspekt.md + HTML</span></div>
         </article>
       </div>
@@ -404,7 +406,7 @@ details.faq summary:focus-visible{outline-offset:-3px}
             <span class="badge canon">tworzy kanon</span>
           </div>
           <h3>Biblia książki</h3>
-          <p>Sercem całego warsztatu. Rój buduje jedno źródło prawdy — świat, postacie, głosy, glosariusz z polską odmianą, kanon fabularny, fakty — z raportu i konspektu. Od tej pory każdy etap pisania czyta z biblii.</p>
+          <p>Sercem całego warsztatu. Rój buduje jedno źródło prawdy — świat, postacie (z <b>profilem chaosu</b>: nieistotna obsesja, zniekształcenie poznawcze, niechciane wspomnienie, nieudana kontrola emocji), głosy, glosariusz z polską odmianą, kanon fabularny, fakty — z raportu i konspektu. Od tej pory każdy etap pisania czyta z biblii.</p>
           <div class="io"><span><b>Wejście</b>pomysl.json + konspekt</span><span class="out"><b>Wynik</b>biblia/**/*.md + index.md</span></div>
         </article>
       </div>
@@ -457,7 +459,7 @@ details.faq summary:focus-visible{outline-offset:-3px}
             <button class="cmd" data-cmd="/book-forge:revise-scene">/book-forge:revise-scene<span class="cp">kopiuj</span></button>
           </div>
           <h3>Pogłębienie i dev-edit</h3>
-          <p>Pętla generuj→oceń: rój wzmacnia prozę środkami literackimi (podtekst, charakteryzacja przez działanie, sensoryka, mikro-zwrot, zasiew), a osobny krytyk „na ślepo” ocenia ją jako bramka PASS/FIX. Z limitem prób i opcją <span class="mono">accept-with-debt</span>.</p>
+          <p>Pętla generuj→oceń: rój wzmacnia prozę środkami literackimi (podtekst, charakteryzacja przez działanie, sensoryka, mikro-zwrot, zasiew), a osobny krytyk „na ślepo” ocenia ją jako bramka PASS/FIX. Z limitem prób i opcją <span class="mono">accept-with-debt</span>. Po przejściu bramki działa faza <b>Disruption</b> (anty-przewidywalność): nieistotna myśl z chaosu postaci, złamana kontrola emocji, celowa szorstkość — chroniona przed humanizerem aż do korekty.</p>
           <div class="io"><span><b>Wejście</b>draft sceny</span><span class="out"><b>Wynik</b>poprawiona scena + QA + handoff</span><span class="bib"><b>Biblia</b>handoff do continuity-check</span></div>
         </article>
         <article class="stage write reveal">
@@ -477,11 +479,11 @@ details.faq summary:focus-visible{outline-offset:-3px}
             <span class="badge lang">humanizer → korekta PL</span>
           </div>
           <h3>Finalna polszczyzna</h3>
-          <p>Najpierw <span class="mono">/humanizer:humanizer</span> (zakotwiczony kartą stylu z biblii), POTEM korekta polonistyczna i walidacja nazw z glosariusza. Ta mikrokolejność jest krytyczna — humanizer bazuje na wzorcach angielskich, więc polski musi być ostatni.</p>
+          <p>Najpierw <span class="mono">/humanizer:humanizer</span> (zakotwiczony kartą stylu z biblii), POTEM korekta polonistyczna i walidacja nazw z glosariusza. Ta mikrokolejność jest krytyczna — humanizer bazuje na wzorcach angielskich, więc polski musi być ostatni. Celowe odstępstwa z fazy Disruption są tu chronione — ani humanizer, ani korekta ich nie wygładzają.</p>
           <div class="io"><span><b>Wejście</b>scena po ciągłości</span><span class="out"><b>Wynik</b>wygładzona scena + raport</span><span class="bib"><b>Biblia</b>karta stylu, glosariusz</span></div>
         </article>
         <article class="stage write reveal">
-          <span class="node">7–10</span>
+          <span class="node range">7–10</span>
           <div class="stage-top">
             <button class="cmd" data-cmd="/book-forge:forge-scenes">/book-forge:forge-scenes<span class="cp">kopiuj</span></button>
             <span class="badge">tryb taśmowy</span>

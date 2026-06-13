@@ -33,6 +33,7 @@ const SCENE = { type:'object', required:['id','rozdzial','pov','cel','konflikt',
   id:{type:'string'}, rozdzial:{type:'number'}, pov:{type:'string'}, miejsce:{type:'string'}, czas:{type:'string'},
   typ:{type:'string'},   // kluczowa | pomostowa | sekwel — steruje kryteriami dev-edit (pomost nie wymaga pełnego value_shift)
   cel:{type:'string'}, konflikt:{type:'string'}, zwrot:{type:'string'}, value:{type:'string'}, luk:{type:'string'},
+  subwersja:{type:'string'}, kotwica:{type:'string'},   // opcjonalne — przeniesione z rozdziału konspektu na scenę otwierającą; honoruje je write-scene
   zasiewa:{type:'array',items:{type:'string'}}, splaca:{type:'array',items:{type:'string'}}, research:{type:'array',items:{type:'string'}} } }
 const SCENESET = { type:'object', required:['sceny'], properties:{ sceny:{type:'array',items:SCENE} } }
 const SP = { type:'object', required:['setup_payoff','os_czasu'], properties:{
@@ -49,7 +50,7 @@ const arc = await agent(
 
 phase('Siatka scen')
 const zestawy = (await parallel(CH.map((c,i)=>()=>
-  agent(`${ROLE}\n\nMapa łuku:\n${JSON.stringify(arc)}\n\nRozdział ${i+1}:\n${JSON.stringify(c)}\n\nRozpisz ten rozdział na sceny (${HINT}). Każda scena: id (DOKŁADNIE w formacie "${TP}R${i+1}S<n>", np. "${TP}R${i+1}S1" — prefiks tomu "${TP}" jest OBOWIĄZKOWY, jeśli niepusty), rozdzial=${i+1}, pov, miejsce, czas, typ ("kluczowa" — pełna scena z celem i zwrotem; "pomostowa" — krótkie przejście/oddech/sumariusz bez pełnego zwrotu wartości; "sekwel" — reakcja po kulminacji; większość scen jest kluczowa, ale wpleć pomostowe dla rytmu, by proza nie była jednostajnie napięta), cel (czego chce postać), konflikt (co stoi na drodze), zwrot (jak kończy się scena, zmiana wartości; dla pomostowej może być drobny), value ("+" lub "-"), luk (jak posuwa łuk protagonisty), zasiewa (co zapowiada — w tym zasiewy międzytomowe serii, jeśli scena je realizuje), splaca (jaki wcześniejszy zasiew domyka), research (realia wymagające weryfikacji — może być puste). Bez wypełniaczy; każda scena ma cel i zwrot.`,
+  agent(`${ROLE}\n\nMapa łuku:\n${JSON.stringify(arc)}\n\nRozdział ${i+1}:\n${JSON.stringify(c)}\n\nRozpisz ten rozdział na sceny (${HINT}). Każda scena: id (DOKŁADNIE w formacie "${TP}R${i+1}S<n>", np. "${TP}R${i+1}S1" — prefiks tomu "${TP}" jest OBOWIĄZKOWY, jeśli niepusty), rozdzial=${i+1}, pov, miejsce, czas, typ ("kluczowa" — pełna scena z celem i zwrotem; "pomostowa" — krótkie przejście/oddech/sumariusz bez pełnego zwrotu wartości; "sekwel" — reakcja po kulminacji; większość scen jest kluczowa, ale wpleć pomostowe dla rytmu, by proza nie była jednostajnie napięta), cel (czego chce postać), konflikt (co stoi na drodze), zwrot (jak kończy się scena, zmiana wartości; dla pomostowej może być drobny), value ("+" lub "-"), luk (jak posuwa łuk protagonisty), zasiewa (co zapowiada — w tym zasiewy międzytomowe serii, jeśli scena je realizuje), splaca (jaki wcześniejszy zasiew domyka), research (realia wymagające weryfikacji — może być puste). Jeśli rozdział niesie pola „subwersja"/„kotwica" (z konspektu), PRZENIEŚ je na PIERWSZĄ (otwierającą) scenę tego rozdziału jako pola subwersja/kotwica — nie powielaj ich na pozostałe sceny. Bez wypełniaczy; każda scena ma cel i zwrot.`,
     {label:`sceny:${TP}R${i+1}`,phase:'Siatka scen',schema:SCENESET})))).filter(Boolean)
 let sceny = zestawy.flatMap(z=>z.sceny)
 

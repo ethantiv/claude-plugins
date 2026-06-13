@@ -238,6 +238,8 @@ $('#chapters-list').innerHTML = (DATA.chapters||[]).map(c=>{
         <div class="hcell hook"><span class="lbl">Haczyk (początek)</span><p>${c.hook||''}</p></div>
         <div class="hcell twist"><span class="lbl">Zwrot akcji (koniec)</span><p>${c.twist||''}</p></div>
       </div>
+      ${c.subwersja?`<span class="lbl">Subwersja beatu</span><p>${c.subwersja}</p>`:''}
+      ${c.kotwica?`<span class="lbl">Kotwica</span><p>${c.kotwica}</p>`:''}
     </div></div></div>
   </div>`;
 }).join('');

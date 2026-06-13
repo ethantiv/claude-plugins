@@ -24,7 +24,7 @@ Etap **„pogłębienie + dev-edit”**: po `write-scene` (treść), przed `cont
 
 ## Krok 1 — wejście
 
-1. **Preflight:** `python3 ${CLAUDE_PLUGIN_ROOT}/scripts/bible.py check-stage revise-scene <id>` — brak prozy = przerwij z czytelnym komunikatem zamiast wykładać rój. Potem wczytaj szkic `.book-forge/sceny/<id>.md`, a kanon przez `b = bible.load_all()`: kartę sceny z `b['kanon_fabularny']['sceny']` i **wyciąg** z biblii (karta głosu narratora, głosy obecnych postaci, stawka, łuk postaci, istotne zasady świata, glosariusz). Domyślnie pierwsza scena ze szkicem i statusem innym niż `zweryfikowana` (priorytet: `do-rewizji` — sceny oflagowane przez `world-research`); pozwól wskazać id (`AskUserQuestion`).
+1. **Preflight:** `python3 ${CLAUDE_PLUGIN_ROOT}/scripts/bible.py check-stage revise-scene <id>` — brak prozy = przerwij z czytelnym komunikatem zamiast wykładać rój. Potem wczytaj szkic `.book-forge/sceny/<id>.md`, a kanon przez `b = bible.load_all()`: kartę sceny z `b['kanon_fabularny']['sceny']` i **wyciąg** z biblii (karta głosu narratora, głosy obecnych postaci, stawka, łuk postaci, istotne zasady świata, glosariusz, **profil `chaos` obecnych postaci** i **`meta.forma`** — zasilają fazę Disruption). Domyślnie pierwsza scena ze szkicem i statusem innym niż `zweryfikowana` (priorytet: `do-rewizji` — sceny oflagowane przez `world-research`); pozwól wskazać id (`AskUserQuestion`).
 2. Jeśli istnieje `.book-forge/redakcja-todo.md` (work-lista z przeglądu całości w `assemble-book`), wczytaj sekcję `## <id>` i sekcję `## CAŁOŚĆ` — pozycje dotyczące tej sceny przekaż do roju jako dodatkowe cele rewizji (to pętla zwrotna całość→scena).
 3. Dopytaj `AskUserQuestion`: maksymalna liczba prób (domyślnie 3) i czego autor szczególnie pilnuje (np. tempo, podtekst).
 
@@ -40,6 +40,8 @@ Uruchom rój według **`references/workflow-swarm.md`**. W pętli (do `N` prób)
 
 **Limit iteracji + eskalacja:** po `N` próbach bez PASS — zapisz z adnotacją `accept-with-debt` w notatce QA i zgłoś autorowi (nigdy cicha, nieskończona pętla).
 
+Po pętli (na ZAAKCEPTOWANEJ prozie) działa faza **Disruption** — anty-przewidywalność: 2–4 operacje, które usuwają gładką sztuczność, a nie „poprawiają” (nieistotna myśl z `chaos.obsesja` postaci, złamana kontrola emocji, jedno celowo chropawe zdanie, zaszumiony dialog / wycięty przewidywalny akapit). Działa POZA bramką dev-edit (która ukarałaby celową szorstkość) i jest **wyłączona dla non-fiction** (`meta.forma`). Zwraca `celowe_odstepstwa` — listę fragmentów chronionych przed korektą i humanizerem w `polish-pl`.
+
 ## Krok 3 — bez humanizera, lekka redakcja PL
 
 Po przejściu pętli zrób tylko **lekką redakcję polonistyczną** (anglicyzmy, AI-slop, interpunkcja dialogowa) — **nie** humanizer (ten w `polish-pl`). Nazw własnych z glosariusza nie ruszaj.
@@ -47,7 +49,7 @@ Po przejściu pętli zrób tylko **lekką redakcję polonistyczną** (anglicyzmy
 ## Krok 4 — zapis i QA
 
 1. Nadpisz `.book-forge/sceny/<id>.md` poprawioną sceną (opcjonalnie zachowaj kopię `.book-forge/sceny/<id>.v1.md`).
-2. Zapisz **`.book-forge/sceny/<id>.qa.md`** — notatka QA: werdykt, oceny, najważniejsze poprawki, dziennik rund, ewentualny dług (`accept-with-debt`). To notatka, **nie** zapis do kanonu — kanonu fabuły ten etap nie zmienia (robi to `continuity-check`).
+2. Zapisz **`.book-forge/sceny/<id>.qa.md`** — notatka QA: werdykt, oceny, najważniejsze poprawki, dziennik rund, ewentualny dług (`accept-with-debt`) oraz **`celowe_odstepstwa`** z fazy Disruption (lista chronionych fragmentów — `polish-pl` ją stąd wczyta). To notatka, **nie** zapis do kanonu — kanonu fabuły ten etap nie zmienia (robi to `continuity-check`).
 3. Jeśli pogłębienie wprowadziło nowe fakty/nazwy/zasiewy, rój zwraca je jako obiekt `propozycje` — trzymaj go w pamięci jako ładunek handoffu (Krok 5), **nie** zapisuj do pliku.
 
 Szczegóły i walidacja: **`references/build-and-verify.md`**.

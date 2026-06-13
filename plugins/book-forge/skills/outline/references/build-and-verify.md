@@ -23,7 +23,9 @@ const DATA = {
     hook:"",           // haczyk otwierający
     twist:"",          // zwrot akcji na końcu
     emotion:"",        // przejście emocjonalne, np. „nadzieja → strata”
-    value:"+"          // "+" albo "-" (na czym kończy się rozdział dla bohatera)
+    value:"+",         // "+" albo "-" (na czym kończy się rozdział dla bohatera)
+    subwersja:"",      // jak rozdział łamie oczekiwaną wypłatę beatu (lub „beat oryginalny”)
+    kotwica:""         // konkretny zapamiętywalny obraz/moment; ew. odwrócona emocja
   } ],
   cut: [ {n:0, powod:""} ]   // wycięte wypełniacze (informacyjnie; może być [])
 };
@@ -90,6 +92,8 @@ Zapisz `DATA` jako plik JSON (`$DATA_JSON`) — `json.dumps` eskejpuje cudzysło
 - {beat}
 **Haczyk:** {hook}
 **Zwrot akcji:** {twist}
+**Subwersja:** {subwersja}
+**Kotwica:** {kotwica}
 **Emocja:** {emotion} ({value})
 
 ## Wycięte wypełniacze

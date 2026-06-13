@@ -10,7 +10,7 @@ allowed-tools: Workflow, AskUserQuestion, Skill, Bash, Read, Write, Edit, WebSea
 
 Buduje **szczegółowy konspekt** powieści na podstawie zwycięskiego pomysłu z etapu 1. Napędza go **rój agentów** przez narzędzie **Workflow**: fundament → struktura → rozdziały → cięcie wypełniaczy → redakcja językowa. Książka bez konspektu to miesiące błądzenia — ten etap ma temu zapobiec.
 
-Dla każdego rozdziału powstaje: jednozdaniowa **obietnica**, 3–5 **kluczowych punktów**, **haczyk** na początku i **zwrot akcji** na końcu, oraz **przejście emocjonalne**. Całość spina jeden **łuk emocjonalny**, a każdy rozdział musi zasłużyć na swoje miejsce — wypełniacze wycinamy.
+Dla każdego rozdziału powstaje: jednozdaniowa **obietnica**, 3–5 **kluczowych punktów**, **haczyk** na początku i **zwrot akcji** na końcu, **przejście emocjonalne**, a do tego **subwersja** standardowego beatu (strukturalne zaskoczenie zamiast przewidywalnej wypłaty) i **kotwica** (konkretny zapamiętywalny obraz). Całość spina jeden **łuk emocjonalny**, a każdy rozdział musi zasłużyć na swoje miejsce — wypełniacze wycinamy.
 
 ## Zasada nadrzędna: polszczyzna (czytaj najpierw)
 
@@ -42,9 +42,9 @@ Konwencji gatunkowych i tabu z etapu 1 (`brief.conventions`, `brief.taboo`) **ni
 Uruchom rój według skryptu w **`references/workflow-swarm.md`** (podstaw pomysł z polem `protagonista`, gatunek, czytelnika, **cały brief autora** (`subgenre`, `conventions`, `protagonist`, `tone`, `taboo`, `format`, `form`…), werdykt i parametry do `args`). Fazy:
 
 1. **Fundament** — kilku agentów z różnych stron (motyw, łuk bohatera, obietnica rynkowa, zakończenie) proponuje kręgosłup książki → synteza.
-2. **Struktura** — kilku agentów proponuje różne szkielety (np. trójakt, podróż bohatera, struktura siedmiu punktów, kishōtenketsu) dopasowane do gatunku → panel sędziów ocenia dopasowanie → wybór/scalenie najlepszego.
-3. **Rozdziały** — rozpisanie każdego rozdziału: obietnica, 3–5 kluczowych punktów, haczyk, zwrot akcji, przejście emocjonalne.
-4. **Cięcie wypełniaczy** — panel krytyków sprawdza każdy rozdział: czy posuwa łuk, czy ma haczyk i zwrot, czy nie jest wypełniaczem → rewizja (łączenie/cięcie).
+2. **Struktura** — kilku agentów proponuje różne szkielety (np. trójakt, podróż bohatera, struktura siedmiu punktów, kishōtenketsu) dopasowane do gatunku → panel sędziów ocenia dopasowanie i **oryginalność** (z realną wagą) oraz subwersję konwencji → wybór/scalenie najlepszego.
+3. **Rozdziały** — rozpisanie każdego rozdziału: obietnica, 3–5 kluczowych punktów, haczyk, zwrot akcji, przejście emocjonalne, **subwersja beatu i kotwica emocjonalna**.
+4. **Cięcie wypełniaczy** — panel krytyków sprawdza każdy rozdział: czy posuwa łuk, czy ma haczyk i zwrot, **czy nie jest przewidywalny / czy ma realną subwersję**, czy nie jest wypełniaczem → rewizja (łączenie/cięcie).
 5. **Redakcja PL** — przepisanie całości na poprawną, naturalną polszczyznę.
 
 **Research strukturalny** (opcjonalny, ale zalecany): agenci sprawdzają przez **WebSearch / agent-browser** konwencje budowy i tempa w tym gatunku oraz to, jak zbudowane są tytuły porównawcze (`comps`) — żeby struktura pasowała do oczekiwań czytelnika, a nie była teoretyczna.
@@ -74,7 +74,7 @@ Pokaż autorowi: ścieżki obu plików, tytuł książki, liczbę rozdziałów, 
 | Parametry | Interaktywnie: długość i liczba rozdziałów (rekomendacja z gatunku/podgatunku, nie stała), transformacja |
 | Silnik | Rój agentów przez Workflow (`references/workflow-swarm.md`) |
 | Rola agentów | Mistrz architektury książek, 50+ bestsellerów |
-| Na rozdział | Obietnica + 3–5 punktów + haczyk + zwrot + emocja |
+| Na rozdział | Obietnica + 3–5 punktów + haczyk + zwrot + emocja + subwersja + kotwica |
 | Spójność | Jeden łuk emocjonalny; każdy rozdział zasługuje na miejsce |
 | Język | Poprawna, naturalna polszczyzna — kryterium #1 |
 | Redakcja | Faza roju + `/humanizer:humanizer` w głównej sesji |
@@ -85,6 +85,7 @@ Pokaż autorowi: ścieżki obu plików, tytuł książki, liczbę rozdziałów, 
 
 - **Wypełniacze.** Rozdział, który nie posuwa łuku ani fabuły. Naprawa: panel krytyków tnie i łączy; każdy rozdział musi mieć obietnicę, haczyk i zwrot.
 - **Płaski łuk.** Te same emocje rozdział po rozdziale. Naprawa: wymuś przejście emocjonalne (wartość +/–) i sprawdź ciągłość między rozdziałami.
+- **Przewidywalny beat.** Kompetentnie napisany standard gatunku, którego czytelnik się spodziewa. Naprawa: pole `subwersja` wymusza strukturalne zaskoczenie; krytyk oznacza `przewidywalny` bez `maSubwersje` do rewizji. Dla non-fiction subwersja = kontrintuicja, nie łamanie beatu.
 - **Anglicyzmy/AI-slop** w opisach. Naprawa: słownik z `${CLAUDE_PLUGIN_ROOT}/shared/polish-style.md` + humanizer.
 - **Ignorowanie etapu 1.** Konspekt ma realizować zwycięski pomysł i jego haczyk, nie własną, nową historię. Dotyczy to też **całego briefu** (ton, profil bohatera, format, konwencje, tabu) — przekaż go do roju, inaczej silnik go nie zobaczy.
 - **Zahardkodowana długość/liczba rozdziałów.** 60 000 słów i 14 rozdziałów pasują do mniejszości gatunków. Naprawa: wyprowadź jedno i drugie z gatunku/podgatunku jako rekomendację, z możliwością nadpisania.

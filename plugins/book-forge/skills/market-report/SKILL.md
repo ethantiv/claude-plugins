@@ -64,8 +64,8 @@ Uruchom rój narzędziem **Workflow** według skryptu w **`references/workflow-s
 
 1. **Analiza rynku** — kilkunastu agentów z różnych perspektyw → 10 bestsellerów.
 2. **Luki** — kilku agentów + synteza → 3 niedoceniane luki.
-3. **Pomysły** — kilku agentów + synteza → 5 pomysłów z roboczymi tytułami.
-4. **Ocena** — panel 4 sędziów na pomysł (redaktor/finanse, marketing, czytelnik docelowy, analityk sprzedaży) → średnia 1–10.
+3. **Pomysły** — kilku agentów (różne kategorie × rotowane **soczewki twórcze**) + synteza, która **podkręca finalistów** (reguła „wzmacniaj, nie podmieniaj") → 5 pomysłów z roboczymi tytułami, każdy z **silnikiem premisy** (wbudowaną sprzecznością napędzającą konflikt).
+4. **Ocena** — panel 5 sędziów na pomysł (redaktor/finanse, marketing, czytelnik docelowy, analityk sprzedaży, **adwokat innowacji**) → średnia 1–10. Adwokat innowacji premiuje odwagę i działający silnik, nie karze ryzyka.
 5. **Werdykt** — wybór zwycięzcy z uzasadnieniem, „dlaczego teraz”, krokami i wicemistrzem.
 6. **Redakcja językowa** — agenci przepisują CAŁĄ prozę na poprawną, naturalną polszczyznę (słownik z `${CLAUDE_PLUGIN_ROOT}/shared/polish-style.md`), usuwają anglicyzmy i AI-slop.
 
@@ -87,7 +87,7 @@ Zbuduj raport z gotowego szablonu `${CLAUDE_PLUGIN_ROOT}/skills/market-report/as
 
 Zapisz do **bieżącego katalogu** jako `market-report-<slug-gatunku>.html` (np. `market-report-science-fiction.html`). Pokaż autorowi: ścieżkę pliku, zwycięski pomysł z oceną, 3 luki i krótką notę, że tekst przeszedł redakcję PL + humanizer. Surowo zgłaszaj, czego nie udało się zweryfikować (np. brak danych rynkowych dla niszowego gatunku).
 
-**Zapisz też deterministyczny artefakt danych `.book-forge/pomysl.json`** w folderze roboczym (utwórz `.book-forge/`, jeśli nie istnieje): `{ "idea": <zwycięski pomysł: t, en, op, hook, gap, comps, protagonista>, "brief": DATA.brief, "verdict": DATA.verdict, "genre": "...", "reader": "..." }`. To **kanoniczny most** do etapów 2–3: outline i book-bible czytają najpierw `.book-forge/pomysl.json` (deterministycznie), a HTML traktują jako fallback. HTML jest formatem prezentacyjnym — nie zmuszaj kolejnych etapów do wyłuskiwania `DATA` z `<script>` (kruche przy wielu raportach i zmianie szablonu).
+**Zapisz też deterministyczny artefakt danych `.book-forge/pomysl.json`** w folderze roboczym (utwórz `.book-forge/`, jeśli nie istnieje): `{ "idea": <zwycięski pomysł: t, en, silnik, op, hook, gap, comps, protagonista>, "brief": DATA.brief, "verdict": DATA.verdict, "genre": "...", "reader": "..." }`. To **kanoniczny most** do etapów 2–3: outline i book-bible czytają najpierw `.book-forge/pomysl.json` (deterministycznie), a HTML traktują jako fallback. HTML jest formatem prezentacyjnym — nie zmuszaj kolejnych etapów do wyłuskiwania `DATA` z `<script>` (kruche przy wielu raportach i zmianie szablonu).
 
 ## Ściąga
 
@@ -113,4 +113,5 @@ Zapisz do **bieżącego katalogu** jako `market-report-<slug-gatunku>.html` (np.
 - **Hardkodowanie SF.** To skill ogólny — wszystko wynika z podanego gatunku i czytelnika.
 - **Monokultura pomysłów (np. „90% bohaterka 50–60 lat").** Bias nie jest zaszyty w kodzie — jest emergentny: rój szukający „niedoobsługiwanej" niszy konwerguje na jednej demografii. Naprawa: pytanie P3 (profil bohatera) daje autorowi kontrolę, a rozproszony wektor demografii + twarde guardy różnorodności w syntezie (max 1 luka persony, ≥3 osie różnicy między 5 pomysłami) i audytor różnorodności przed werdyktem łamią monokulturę (wszystko w `references/workflow-swarm.md`). Gdy autor jawnie ustalił profil — monokultura jest OK i audytor ją przepuszcza.
 - **`args` jako string JSON.** Workflow bywa, że podaje `args` jako tekst, nie obiekt — `args.genre` wychodzi `undefined` i całe wejście roju jest puste. Naprawa: skrypt parsuje `args` odpornie w `try/catch` (`typeof args === 'string' ? JSON.parse(args) : (args || {})`) i przerywa z czytelnym błędem przy braku gatunku/czytelnika lub niepoprawnym JSON (guard w `references/workflow-swarm.md`); w fazie 1 (Analiza rynku) działa bramka gatunku — po niej sprawdź, czy tytuły są z gatunku, a nie „undefined”.
+- **Pomysł bez silnika premisy** (płaska sytuacja, konflikt doklejony z zewnątrz). Naprawa: każdy pomysł ma pole `silnik` — strukturalną sprzeczność, która sama generuje fabułę; wymóg w prompcie generowania i u adwokata innowacji, który premiuje odwagę zamiast karać ryzyko.
 - **Pominięcie humanizera.** Obowiązkowy przebieg w głównej sesji, nie opcja.

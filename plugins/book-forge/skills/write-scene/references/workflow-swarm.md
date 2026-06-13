@@ -1,6 +1,6 @@
 # Skrypt roju (Workflow) — napisz scenę
 
-Skopiuj do narzędzia **Workflow**. `args`: `{ scena, wyciag, prev, dlugosc, prozaZrodlo }`, gdzie `scena` to karta sceny z biblii (id, pov, miejsce, czas, cel, konflikt, zwrot, value, luk, zasiewa, splaca), `wyciag` to WYCIĄG z biblii (karta głosu narratora, głosy obecnych postaci, zasady świata istotne, glosariusz z odmianą, otwarte zasiewy), `prev` to streszczenia 2–3 poprzednich scen, a `prozaZrodlo` to **treść** pliku otwarcia (gdy karta ma `proza_zrodlo` lub to scena 1 z `.book-forge/poczatek.md` — patrz Krok 1 SKILL.md). Nie wklejaj całej biblii ani całego dotychczasowego tekstu — tylko wyciąg i streszczenia.
+Skopiuj do narzędzia **Workflow**. `args`: `{ scena, wyciag, prev, dlugosc, prozaZrodlo }`, gdzie `scena` to karta sceny z biblii (id, pov, miejsce, czas, cel, konflikt, zwrot, value, luk, zasiewa, splaca; scena otwierająca rozdział może mieć też `subwersja`/`kotwica` z konspektu), `wyciag` to WYCIĄG z biblii (karta głosu narratora, głosy obecnych postaci, zasady świata istotne, glosariusz z odmianą, otwarte zasiewy), `prev` to streszczenia 2–3 poprzednich scen, a `prozaZrodlo` to **treść** pliku otwarcia (gdy karta ma `proza_zrodlo` lub to scena 1 z `.book-forge/poczatek.md` — patrz Krok 1 SKILL.md). Nie wklejaj całej biblii ani całego dotychczasowego tekstu — tylko wyciąg i streszczenia.
 
 ```javascript
 export const meta = {
@@ -22,7 +22,9 @@ const CZASK = `${(W.glos_narratora&&W.glos_narratora.czas) || (W.meta&&W.meta.cz
 const KONTRAKT = `\n\nKONTRAKT NARRACJI (zafiksowany — NIE łam): POV: ${POVK||'jak w karcie .book-forge/sceny/głosu'}; czas gramatyczny: ${CZASK||'jak w karcie głosu'}. Pozostań w głowie fokalizatora POV — ZERO head-hoppingu (nie wchodź do myśli innych postaci).`
 // Zasiewy z karty sceny jako TWARDE zadanie (nie giną w ogólnym JSON karty)
 const ZAS = `${(SC.zasiewa&&SC.zasiewa.length)?`\n- ZASIEJ w tej scenie (z karty): ${SC.zasiewa.join(', ')}.`:''}${(SC.splaca&&SC.splaca.length)?`\n- SPŁAĆ w tej scenie (z karty): ${SC.splaca.join(', ')}.`:''}`
-const ZADANIA = ZAS ? `\n\nZADANIA SCENY (obowiązkowe):${ZAS}` : ''
+// Subwersja/kotwica z karty sceny (przeniesione z rozdziału konspektu) jako TWARDE zadanie prozy
+const KREAT = `${SC.subwersja?`\n- SUBWERSJA BEATU (złam oczekiwaną wypłatę — nie zapowiadaj jej; niech zaskoczy, ale wynika z postaci): ${SC.subwersja}`:''}${SC.kotwica?`\n- KOTWICA OBRAZOWA (zbuduj jeden konkretny, zapamiętywalny obraz/moment; jeśli niesie odwróconą emocję — utrzymaj kontrast): ${SC.kotwica}`:''}`
+const ZADANIA = (ZAS||KREAT) ? `\n\nZADANIA SCENY (obowiązkowe):${ZAS}${KREAT}` : ''
 const OTWARCIE = PZ ? `\n\nMATERIAŁ OTWARCIA (proza z etapu opening) — to scena otwierająca: ROZWIŃ poniższy tekst do docelowej długości, ZACHOWUJĄC jego pierwsze akapity, obrazy i głos. NIE pisz sceny od zera, nie podmieniaj otwarcia:\n${PZ}` : ''
 
 const ROLE = `Jesteś powieściopisarzem piszącym w USTALONYM głosie z biblii — głosie narratora i idiolektach postaci, nie we własnym. Trzymaj się ściśle: POV i czas z biblii, karta głosu, zasady świata, nazwy własne i ich odmiana z glosariusza. Pisz immersyjnie: pokazuj nie mów, konkret sensoryczny, dialog z podtekstem, świat dawkowany przez akcję. Dialog zapisuj polską interpunkcją dialogową (pauza „— ”, didaskalia małą literą — patrz shared/polish-style.md). Bez „głosu autora”, bez osobistych anegdot, bez zwrotów do czytelnika, bez „stop and think”, bez wymuszonego cliffhangera — haczyk i napięcie wynikają ze sceny. Pisz po polsku (słownik z polish-style).${KONTRAKT}${ZADANIA}${OTWARCIE}\n\nWYCIĄG Z BIBLII:\n${JSON.stringify(W)}\n\nKARTA SCENY:\n${JSON.stringify(SC)}\n\nCO BYŁO WCZEŚNIEJ (streszczenia poprzednich scen):\n${JSON.stringify(PREV)}`
