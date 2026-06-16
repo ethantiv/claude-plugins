@@ -35,7 +35,7 @@ const DATA = {
     hook:"",         // haczyk (może mieć <b>…</b>)
     comps:["",""],   // tytuły porównawcze
     protagonista:"", // profil bohatera (np. „kobieta, ~40, była śledcza") — niesie decyzję do outline/book-bible
-    votes:[ ["Redaktor (finanse)",7.4], ["Marketing",7.5], ["Czytelnik docelowy",7.4], ["Analityk sprzedaży",6.8], ["Adwokat innowacji",7.6] ]
+    votes:[ ["Redaktor (finanse-rynek)",7.4], ["Marketing",7.5], ["Adwokat innowacji",7.6] ]
   } ],                                                // 5 pomysłów
   brief: {           // brief autora z Kroku 1 — dziedziczony przez outline (etap 2) i book-bible (etap 3)
     subgenre:"",     // podgatunek/nurt (warstwa adaptacyjna) lub '' (bez preferencji)
@@ -50,7 +50,7 @@ const DATA = {
   verdict: {
     title:"",        // = winnerTitle (po polsku)
     titleEn:"",      // = en zwycięskiego pomysłu
-    score:"Średnia 7,3 &bull; najwyższa w stawce (7,4 / 7,5 / 7,4 / 6,8 / 7,6)",
+    score:"Średnia 7,5 &bull; najwyższa w stawce (7,4 / 7,5 / 7,6)",
     rationale:"", warn:"", whyNow:"",
     steps:["",""],   // kroki dla autora
     runner:"",       // tytuł wicemistrza (po polsku)
@@ -67,7 +67,7 @@ Rój zwraca `{ bestsellers:{books,observations}, gaps:[...], ideas:[...], winner
 - `DATA.books` ← `bestsellers.books`
 - `DATA.obs` ← `bestsellers.observations`
 - `DATA.gaps` ← `gaps`
-- `DATA.ideas` ← `ideas` (każdy): `score` ← `avgScore`; `silnik` ← `silnik` (przepisz 1:1); `protagonista` ← `protagonista` (przepisz 1:1); `votes` ← sparuj oceny z nazwami sędziów **w kolejności**: `["Redaktor (finanse)","Marketing","Czytelnik docelowy","Analityk sprzedaży","Adwokat innowacji"]`. Ustaw `winner:true` na pozycji, której `t` odpowiada `winner.winnerTitle` (fallback: najwyższe `avgScore`); ustaw `runner:true` tam, gdzie `t` = `winner.runnerTitle`. **Pole `gap` każdego pomysłu musi zaczynać się od numeru luki** (np. „Luka 2 — …”) — UI ma dwa tryby sortowania: „według oceny” (malejąco po `score`) oraz „według luki rynkowej” (rosnąco po numerze wyłuskanym z `gap`). Kolejność tablicy `ideas` ustala porządek w obrębie jednej luki (np. zwycięzca najpierw), więc grupuj ją wg luki, a nie pre-sortuj po ocenie.
+- `DATA.ideas` ← `ideas` (każdy): `score` ← `avgScore`; `silnik` ← `silnik` (przepisz 1:1); `protagonista` ← `protagonista` (przepisz 1:1); `votes` ← przepisz 1:1 tablicę z roju (już ma 3 pozycje w kolejności sędziów: `["Redaktor (finanse-rynek)","Marketing","Adwokat innowacji"]`). Ustaw `winner:true` na pozycji, której `t` odpowiada `winner.winnerTitle` (fallback: najwyższe `avgScore`); ustaw `runner:true` tam, gdzie `t` = `winner.runnerTitle`. **Pole `gap` każdego pomysłu musi zaczynać się od numeru luki** (np. „Luka 2 — …”) — UI ma dwa tryby sortowania: „według oceny” (malejąco po `score`) oraz „według luki rynkowej” (rosnąco po numerze wyłuskanym z `gap`). Kolejność tablicy `ideas` ustala porządek w obrębie jednej luki (np. zwycięzca najpierw), więc grupuj ją wg luki, a nie pre-sortuj po ocenie.
 - `DATA.brief` ← `brief` (przepisz 1:1 — to dane sterujące, NIE redaguj). To kanał dziedziczenia decyzji autora do outline i book-bible.
 - `DATA.verdict`: `title`←`winner.winnerTitle`, `titleEn`← `en` zwycięskiego pomysłu, `rationale`←`winner.rationale`, `warn`←`winner.warning`, `whyNow`←`winner.whyNow`, `steps`←`winner.nextSteps`, `runner`←`winner.runnerTitle`, `runnerEn`← `en` wicemistrza, `runnerWhy`←`winner.runnerWhy`. Pole `score` złóż ręcznie z oceny zwycięzcy.
 

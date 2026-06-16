@@ -58,26 +58,29 @@ Zebrane odpowiedzi przekazujesz do roju w `args` jako: `genre, reader, subgenre,
 
 ## Krok 2 — rój agentów (Workflow)
 
-Uruchom rój narzędziem **Workflow** według skryptu w **`references/workflow-swarm.md`** (skopiuj go i podstaw cały brief z Kroku 1 do `args`: `genre, reader, subgenre, conventions, protagonist, protAge, protType, form, format, tone, spice, taboo, market, year`). Skrypt rozprasza wektor demografii, a w syntezie luk i pomysłów egzekwuje **twarde guardy różnorodności** (to lek na monokulturę „90% jedna bohaterka"). Fazy:
+Uruchom rój narzędziem **Workflow** według skryptu w **`references/workflow-swarm.md`** (skopiuj go i podstaw cały brief z Kroku 1 do `args`: `genre, reader, subgenre, conventions, protagonist, protAge, protType, form, format, tone, spice, taboo, market, year`). Skrypt rozprasza wektor demografii, a w syntezie luk i pomysłów egzekwuje **twarde guardy różnorodności** (to lek na monokulturę „90% jedna bohaterka").
+
+> **Wariant odchudzony (szybszy).** Skrypt jest lżejszy niż dawniej — **5 faz** (redakcja PL wbita w prompty roju, bez osobnej fazy), **6 perspektyw rynku**, **4 obiektywy luk**, **6 generatorów pomysłów** z **audytem różnorodności wtopionym w syntezę**, **3 sędziów na pomysł BEZ ponownego WebSearch** (oceniają na danych z fazy 1). Core bez zmian: ugruntowanie rynkowe przez WebSearch + 10 bestsellerów, 3 luki, 5 pomysłów, oceny, werdykt.
 
 > **Pułapka `args`.** Workflow potrafi przekazać `args` do skryptu jako **string JSON**, a nie obiekt — wtedy `args.genre` jest `undefined` i puste pole zatruwa prompt każdego agenta (rój zwraca „gatunek: undefined” i odmawia pracy). Skrypt w `references/workflow-swarm.md` parsuje `args` odpornie i przerywa z błędem przy braku gatunku/czytelnika. Jeśli kopiujesz skrypt własnoręcznie, zachowaj ten guard. Po fazie 1 i tak zweryfikuj, że pierwsze tytuły są z właściwego gatunku — nie dopuszczaj „undefined” dalej.
 
-1. **Analiza rynku** — kilkunastu agentów z różnych perspektyw → 10 bestsellerów.
-2. **Luki** — kilku agentów + synteza → 3 niedoceniane luki.
-3. **Pomysły** — kilku agentów (różne kategorie × rotowane **soczewki twórcze**) + synteza, która **podkręca finalistów** (reguła „wzmacniaj, nie podmieniaj") → 5 pomysłów z roboczymi tytułami, każdy z **silnikiem premisy** (wbudowaną sprzecznością napędzającą konflikt).
-4. **Ocena** — panel 5 sędziów na pomysł (redaktor/finanse, marketing, czytelnik docelowy, analityk sprzedaży, **adwokat innowacji**) → średnia 1–10. Adwokat innowacji premiuje odwagę i działający silnik, nie karze ryzyka.
+1. **Analiza rynku** — 6 agentów z różnych perspektyw + synteza + bramka gatunku → 10 bestsellerów.
+2. **Luki** — 4 agentów + synteza → 3 niedoceniane luki.
+3. **Pomysły** — 6 agentów (różne kategorie × rotowane **soczewki twórcze**) + synteza, która **podkręca finalistów** (reguła „wzmacniaj, nie podmieniaj") i **wtapia audyt różnorodności** → 5 pomysłów z roboczymi tytułami, każdy z **silnikiem premisy** (wbudowaną sprzecznością napędzającą konflikt).
+4. **Ocena** — panel **3 sędziów** na pomysł (redaktor/finanse-rynek, marketing, **adwokat innowacji**) → średnia 1–10, **bez ponownego WebSearch** (oceniają na danych rynkowych z fazy 1). Adwokat innowacji premiuje odwagę i działający silnik, nie karze ryzyka.
 5. **Werdykt** — wybór zwycięzcy z uzasadnieniem, „dlaczego teraz”, krokami i wicemistrzem.
-6. **Redakcja językowa** — agenci przepisują CAŁĄ prozę na poprawną, naturalną polszczyznę (słownik z `${CLAUDE_PLUGIN_ROOT}/shared/polish-style.md`), usuwają anglicyzmy i AI-slop.
 
-**Świeże dane z rynku są obowiązkowe.** Agenci sięgają po nie przez **WebSearch / WebFetch** oraz CLI **agent-browser** (uruchamiane z `Bash`) — listy bestsellerów, Goodreads/lubimyczytać, Reddit, BookTok, nagrody gatunku, transakcje wydawnicze. Nie zmyślaj liczb; każdą opieraj na źródle. Sterowania realną przeglądarką nie odpalaj w dziesiątkach kopii naraz (bywa zawodne) — używaj go celowo.
+Redakcja językowa nie jest już osobną fazą — zasady poprawnej polszczyzny (zakaz anglicyzmów i AI-slopu) są wbite w `ROLE` każdego agenta, więc proza wraca po polsku; finalny szlif robi obowiązkowy `/humanizer:humanizer` w głównej sesji (Krok 3).
+
+**Świeże dane z rynku są obowiązkowe — w fazach 1-2.** Agenci sięgają po nie przez **WebSearch / WebFetch** oraz CLI **agent-browser** (uruchamiane z `Bash`) — listy bestsellerów, Goodreads/lubimyczytać, Reddit, BookTok, nagrody gatunku, transakcje wydawnicze. Nie zmyślaj liczb; każdą opieraj na źródle. **Faza oceny (4) NIE używa WebSearch** — sędziowie oceniają na danych zebranych w fazie 1 (świadomy kompromis „szybciej": tracisz drugie, niezależne sprawdzenie realiów w momencie scoringu). Sterowania realną przeglądarką nie odpalaj w dziesiątkach kopii naraz (bywa zawodne) — używaj go celowo.
 
 ## Krok 3 — humanizer (główna sesja)
 
-Po powrocie roju na złożonej prozie polskiej **wywołaj skill `/humanizer:humanizer`** (przez narzędzie `Skill`) i nanieś jego poprawki na pola tekstowe raportu. Humanizer czyści wzorce AI; słownik z `${CLAUDE_PLUGIN_ROOT}/shared/polish-style.md` pilnuje polskości słownictwa — stosuj oba.
+Po powrocie roju na prozie polskiej **wywołaj skill `/humanizer:humanizer`** (przez narzędzie `Skill`) i nanieś jego poprawki na pola tekstowe raportu. To **jedyny** przebieg redakcji (osobna faza w roju została usunięta, proza wraca po polsku z `ROLE`) — obowiązkowy, nie opcja. Humanizer czyści wzorce AI; słownik z `${CLAUDE_PLUGIN_ROOT}/shared/polish-style.md` pilnuje polskości słownictwa — stosuj oba.
 
 ## Krok 4 — lokalizacja tytułów (agent-browser)
 
-Tytuły istniejących książek (10 bestsellerów + tytuły porównawcze) podawaj po **polsku, jeśli mają polskie wydanie** — zweryfikuj to przez agent-browser na lubimyczytac.pl (wchodź na stronę książki, sprawdź pole „Wydawnictwo”/„Tłumacz”, nie ufaj samemu podglądowi wyszukiwarki). Brak polskiego wydania → zostaw oryginał. Tytuły **propozycji** są polskie (robocze), z oryginałem w podtytule. Procedura i pułapki: **`${CLAUDE_PLUGIN_ROOT}/shared/polish-style.md`**.
+Tytuły podawaj po **polsku, jeśli mają polskie wydanie**. Weryfikuj przez agent-browser na lubimyczytac.pl **tylko dla 10 bestsellerów** (nie dla tytułów porównawczych — comps zostają orientacyjne), i rób to w **równoległym batchu** kilku sesji agent-browser, nie sekwencyjnie tytuł po tytule. **Best-effort:** błąd/timeout sesji → zostaw tytuł oryginalny i jedź dalej (nie blokuj raportu na jednym tytule). Na stronie książki sprawdź pole „Wydawnictwo”/„Tłumacz”, nie ufaj samemu podglądowi wyszukiwarki. Tytuły **propozycji** są polskie (robocze), z oryginałem w podtytule. Procedura i pułapki: **`${CLAUDE_PLUGIN_ROOT}/shared/polish-style.md`**.
 
 ## Krok 5 — budowa raportu HTML
 
@@ -94,13 +97,13 @@ Zapisz do **bieżącego katalogu** jako `market-report-<slug-gatunku>.html` (np.
 | Aspekt | Reguła |
 | --- | --- |
 | Wynik | `./market-report-<gatunek>.html` (interaktywny) |
-| Silnik | Rój agentów przez Workflow (`references/workflow-swarm.md`) |
+| Silnik | Rój agentów przez Workflow, **5 faz, ~36 agentów** (`references/workflow-swarm.md`) |
 | Wejście | Zawsze interaktywne (`AskUserQuestion`): gatunek + czytelnik |
 | Rola agentów | Starszy redaktor ds. zakupów, 20 lat |
-| Dane | Świeże, przez agent-browser + WebSearch; cytuj źródła |
+| Dane | Świeże, przez agent-browser + WebSearch w **fazach 1-2**; ocena bez re-searchu; cytuj źródła |
 | Język | Poprawna, naturalna polszczyzna — kryterium #1 |
-| Redakcja | Faza roju + `/humanizer:humanizer` w głównej sesji |
-| Tytuły | PL gdy jest wydanie (weryfikacja agent-browser); inaczej oryginał |
+| Redakcja | Wbita w prompty roju + `/humanizer:humanizer` w głównej sesji (brak osobnej fazy) |
+| Tytuły | PL gdy jest wydanie (agent-browser, **tylko 10 bestsellerów, równolegle, best-effort**); inaczej oryginał |
 | Walidacja | `node --check` na JS + podgląd/zrzut w agent-browser |
 
 ## Najczęstsze błędy

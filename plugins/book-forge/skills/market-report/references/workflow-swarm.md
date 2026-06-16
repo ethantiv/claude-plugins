@@ -1,26 +1,27 @@
-# Skrypt roju agentów (Workflow) — ogólny
+# Skrypt roju agentów (Workflow) — ogólny (wariant odchudzony)
 
 Skopiuj ten skrypt do narzędzia **Workflow** i podstaw dane wejściowe przez `args` (`{ genre, reader, subgenre, conventions, market, year, ... }` — pełny brief w sekcji parsowania). Skrypt działa dla każdego gatunku — nie wpisuj na sztywno science fiction. Liczby agentów dostosuj do gatunku (niszowy → mniej).
 
 > **Uwaga o `args` (częsta pułapka).** Narzędzie Workflow bywa, że podaje `args` do skryptu jako **string JSON**, nie jako gotowy obiekt — wtedy `args.genre` zwróci `undefined`, a puste pole wpłynie do promptu każdego agenta (cały rój zwróci „gatunek: undefined” i odmówi pracy). Skrypt poniżej parsuje `args` odpornie i **przerywa z błędem**, gdy brakuje gatunku lub czytelnika — to celowa bramka wejścia (zasada „fail loud”). Jeśli widzisz ten błąd, sprawdź, czy w wywołaniu Workflow faktycznie przekazujesz `genre` i `reader`.
 
+> **Wariant odchudzony (szybszy).** Ten skrypt to lżejsza wersja: **6 perspektyw rynku** (zamiast 11), **4 obiektywy luk** (zamiast 6), **6 generatorów pomysłów** (zamiast 8) z **audytem różnorodności wtopionym w syntezę** (bez osobnego agenta), **3 sędziów na pomysł** (zamiast 5) **bez ponownego WebSearch w ocenie** (oceniają na danych z fazy 1) oraz **bez osobnej fazy redakcji PL** (zasady polszczyzny wbite w `ROLE`; finalny szlif robi obowiązkowy `/humanizer:humanizer` w głównej sesji). Core bez zmian: ugruntowanie rynkowe przez WebSearch + 10 bestsellerów, 3 luki, 5 pomysłów, oceny, werdykt.
+
 Zasady wbudowane w prompty:
 - **brief autora** (`subgenre, conventions, protagonist, protAge, protType, form, format, tone, spice, taboo`) wstrzyknięty do `ROLE`/`BRIEF` jako twarde wymagania; przy „dowolny/zróżnicuj" rój nie narzuca persony,
 - **warstwa adaptacyjna**: `subgenre` zawęża wyszukiwanie bestsellerów i luk do nurtu; `conventions` to obietnice gatunkowe, które 5 pomysłów MUSI dowieźć; `form` obsługuje non-fiction (wtedy machineria persony bohatera nie działa),
-- **anty-monokultura**: wektor demografii rozbity na rozłączne osie, twarde guardy różnorodności w syntezie luk (max 1 demograficzna) i pomysłów (≥3 osie, ≤2 ten sam profil), kryterium anty-trend u sędziów, audytor różnorodności przed oceną,
+- **anty-monokultura**: wektor demografii rozbity na rozłączne osie, twarde guardy różnorodności w syntezie luk (max 1 demograficzna) i pomysłów (≥3 osie, ≤2 ten sam profil) — **audyt różnorodności wtopiony w prompt syntezy pomysłów**, bez osobnego agenta,
 - rola: starszy redaktor do spraw zakupów z 20-letnim doświadczeniem,
-- **twarda blokada gatunku**: każdy tytuł, każda luka i każdy pomysł MUSI być w podanym gatunku; po fazie 1 działa bramka walidacyjna, która odrzuca pozycje spoza gatunku i uzupełnia je z list gatunkowych (bez tego rój dryfuje ku temu, co dominuje listy ogólne — np. romantasy — zamiast trzymać niszę),
-- świeże dane przez **WebSearch** oraz **agent-browser** (z `Bash`); cytuj źródła,
-- ostatni etap to **redakcja na poprawną, naturalną polszczyznę** (bez anglicyzmów i AI-slopu) — patrz `${CLAUDE_PLUGIN_ROOT}/shared/polish-style.md`,
-- proza wraca już po polsku, w polach zgodnych z kształtem `DATA` (patrz `build-and-verify.md`).
+- **twarda blokada gatunku**: każdy tytuł, każda luka i każdy pomysł MUSI być w podanym gatunku; po fazie 1 działa bramka walidacyjna, która odrzuca pozycje spoza gatunku i **uzupełnia je z sieci TYLKO, gdy po filtrze zostało mniej niż 10** (bez tego rój dryfuje ku temu, co dominuje listy ogólne — np. romantasy),
+- świeże dane przez **WebSearch** oraz **agent-browser** (z `Bash`) **w fazach 1-2**; **faza oceny NIE używa WebSearch** — sędziowie oceniają na danych rynkowych zebranych w fazie 1; cytuj źródła,
+- proza wraca już po polsku (zasady w `ROLE`), w polach zgodnych z kształtem `DATA` (patrz `build-and-verify.md`); osobnej fazy redakcji nie ma — patrz `${CLAUDE_PLUGIN_ROOT}/shared/polish-style.md` i obowiązkowy humanizer w głównej sesji.
 
 ```javascript
 export const meta = {
   name: 'book-forge-market-report',
-  description: 'Roj agentów: 10 bestsellerów, 3 luki, 5 pomysłów, ocena 1-10, werdykt, redakcja PL',
+  description: 'Roj agentów (odchudzony): 10 bestsellerów, 3 luki, 5 pomysłów, ocena 1-10 bez re-searchu, werdykt',
   phases: [
     { title: 'Analiza rynku' }, { title: 'Luki' }, { title: 'Pomysly' },
-    { title: 'Ocena' }, { title: 'Werdykt' }, { title: 'Redakcja PL' },
+    { title: 'Ocena' }, { title: 'Werdykt' },
   ],
 }
 
@@ -62,7 +63,7 @@ ${PERSONA}
 ${CONV.length ? `- Konwencje/obietnice gatunkowe, które pomysły MUSZĄ dowieźć: ${CONV.join(', ')}.` : ''}
 ${TABOO.length ? `- TABU (NIGDY nie proponuj tych tematów): ${TABOO.join(', ')}.` : ''}`
 
-const ROLE = `Jesteś starszym redaktorem do spraw zakupów z 20-letnim doświadczeniem w wyłapywaniu bestsellerów. Gatunek: ${G}${SUBG ? `, podgatunek/nurt: ${SUBG} (trzymaj się tego nurtu)` : ''}. Docelowy czytelnik: ${R}. Rynek: ${M}. BLOKADA GATUNKU: pracujesz WYŁĄCZNIE w obrębie gatunku ${G}${SUBG ? ` (a konkretnie nurtu ${SUBG})` : ''} i celujesz w czytelnika ${R}. Każdy tytuł, każda luka i każdy pomysł MUSI należeć do tego gatunku. Ogólne listy sprzedaży (NYT, Amazon, Empik, lubimyczytac) bywają zdominowane przez inne gatunki (romans, romantasy, poradniki) — filtruj je i bierz wyłącznie pozycje z ${G}, a brakujące uzupełniaj z list i nagród gatunkowych, tematycznych półek Goodreads/lubimyczytac oraz gatunkowych społeczności (Reddit). Pozycje spoza gatunku są POZA ZAKRESEM — odrzucaj je, nie podawaj jako trafienia. Korzystaj z NAJŚWIEŻSZYCH danych (${Y}) przez WebSearch oraz CLI agent-browser uruchamiane z Bash (listy bestsellerów, Goodreads/lubimyczytac, Reddit, BookTok, nagrody gatunku, transakcje wydawnicze). Cytuj źródła, nie zmyślaj liczb. Pisz po polsku.${BRIEF}`
+const ROLE = `Jesteś starszym redaktorem do spraw zakupów z 20-letnim doświadczeniem w wyłapywaniu bestsellerów. Gatunek: ${G}${SUBG ? `, podgatunek/nurt: ${SUBG} (trzymaj się tego nurtu)` : ''}. Docelowy czytelnik: ${R}. Rynek: ${M}. BLOKADA GATUNKU: pracujesz WYŁĄCZNIE w obrębie gatunku ${G}${SUBG ? ` (a konkretnie nurtu ${SUBG})` : ''} i celujesz w czytelnika ${R}. Każdy tytuł, każda luka i każdy pomysł MUSI należeć do tego gatunku. Ogólne listy sprzedaży (NYT, Amazon, Empik, lubimyczytac) bywają zdominowane przez inne gatunki (romans, romantasy, poradniki) — filtruj je i bierz wyłącznie pozycje z ${G}, a brakujące uzupełniaj z list i nagród gatunkowych, tematycznych półek Goodreads/lubimyczytac oraz gatunkowych społeczności (Reddit). Pozycje spoza gatunku są POZA ZAKRESEM — odrzucaj je, nie podawaj jako trafienia. Gdy zadanie tego wymaga, korzystaj z NAJŚWIEŻSZYCH danych (${Y}) przez WebSearch oraz CLI agent-browser uruchamiane z Bash. Cytuj źródła, nie zmyślaj liczb. Pisz po polsku — czystą, naturalną polszczyzną, BEZ anglicyzmów (hook→haczyk, found family→rodzina z wyboru, worldbuilding→świat przedstawiony, plot armor→fabularny immunitet) i BEZ AI-slopu (nadęcia „stanowi/podkreśla", triady, nadmiar myślników); krótkie, konkretne zdania.${BRIEF}`
 
 // --- schematy (skrócone; rozszerz pola opisowe wg potrzeb) ---
 const ANALIZA = { type:'object', required:['perspektywa','ustalenia','topKsiazki','luki'], properties:{
@@ -93,7 +94,7 @@ const WERDYKT = { type:'object', required:['winnerTitle','rationale','warning','
   positioning:{type:'string'},nextSteps:{type:'array',items:{type:'string'}},
   runnerTitle:{type:'string'},runnerWhy:{type:'string'} } }
 
-// --- FAZA 1: rynek ---
+// --- FAZA 1: rynek (6 perspektyw) ---
 phase('Analiza rynku')
 const PERSPEKTYWY = [
   'Fenomen 1-2 czołowych tytułów kotwicznych gatunku — co je dziś realnie sprzedaje.',
@@ -102,12 +103,6 @@ const PERSPEKTYWY = [
   'Goodreads/lubimyczytać: najwyżej oceniane i najczęściej dodawane premiery gatunku.',
   'BookTok/TikTok/Bookstagram: które tytuły wybuchają wiralowo i jakie tropy je niosą.',
   'Comp titles i zaliczki: na co wydawcy stawiają duże pieniądze w tym gatunku.',
-  'Mapa podgatunków: które rosną, które są nasycone.',
-  'Nagrody gatunku — co docenia branża, a czego brak masowemu czytelnikowi.',
-  'Audiobook i ekranizacje — jak adaptacje napędzają sprzedaż książek.',
-  // Wektor demografii rozbity na rozłączne osie — inaczej rój konwerguje na jednej „białej plamie" (monokultura bohaterów)
-  'Luki w typie/profilu protagonisty — kto prowadzi te historie i jakiego bohatera brakuje.',
-  'Luki w settingu i realiach — gdzie i kiedy dzieją się historie, a gdzie jest pustka.',
 ]
 const analizy = (await parallel(PERSPEKTYWY.map((p,i)=>()=>
   agent(`${ROLE}\n\nTwoja perspektywa: ${p}\n\nZbadaj rynek (WebSearch/agent-browser) i podaj ustalenia oparte na faktach, konkretne tytuły i zauważone luki.`,
@@ -117,17 +112,18 @@ const bestKandydaci = await agent(
   `${ROLE}\n\nOto analizy zespołu:\n${JSON.stringify(analizy)}\n\nSkonsoliduj w 10 najlepiej sprzedających się książek NISZY (gatunek ${G}, czytelnik ${R}). Dla każdej: t (tytuł), a (autor), g (krótki podgatunek), why (dlaczego się sprzedaje), love (co kocha czytelnik). Dodaj observations: 6-8 obserwacji {b: pogrubione zdanie, t: rozwinięcie}.`,
   {label:'synteza:top10',phase:'Analiza rynku',schema:BEST})
 
-// BRAMKA GATUNKU: bez niej rój dryfuje ku temu, co dominuje listy ogólne (np. romantasy), zamiast trzymać niszę
+// BRAMKA GATUNKU: bez niej rój dryfuje ku temu, co dominuje listy ogólne (np. romantasy). WebSearch TYLKO gdy po filtrze zostało < 10.
 const bestsellers = await agent(
-  `${ROLE}\n\nKANDYDACI NA 10 BESTSELLERÓW:\n${JSON.stringify(bestKandydaci)}\n\nAUDYT GATUNKU. Sprawdź każdą pozycję: czy to powieść z gatunku ${G} dla czytelnika ${R}? Usuń KAŻDĄ, która nią nie jest (inny gatunek, poradnik, romans/romantasy doklejone „bo się sprzedaje” — POZA ZAKRESEM). Jeśli zostało mniej niż 10, UZUPEŁNIJ realnymi tytułami Z GATUNKU (WebSearch/agent-browser: nagrody i listy gatunkowe, tematyczne półki Goodreads/lubimyczytac, gatunkowe wątki na Reddicie); nie zmyślaj. Zwróć DOKŁADNIE 10 pozycji z gatunku (t, a, g, why, love) oraz 6-8 observations {b,t} dotyczących tego gatunku.`,
+  `${ROLE}\n\nKANDYDACI NA 10 BESTSELLERÓW:\n${JSON.stringify(bestKandydaci)}\n\nAUDYT GATUNKU. Sprawdź każdą pozycję: czy to powieść z gatunku ${G} dla czytelnika ${R}? Usuń KAŻDĄ, która nią nie jest (inny gatunek, poradnik, romans/romantasy doklejone „bo się sprzedaje” — POZA ZAKRESEM). Jeśli po odfiltrowaniu zostało 10 trafnych pozycji — NIE używaj WebSearch, po prostu zwróć je. TYLKO jeśli zostało mniej niż 10, UZUPEŁNIJ realnymi tytułami Z GATUNKU (WebSearch/agent-browser: nagrody i listy gatunkowe, tematyczne półki Goodreads/lubimyczytac, gatunkowe wątki na Reddicie); nie zmyślaj. Zwróć DOKŁADNIE 10 pozycji z gatunku (t, a, g, why, love) oraz 6-8 observations {b,t} dotyczących tego gatunku.`,
   {label:'bramka:gatunek',phase:'Analiza rynku',schema:BEST})
 
-// --- FAZA 2: luki ---
+// --- FAZA 2: luki (4 obiektywy) ---
 phase('Luki')
 const OBIEKTYWY = [
-  'Luki tematyczne i światotwórcze.','Luki w profilu bohatera (kto prowadzi historię — wiek/płeć/typ).',
-  'Luki w settingu i realiach (gdzie/kiedy).','Luki tonalne i w tempie/formacie.',
-  'Skrzyżowania gatunkowe, gdzie jest pieniądz.','Luki zgrane z momentem kulturowym/kalendarzem.',
+  'Luki tematyczne i światotwórcze.',
+  'Luki w profilu bohatera (kto prowadzi historię — wiek/płeć/typ).',
+  'Luki w settingu i realiach (gdzie/kiedy).',
+  'Skrzyżowania gatunkowe i luki zgrane z momentem kulturowym/kalendarzem — gdzie jest pieniądz.',
 ]
 const kandydaci = (await parallel(OBIEKTYWY.map((l,i)=>()=>
   agent(`${ROLE}\n\nBestsellery:\n${JSON.stringify(bestsellers)}\n\nObiektyw: ${l}\n\nWskaż 2-3 NIEDOCENIANE aspekty, których brak konkurencji, z potencjałem komercyjnym. Poprzyj dowodami z rynku.`,
@@ -137,7 +133,7 @@ const luki = await agent(
   `${ROLE}\n\nKandydujące luki:\n${JSON.stringify(kandydaci)}\n\nWybierz DOKŁADNIE 3 najsilniejsze. Dla każdej: n (numer 1-3), h (nagłówek), p (opis), e (dowód i okazja jako STRUKTURA: e.proof = 3-5 osobnych, zwięzłych dowodów, każdy z URL źródła gdy istnieje; e.notes = plakietki o k ∈ {Luka, Ryzyko, Pozycjonowanie} i treści t — NIE pisz jednego długiego akapitu). Połącz pokrewne, odrzuć słabe.\n\nGUARD RÓŻNORODNOŚCI: MAKSYMALNIE JEDNA z 3 luk może dotyczyć profilu/persony bohatera (wiek/płeć/typ protagonisty). Pozostałe dwie MUSZĄ dotyczyć innych osi (setting, koncept, tempo/format, skrzyżowanie gatunkowe, temat). Jeśli kandydaci są zdominowani przez demografię — świadomie wybierz różnorodność, nie powielaj jednej „białej plamy".`,
   {label:'synteza:3luki',phase:'Luki',schema:LUKI})
 
-// --- FAZA 3: pomysly ---
+// --- FAZA 3: pomysly (6 generatorów, audyt różnorodności WTOPIONY w syntezę) ---
 phase('Pomysly')
 const KATY = [
   'Pomysł w duchu czołowego tytułu kotwicznego, ale z JEDNYM złamanym założeniem nurtu, celujący w luki.',
@@ -145,8 +141,6 @@ const KATY = [
   'Pomysł, w którym sam świat lub jego zasada jest źródłem nieuniknionego konfliktu, celujący w luki.',
   'Odważne skrzyżowanie gatunkowe — mechanizm z OBCEJ dziedziny (nauka, zawód, rytuał, historia), celujący w luki.',
   'Pomysł oparty na momencie kulturowym zderzonym z osobistą stawką bohatera, celujący w luki.',
-  'Pomysł z niedoreprezentowaną perspektywą kulturową, która NAPĘDZA fabułę, celujący w luki.',
-  'Pomysł z premisą, którą da się streścić w jednym zdaniu i opowiedzieć dalej, celujący w luki.',
   'Ciemny koń — premisa tak nieoczywista, że konkurencja nie odważyłaby się jej kupić.',
 ]
 // Soczewki twórcze — narzędzia myślowe rotowane NA AGENTACH obok KATY (różnorodność poznawcza, nie tylko zmiana framingu)
@@ -157,8 +151,6 @@ const SOCZEWKI = [
   'ESKALACJA: sytuacja startowa, która z definicji sama się pogarsza, krok po kroku.',
   'KOLIZJA Z MOMENTEM: zderz premisę z dzisiejszym lękiem lub napięciem kulturowym.',
   'IRONIA WBUDOWANA: bohater jest sprawcą własnego problemu (jak „idealna żona, która zaplanowała własne morderstwo”).',
-  'PYTANIE DRAMATYCZNE: zacznij od jednego pytania, na które czytelnik MUSI poznać odpowiedź.',
-  'STAWKA OSOBISTA: sprowadź globalne zagrożenie do jednej konkretnej osoby do uratowania albo zniszczenia.',
 ]
 // Reguła silnika premisy — dla non-fiction (FORM) reinterpretowana, nie wyłączona
 const SILNIK_REGULA = FORM
@@ -174,38 +166,25 @@ const DYWERSYFIKACJA = PROT === 'zroznicuj'
   : (PROT !== 'dowolny'
       ? `Profil bohatera jest USTALONY przez autora (${PROT}${PAGE?', '+PAGE:''}) — wszystkie pomysły go trzymają; różnicuj POZOSTAŁE osie (setting, ton, koncept, podgatunek).`
       : 'Nie więcej niż 2 z 5 pomysłów mogą dzielić ten sam profil protagonisty; reszta musi się różnić.')
+// AUDYT RÓŻNORODNOŚCI WTOPIONY: synteza sama pilnuje rozkładu profili bohatera (zamiast osobnego agenta-audytora)
+const ANTYMONO = (PROT === 'dowolny' || PROT === 'zroznicuj')
+  ? 'AUDYT WTOPIONY: zanim zwrócisz 5 pomysłów, sprawdź rozkład profili protagonisty — jeśli >60% dzieli zbliżony profil (ten sam wiek/płeć/typ), PRZEBUDUJ nadmiarowe duplikaty pomysłami z INNYM profilem (trzymając gatunek i te same luki). Nie zwracaj monokultury.'
+  : ''
 const finalisci = await agent(
-  `${ROLE}\n\nPomysły zespołu:\n${JSON.stringify(propozycje)}\n\nWybierz 5 najsilniejszych i PODKRĘĆ każdy z nich. PODKRĘCENIE = wyostrz silnik premisy (mocniejsza sprzeczność), podnieś stawkę, dodaj jeden nieoczywisty zwrot. ŻELAZNA REGUŁA „WZMACNIAJ, NIE PODMIENIAJ": surowy pomysł musi pozostać rozpoznawalny — wzmacniasz, nie zastępujesz go innym. Dopracuj pola (t, en, gap, log, silnik, op, hook, comps, protagonista). Pomysły mają być wyraziste, świeże i sprzedawalne.\n\nGUARD RÓŻNORODNOŚCI: 5 pomysłów MUSI różnić się na co najmniej 3 osiach (profil bohatera, setting, ton, podgatunek, format). ${DYWERSYFIKACJA}`,
+  `${ROLE}\n\nPomysły zespołu:\n${JSON.stringify(propozycje)}\n\nWybierz 5 najsilniejszych i PODKRĘĆ każdy z nich. PODKRĘCENIE = wyostrz silnik premisy (mocniejsza sprzeczność), podnieś stawkę, dodaj jeden nieoczywisty zwrot. ŻELAZNA REGUŁA „WZMACNIAJ, NIE PODMIENIAJ": surowy pomysł musi pozostać rozpoznawalny — wzmacniasz, nie zastępujesz go innym. Dopracuj pola (t, en, gap, log, silnik, op, hook, comps, protagonista). Pomysły mają być wyraziste, świeże i sprzedawalne.\n\nGUARD RÓŻNORODNOŚCI: 5 pomysłów MUSI różnić się na co najmniej 3 osiach (profil bohatera, setting, ton, podgatunek, format). ${DYWERSYFIKACJA} ${ANTYMONO}`,
   {label:'synteza:5pomyslow',phase:'Pomysly',schema:POMYSLY})
-let ideas = finalisci.ideas.slice(0,5)
+const ideas = finalisci.ideas.slice(0,5)
 
-// Audyt różnorodności (zanim ruszy ocena — poprawiona stawka płynnie wejdzie do scoringu).
-// Łapie monokulturę profilu bohatera, której guardy syntezy nie złapały. Pomijany, gdy autor JAWNIE ustalił profil.
-if (PROT === 'dowolny' || PROT === 'zroznicuj') {
-  const audyt = await agent(
-    `${ROLE}\n\n5 pomysłów (profile bohaterów):\n${JSON.stringify(ideas.map(s=>({t:s.t,protagonista:s.protagonista,gap:s.gap})))}\n\nSprawdź rozkład profili protagonisty. Monokultura = >60% pomysłów ma ZBLIŻONY profil (ten sam wiek/płeć/typ). Zwróć: monokultura (bool), dominujacy (opis), uwaga (1 zdanie).`,
-    {label:'audyt:roznorodnosc',phase:'Pomysly',schema:{type:'object',required:['monokultura','uwaga'],properties:{monokultura:{type:'boolean'},dominujacy:{type:'string'},uwaga:{type:'string'}}}})
-  if (audyt && audyt.monokultura) {
-    log('Audyt różnorodności: monokultura profili bohatera — przerabiam stawkę')
-    const poprawione = await agent(
-      `${ROLE}\n\nStawka jest zdominowana przez jeden profil bohatera (${audyt.dominujacy||''}). Przebuduj 5 pomysłów tak, by NIE WIĘCEJ niż 2 dzieliły ten profil — zastąp nadmiarowe duplikaty pomysłami z INNYM profilem protagonisty, trzymając gatunek ${G} i te same luki. Zachowaj najsilniejsze pomysły, podmień tylko duplikaty. Pola: t, en, gap, log, silnik, op, hook, comps, protagonista.\n\nDotychczasowe:\n${JSON.stringify(ideas)}`,
-      {label:'synteza:roznorodnosc',phase:'Pomysly',schema:POMYSLY})
-    if (poprawione && poprawione.ideas && poprawione.ideas.length) ideas = poprawione.ideas.slice(0,5)
-  }
-}
-
-// --- FAZA 4: ocena ---
+// --- FAZA 4: ocena (3 sędziów/pomysł, BEZ WebSearch — na danych z fazy 1) ---
 phase('Ocena')
 const SEDZIOWIE = [
-  {n:'Redaktor (finanse)',l:'Oceń zwrot: rynek, ryzyko, zaliczka, potencjał serii.'},
-  {n:'Marketing',l:'Oceń wiralowość, łatwość pozycjonowania, siłę haczyka (BookTok/social).'},
-  {n:'Czytelnik docelowy',l:'Oceń, czy KUPIŁBYŚ to i polecił; czy haczyk budzi głód.'},
-  {n:'Analityk sprzedaży',l:'Oceń na podstawie realnych wyników podobnych tytułów (WebSearch).'},
+  {n:'Redaktor (finanse-rynek)',l:'Oceń zwrot komercyjny na bazie zebranych danych rynkowych (bestsellery i luki w kontekście): rynek, ryzyko, zaliczka, potencjał serii, realne wyniki podobnych tytułów z TYCH danych.'},
+  {n:'Marketing',l:'Oceń wiralowość, łatwość pozycjonowania, siłę haczyka i głód zakupowy czytelnika docelowego (BookTok/social) — na bazie danych z fazy 1.'},
   {n:'Adwokat innowacji',l:'Oceń ODWAGĘ i świeżość: czy SILNIK premisy to realna, samonapędzająca się sprzeczność? Czy pomysł otwiera nową półkę, zamiast dosiadać przegrzanego trendu? Tu RYZYKO i nieoczywistość to PREMIA, nie kara; pomysł poprawny, lecz przewidywalny oceń NIŻEJ.'},
 ]
 const ocenione = await parallel(ideas.map((idea)=>async()=>{
   const votes=(await parallel(SEDZIOWIE.map((s)=>()=>
-    agent(`${ROLE}\n\nWcielasz się w rolę: ${s.n}. ${s.l}\n\nPomysł:\n${JSON.stringify(idea)}\n\nLuki:\n${JSON.stringify(luki.gaps)}\n\nZweryfikuj realia rynku (WebSearch). Zwróć szczególną uwagę na pole „silnik" — pomysł bez działającego silnika premisy (płaska sytuacja, konflikt doklejony z zewnątrz) oceń niżej. Oceń też ODRÓŻNIALNOŚĆ od obecnej fali: pomysł, który tylko dosiada przegrzanego trendu (np. kolejna starsza bohaterka przy rynku już nimi nasyconym), dostaje KARĘ do oceny, nie premię — świeżość ma wartość. Wystaw ocenę 1-10 (może być ułamkowa) z uzasadnieniem, mocnymi stronami i ryzykami.`,
+    agent(`${ROLE}\n\nWcielasz się w rolę: ${s.n}. ${s.l}\n\nPomysł:\n${JSON.stringify(idea)}\n\nBestsellery i luki (dane rynkowe z fazy 1):\n${JSON.stringify({books:bestsellers.books,gaps:luki.gaps})}\n\nNIE używaj WebSearch ani agent-browser — oceniaj WYŁĄCZNIE na powyższych danych rynkowych z fazy 1. Zwróć szczególną uwagę na pole „silnik" — pomysł bez działającego silnika premisy (płaska sytuacja, konflikt doklejony z zewnątrz) oceń niżej. Oceń też ODRÓŻNIALNOŚĆ od obecnej fali: pomysł, który tylko dosiada przegrzanego trendu (np. kolejna starsza bohaterka przy rynku już nimi nasyconym), dostaje KARĘ do oceny, nie premię — świeżość ma wartość. Wystaw ocenę 1-10 (może być ułamkowa) z uzasadnieniem, mocnymi stronami i ryzykami.`,
       {label:`ocena:${s.n.slice(0,12)}:${idea.t.slice(0,12)}`,phase:'Ocena',schema:OCENA})))).filter(Boolean)
   const avg=votes.reduce((s,v)=>s+v.score,0)/(votes.length||1)
   return {...idea, votes, avgScore:Math.round(avg*10)/10}
@@ -218,27 +197,11 @@ const werdykt = await agent(
   `${ROLE}\n\n5 pomysłów z ocenami:\n${JSON.stringify(scoredIdeas.map(s=>({t:s.t,log:s.log,protagonista:s.protagonista,avgScore:s.avgScore,votes:s.votes})))}\n\nLuki:\n${JSON.stringify(luki.gaps)}\n\nWskaż JEDEN pomysł do rozwijania. Podaj: winnerTitle, rationale (dlaczego), warning (uczciwe ostrzeżenie o ryzykach — fail loud; JEŚLI wszystkie 5 pomysłów dzieli ten sam profil bohatera, ZGŁOŚ to jako ryzyko monokultury i wskaż, czego w stawce zabrakło), whyNow (dlaczego teraz), positioning (jak pozycjonować), nextSteps (kroki dla autora), runnerTitle (tytuł wicemistrza), runnerWhy (dlaczego wicemistrz).`,
   {label:'werdykt',phase:'Werdykt',schema:WERDYKT})
 
-// --- FAZA 6: redakcja na poprawną, naturalną polszczyznę ---
-phase('Redakcja PL')
-const REDAKCJA = `Jesteś redaktorem języka polskiego w wydawnictwie. Przepisz CAŁY przekazany tekst na poprawną, naturalną polszczyznę. ŻELAZNE zasady: (1) usuń anglicyzmy i kalki — tłumacz żargon (np. competence porn → frajda z patrzenia, jak bohater kompetentnie rozwiązuje problemy; hook → haczyk; found family → rodzina z wyboru; worldbuilding → świat przedstawiony; plot armor → fabularny immunitet); (2) usuń AI-slop (nadęcia „stanowi/podkreśla”, triady, nadmiar myślników, puste konkluzje); (3) krótkie, konkretne zdania, zmienny rytm; (4) zachowaj sens, liczby i źródła; (5) cudzysłowy „ ”, przecinki dziesiętne. Zwróć tekst w tej samej strukturze pól.`
-
-const [redBest, redLuki, redIdeasProse, redWerdykt] = await parallel([
-  ()=>agent(`${REDAKCJA}\n\nDane (10 bestsellerów):\n${JSON.stringify(bestsellers)}`,{label:'red:bestsellery',phase:'Redakcja PL',schema:BEST}),
-  ()=>agent(`${REDAKCJA}\n\nDane (3 luki):\n${JSON.stringify(luki)}`,{label:'red:luki',phase:'Redakcja PL',schema:LUKI}),
-  ()=>agent(`${REDAKCJA}\n\nZredaguj TYLKO pola tekstowe tych 5 pomysłów (NIE oceniaj, NIE dodawaj głosów ani ocen). Zwróć obiekt {ideas:[{t,en,gap,log,silnik,op,hook,comps,protagonista}, ...]} z DOKŁADNIE 5 pozycjami w tej SAMEJ kolejności co wejście. Pole gap zachowaj w formacie zaczynającym się od numeru luki (np. „Luka 2 — …”). Nie zmieniaj kolejności ani liczby pomysłów.\n${JSON.stringify({ideas:scoredIdeas.map(s=>({t:s.t,en:s.en,gap:s.gap,log:s.log,silnik:s.silnik,op:s.op,hook:s.hook,comps:s.comps,protagonista:s.protagonista}))})}`,{label:'red:pomysly',phase:'Redakcja PL',schema:POMYSLY}),
-  ()=>agent(`${REDAKCJA}\n\nDane (werdykt):\n${JSON.stringify(werdykt)}`,{label:'red:werdykt',phase:'Redakcja PL',schema:WERDYKT}),
-])
-
-const mergedIdeas = scoredIdeas.map((s,i)=>{
-  const r=(redIdeasProse && redIdeasProse.ideas && redIdeasProse.ideas[i]) || {}
-  return {...s, t:r.t||s.t, en:r.en||s.en, gap:r.gap||s.gap, log:r.log||s.log, silnik:r.silnik||s.silnik, op:r.op||s.op, hook:r.hook||s.hook, comps:(Array.isArray(r.comps)&&r.comps.length)?r.comps:s.comps, protagonista:r.protagonista||s.protagonista}
-})
-
 return {
-  bestsellers: redBest || bestsellers,
-  gaps: (redLuki && redLuki.gaps) || luki.gaps,
-  ideas: mergedIdeas,
-  winner: redWerdykt || werdykt,
+  bestsellers,
+  gaps: luki.gaps,
+  ideas: scoredIdeas,
+  winner: werdykt,
   // Brief autora — dane sterujące (NIE redagowane), dziedziczone przez outline/book-bible przez DATA.brief
   brief: { subgenre: SUBG, conventions: CONV, protagonist: PROT, protAge: PAGE, protType: PTYPE, form: FORM, format: FORMAT, tone: TONE, spice: SPICE, taboo: TABOO, market: M },
 }
@@ -246,11 +209,13 @@ return {
 
 ## Po powrocie roju agentów (główna sesja)
 
-1. **Humanizer** — wywołaj `/humanizer:humanizer` i nanieś poprawki na prozę (patrz `${CLAUDE_PLUGIN_ROOT}/shared/polish-style.md`). Rój już redagował, ale humanizer to obowiązkowy, drugi przebieg.
-2. **Lokalizacja tytułów** — zweryfikuj polskie wydania przez agent-browser (`${CLAUDE_PLUGIN_ROOT}/shared/polish-style.md`).
+1. **Humanizer** — wywołaj `/humanizer:humanizer` i nanieś poprawki na prozę (patrz `${CLAUDE_PLUGIN_ROOT}/shared/polish-style.md`). To **jedyny** przebieg redakcji (osobna faza w roju została usunięta, proza wraca po polsku z `ROLE`) — obowiązkowy.
+2. **Lokalizacja tytułów** — zweryfikuj polskie wydania przez agent-browser **tylko dla 10 bestsellerów** (nie dla comps), w **równoległym batchu** sesji (best-effort: błąd/timeout → zostaw tytuł oryginalny). Procedura i pułapki: `${CLAUDE_PLUGIN_ROOT}/shared/polish-style.md`.
 3. **Mapowanie do `DATA`** i budowa HTML — `build-and-verify.md`.
 
 ## Skalowanie i wariant zapasowy
 
-- Niszowy lub lokalny gatunek → zmniejsz liczby (np. 6 perspektyw, 5 pomysłów).
-- Brak narzędzia Workflow → odtwórz te same etapy równoległymi agentami `Task` (ta sama logika: generuj → oceń → synteza → redakcja), wolniej i w kontekście.
+- Niszowy lub lokalny gatunek → zmniejsz liczby jeszcze bardziej (np. 4 perspektywy, 5 pomysłów).
+- Potrzebujesz szerszego ugruntowania rynkowego → zwiększ liczbę perspektyw fazy 1 i przywróć WebSearch w ocenie (wolniej, dokładniej).
+- Brak narzędzia Workflow → odtwórz te same etapy równoległymi agentami `Task` (ta sama logika: generuj → oceń → synteza), wolniej i w kontekście.
+```
