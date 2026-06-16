@@ -86,13 +86,6 @@ h2.sec::before{content:"";display:block;width:54px;height:3px;background:var(--o
 .persona{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;background:var(--ink);color:var(--cream);padding:5px 10px;border-radius:3px}
 .comp{font-size:12px;color:var(--ink-soft);border:1px solid var(--line);padding:4px 10px;border-radius:12px}
 
-/* ---- trzon ---- */
-.trzon-grp{margin:28px 0 6px}
-.trzon-grp:first-of-type{margin-top:10px}
-.trzon-grp .gk{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);display:block;margin-bottom:13px}
-.tz{font-size:15px;line-height:1.55;margin:0 0 13px;padding-left:14px;border-left:3px solid var(--line)}
-.tz .tk{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);display:block;margin-bottom:4px}
-
 /* ---- verdict (drench) ---- */
 .verd{background:var(--ox);background:linear-gradient(157deg,var(--ox) 0%,var(--ox-deep) 100%);color:var(--cream);border-radius:7px;padding:48px 46px;position:relative;overflow:hidden;box-shadow:0 14px 50px -22px rgba(79,15,24,.7)}
 .verd::before{content:"";position:absolute;top:-70px;right:-50px;width:280px;height:280px;background:radial-gradient(circle,rgba(200,146,51,.2),transparent 68%);pointer-events:none}
@@ -132,41 +125,34 @@ footer .wrap{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacin
 <header class="masthead">
   <div class="wrap">
     <div class="masthead-rule">Iskra pomysłu <span>/</span> Dział {{GENRE}} <span>/</span> {{YEAR}}</div>
-    <h1>Trzon wizji <em>i pięć fabuł</em></h1>
-    <p class="sub">Autor projektuje trzon powieści — kierunek, bohaterów i świat. Rój rozpisuje pięć wariantów fabuły w tych ramach, ocenia je rzemieślniczo i wskazuje zwycięzcę — bez badania rynku.</p>
-    <div class="metaline">
-      <span class="chip">autorski trzon</span>
-      <span class="chip">pięć wariantów fabuły</span>
+    <h1>Pięć fabuł <em>nie do przewidzenia</em></h1>
+    <p class="sub">Szybka iskra twórcza, bez badania rynku. Rój generuje pięć celowo nieoczywistych fabuł z twardą bramką anty-klisza, ocenia każdą pod kątem świeżości i wykonalności, i wskazuje zwycięzcę.</p>
+    <div class="metaline" id="metaline">
+      <span class="chip">pięć fabuł</span>
       <span class="chip alt">bez badania rynku</span>
       <span class="chip alt">dane {{YEAR}}</span>
-      <span class="chip alt">czytelnik docelowy: {{READER}}</span>
+      <span class="chip alt">czytelnik: {{READER}}</span>
     </div>
   </div>
 </header>
 
 <nav class="contents">
   <div class="wrap">
-    <button class="tab active" data-p="trzon"><span class="n">01</span>Trzon wizji</button>
-    <button class="tab" data-p="ideas"><span class="n">02</span>5 fabuł</button>
-    <button class="tab" data-p="verdict"><span class="n">03</span>Werdykt</button>
+    <button class="tab active" data-p="ideas"><span class="n">01</span>5 fabuł</button>
+    <button class="tab" data-p="verdict"><span class="n">02</span>Werdykt</button>
   </div>
 </nav>
 
-<!-- ===== 01 TRZON ===== -->
-<section class="panel active" id="trzon">
-  <div class="wrap" id="trzonwrap"></div>
-</section>
-
-<!-- ===== 02 IDEAS ===== -->
-<section class="panel" id="ideas">
+<!-- ===== 01 IDEAS ===== -->
+<section class="panel active" id="ideas">
   <div class="wrap">
     <h2 class="sec">Pięć fabuł na stół</h2>
-    <p class="lead">Wszystkie pięć dzieli <b>jeden trzon</b> ustalony przez autora (zakładka „Trzon wizji") — ten sam kierunek, bohaterów i świat. Rój rozpisał pięć różnych <b>fabuł</b> w tych ramach, a panel ocenił każdą osobno — redaktor prowadzący, marketing i czytelnik docelowy — z rzemiosła, <b>bez sięgania po dane rynkowe</b>. Ocena to średnia z głosów w skali od 1 do 10. Kolejność jest stała: zwycięzca, wicemistrz, dalej według oceny.</p>
+    <p class="lead">Rój wygenerował pięć <b>celowo nieoczywistych</b> fabuł z twardą bramką anty-klisza, a <b>krytyk świeżości</b> ocenił każdą osobno na trzech osiach — <b>świeżość, silnik premisy, rzemiosło</b> (wykonalność jako twarda podłoga) — <b>bez sięgania po dane rynkowe</b>. Ocena to złożenie tych osi w skali od 1 do 10. Kolejność jest stała: zwycięzca, wicemistrz, dalej według oceny.</p>
     <div id="idealist"></div>
   </div>
 </section>
 
-<!-- ===== 03 VERDICT ===== -->
+<!-- ===== 02 VERDICT ===== -->
 <section class="panel" id="verdict">
   <div class="wrap" id="verdwrap"></div>
 </section>
@@ -183,8 +169,6 @@ const DATA = /*__INJECT_DATA__*/ null;
 /* ---------- render ---------- */
 const $=s=>document.querySelector(s);
 const fx=n=>(Number(n)||0).toFixed(1).replace('.',',');
-// trzon to surowy tekst autora (NIE przechodzi przez redakcję) — escapuj, by „<”/„&” go nie zepsuły
-const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
 // ideas
 function ideaHTML(idea){
@@ -224,22 +208,19 @@ function renderIdeas(){
 }
 renderIdeas();
 
-// trzon (stała wspólna dla wszystkich fabuł)
-const tz=DATA.trzon||{}, ramy=tz.ramy||{};
-const tzRow=(label,val)=>val?`<div class="tz"><span class="tk">${label}</span>${esc(val)}</div>`:'';
-const trzonGroups=[
-  ['Kierunek i temat',[['Centralne pytanie dramatyczne',tz.dramaticQ],['Przesłanie / teza',tz.theme],['Emocja docelowa',tz.emotion]]],
-  ['Bohaterowie',[['Antagonista / siła przeciwna',tz.antagonist],['Kluczowa relacja',tz.relation],['Łuk przemiany',tz.arc]]],
-  ['Świat',[['Miejsce i czas',tz.setting],['Realizm / zasady',tz.realism],['Atmosfera',tz.mood],['Skala',tz.scale]]],
-  ['Ramy fabuły',[['Typ konfliktu',ramy.conflictType],['Typ zakończenia',ramy.ending],['Tempo',ramy.pace],['Punkt wyjścia (zaczyn)',ramy.seed]]],
-];
-const trzonHTML=trzonGroups.map(([title,rows])=>{
-  const inner=rows.map(([l,val])=>tzRow(l,val)).join('');
-  return inner?`<div class="trzon-grp"><span class="gk">${title}</span>${inner}</div>`:'';
-}).join('');
-$('#trzonwrap').innerHTML=`<h2 class="sec">Trzon wizji</h2>
-  <p class="lead">To <b>stały fundament</b> ustalony przez autora — wszystkie pięć fabuł dzieli ten sam kierunek, bohaterów i świat. Rój różnicuje <b>tylko fabułę</b>. Puste pola autor oddał rojowi.</p>
-  ${trzonHTML||'<p class="lead">Autor oddał cały trzon rojowi — fundament dobrał zespół (zob. zakładkę „5 fabuł").</p>'}`;
+// belka ustawień autora w nagłówku (wejście jako header strip — bez osobnej zakładki)
+// b.subgenre / DATA.weird to surowy tekst autora (brief NIE przechodzi przez redakcję) — escapuj przed insertAdjacentHTML
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const b=DATA.brief||{};
+const mapTone={mroczny:'ton: mroczny',wywazony:'ton: wyważony',lekki:'ton: lekki'};
+const mapFmt={pojedyncza:'powieść samodzielna',trylogia:'trylogia',seria:'seria'};
+const settingChips=[
+  DATA.weird?`dziwność: ${esc(DATA.weird)}`:'',
+  b.subgenre?esc(b.subgenre):'',
+  mapTone[b.tone]||'',
+  mapFmt[b.format]||'',
+].filter(Boolean).map(t=>`<span class="chip alt">${t}</span>`).join('');
+if(settingChips) $('#metaline').insertAdjacentHTML('beforeend',settingChips);
 
 // verdict
 const v=DATA.verdict||{};
