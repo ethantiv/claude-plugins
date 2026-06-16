@@ -6,7 +6,7 @@ Skopiuj do narzędzia **Workflow**. `args`: `{ idea, genre, reader, pov, czas, s
 export const meta = {
   name: 'book-forge-bible',
   description: 'Roj buduje biblie: swiat, postacie, glosy, glosariusz, kanon, motyw + synteza spojnosci',
-  phases: [ { title: 'Sekcje' }, { title: 'Synteza spojnosci' }, { title: 'Redakcja PL' } ],
+  phases: [ { title: 'Sekcje' }, { title: 'Synteza spojnosci' } ],
 }
 
 // Workflow bywa, że podaje `args` jako string JSON, nie jako obiekt — parsuj odpornie
@@ -20,7 +20,7 @@ const FORM = A.form || ''   // non-fiction: poradnik/reportaz/esej/pamietnik; ''
 const OUT = A.outline || '', EX = A.existing || null
 
 const SERIA = TOMY > 1 ? `\nTo SERIA ${TOMY}-tomowa: projektuj łuki postaci i zasiewy z rozpiętością wielotomową (co domyka się w tomie 1, co dojrzewa w kolejnych — spójnie z luk_nadrzedny/zasiewy_miedzytomowe z seria.md), a zasady świata tak, by uniosły całą serię, nie jeden tom.` : ''
-const ROLE = `Jesteś showrunnerem powieści i strażnikiem kanonu. Gatunek: ${G} (${SUB}). Czytelnik: ${R}. POV: ${POV}, czas: ${CZAS}. Pomysł: ${JSON.stringify(I)}. Konspekt (skrót): ${OUT}. Buduj świat logiczny i spójny; nazwy własne podawaj z PEŁNĄ polską odmianą. Gdy trzeba zweryfikować twardy filar świata, użyj WebSearch/agent-browser (lekko, tylko fundamenty). Pisz po polsku, naturalnie.${SERIA}${EX ? '\\nISTNIEJĄCA BIBLIA (pola RO traktuj jako ustalone, tylko uzupełniaj braki):\\n'+JSON.stringify(EX) : ''}`
+const ROLE = `Jesteś showrunnerem powieści i strażnikiem kanonu. Gatunek: ${G} (${SUB}). Czytelnik: ${R}. POV: ${POV}, czas: ${CZAS}. Pomysł: ${JSON.stringify(I)}. Konspekt (skrót): ${OUT}. Buduj świat logiczny i spójny; nazwy własne podawaj z PEŁNĄ polską odmianą. Gdy trzeba zweryfikować twardy filar świata, użyj WebSearch/agent-browser (lekko, tylko fundamenty). Pisz po polsku — czystą, naturalną polszczyzną, BEZ anglicyzmów (hook→haczyk, found family→rodzina z wyboru, worldbuilding→świat przedstawiony) i BEZ AI-slopu (nadęcia „stanowi/podkreśla", triady, nadmiar myślników); krótkie, konkretne zdania, cudzysłowy „ ". NIE ruszaj nazw własnych z glosariusza ani ich odmiany.${SERIA}${EX ? '\\nISTNIEJĄCA BIBLIA (pola RO traktuj jako ustalone, tylko uzupełniaj braki):\\n'+JSON.stringify(EX) : ''}`
 
 // schematy sekcji (skrocone; rozszerz pola wg biblia-spec.md)
 const S_SWIAT = { type:'object', required:['lokacje','zasady'], properties:{
@@ -61,23 +61,15 @@ const spojna = await agent(
      swiat:S_SWIAT.properties?S_SWIAT:{type:'object'}, postacie:{type:'array'}, antagonista:{type:'object'}, stawka:{type:'object'},
      glos_narratora:{type:'object'}, glosy_postaci:{type:'array'}, glosariusz:{type:'array'}, temat:{type:'object'}}}})
 
-phase('Redakcja PL')
-// ten sam schema co synteza — pusty {type:'object'} pozwoliłby redaktorowi po cichu zgubić sekcje kanonu
-const SEKCJE = ['swiat','postacie','antagonista','stawka','glos_narratora','glosy_postaci','glosariusz','temat']
-const red = await agent(
-  `Jesteś redaktorem języka polskiego. Przepisz partie OPISOWE biblii na naturalną polszczyznę (bez anglicyzmów, AI-slopu; cudzysłowy „ ”). NIE ruszaj nazw własnych z glosariusza ani ich odmiany. Zwróć tę samą strukturę.\n\n${JSON.stringify(spojna)}`,
-  {label:'redakcja',phase:'Redakcja PL',
-   schema:{type:'object',required:SEKCJE,properties:{
-     swiat:{type:'object'}, postacie:{type:'array'}, antagonista:{type:'object'}, stawka:{type:'object'},
-     glos_narratora:{type:'object'}, glosy_postaci:{type:'array'}, glosariusz:{type:'array'}, temat:{type:'object'}}}})
-
-return red && SEKCJE.every(k => red[k]) ? red : spojna
+// Redakcja PL nie jest osobną fazą roju — zasady polszczyzny są w ROLE (proza wraca czysta);
+// finalny szlif robi obowiązkowy /humanizer:humanizer w głównej sesji (patrz „Po powrocie roju").
+return spojna
 ```
 
 ## Po powrocie roju (główna sesja)
 
-1. **Humanizer** na partiach opisowych (`/humanizer:humanizer`), z pominięciem nazw własnych.
-2. **Złożenie kanonu-wiki** przez `${CLAUDE_PLUGIN_ROOT}/scripts/bible.py` (`write_section`/`write_entity` dla sekcji RO + `write_scene_grid` z beatami/scenami z konspektu; sekcje RUNTIME `os_czasu`/`setup_payoff`/`fakty`/`log_ciaglosci` zostają puste) i **`render_index()`**. Szczegóły: `build-and-verify.md`.
+1. **Humanizer** na partiach opisowych (`/humanizer:humanizer`), z pominięciem nazw własnych. To **jedyny** przebieg redakcji (osobna faza w roju została usunięta — proza wraca po polsku z `ROLE`).
+2. **Złożenie kanonu-wiki** przez `${CLAUDE_PLUGIN_ROOT}/scripts/bible.py` (`write_section`/`write_entity` dla sekcji RO + `write_scene_grid` z beatami/scenami z konspektu; sekcje RUNTIME `os_czasu`/`setup_payoff`/`fakty`/`log_ciaglosci` zostają puste) i **`render_index()`**. Na koniec dopisz wpis ingestu do kroniki: `append_log({"werdykt":"INGEST","decyzja":"Zbudowano kanon z pomysl.json + konspekt.md: N postaci, M zasad świata, K haseł glosariusza"})` (operacja „ingest" wzorca LLM-wiki — patrz `build-and-verify.md`). Szczegóły: `build-and-verify.md`.
 
 ## Wariant awaryjny
 Brak narzędzia Workflow → te same role jako równoległe agenty `Task`, potem synteza.

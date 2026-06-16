@@ -78,6 +78,11 @@ kf = r.get("kanon_fabularny", {})   # {rozdzialy, beaty} z konspektu
 bible.write_scene_grid(kf.get("rozdzialy", []), kf.get("beaty", []), [], force=True)
 
 bible.render_index()
+# wpis ingestu (operacja „ingest" wzorca LLM-wiki) — kronika notuje, z czego zbudowano kanon
+b = bible.load_all()
+bible.append_log({"werdykt": "INGEST", "decyzja":
+    f"Zbudowano kanon z pomysl.json + konspekt.md: {len(b.get('postacie', []))} postaci, "
+    f"{len(b.get('swiat', {}).get('zasady', []))} zasad świata, {len(b.get('glosariusz', []))} haseł glosariusza"})
 print("zapisano kanon-wiki do .book-forge/biblia/")
 PY
 ```
@@ -99,6 +104,8 @@ python3 ${CLAUDE_PLUGIN_ROOT}/scripts/bible.py validate
 ```
 
 Walidator (następca `json.load`) sprawdza: poprawny frontmatter każdej strony, że `load_all()` składa kanon bez błędu, wypełnione sekcje RO (każda postać ma łuk, każda zasada koszt), pełną 7-przypadkową odmianę każdej nazwy w glosariuszu, rozwiązywalność wikilinków oraz brak duplikatów id. Wynik: `OK, brak luk` albo `LUKI:\n- ...`. Luki zgłoś autorowi — to typowe źródła późniejszych sprzeczności.
+
+Poza twardymi `LUKI:` walidator drukuje **`UWAGI (lint):`** — miękki lint w duchu LLM-wiki (`lint_canon()`): nazwy postaci/lokacji spoza glosariusza (brak ochrony polskiej odmiany) oraz integralność `glos_ref` dwukierunkowo (wisząca referencja głosu i głos-sierota bez postaci). **Uwagi NIE bramkują** pipeline'u (`check_stage` patrzy wyłącznie na `LUKI:`) — mają świadome wyjątki (postać z nazwą-rolą, lokacja bez potrzeby odmiany), więc autor je przegląda i poprawia albo ignoruje.
 
 ## Co czytają kolejne etapy
 

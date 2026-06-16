@@ -38,13 +38,15 @@ Uruchom rój według **`references/workflow-swarm.md`**. Agenci wypełniają sek
 
 Na partiach **opisowych** (opisy świata, postaci, motyw) uruchom `/humanizer:humanizer` i nanieś poprawki. Nie ruszaj nim nazw własnych z glosariusza (chronione).
 
-## Krok 5 — zapis (kanon-wiki) i walidacja
+## Krok 5 — zapis (kanon-wiki, „ingest") i walidacja
 
-Zapisz kanon przez **`${CLAUDE_PLUGIN_ROOT}/scripts/bible.py`** (singletony → `write_entity`/`write_section`, encje postaci/lokacji/głosów/glosariusza → pętla `write_entity`, siatka scen z konspektu → `write_scene_grid`), na końcu `render_index()`. Szczegóły kształtu, merge idempotentny i walidacja: **`references/build-and-verify.md`**. Waliduj: `python3 ${CLAUDE_PLUGIN_ROOT}/scripts/bible.py validate` — raport potwierdza poprawne frontmattery, wypełnione sekcje RO i pełną odmianę każdej nazwy w glosariuszu.
+To operacja **ingest** wzorca LLM-wiki: wczytane źródła (`pomysl.json`, `konspekt.md`) zamieniasz w strony kanonu. Zapisz kanon przez **`${CLAUDE_PLUGIN_ROOT}/scripts/bible.py`** (singletony → `write_entity`/`write_section`, encje postaci/lokacji/głosów/glosariusza → pętla `write_entity`, siatka scen z konspektu → `write_scene_grid`), na końcu `render_index()`. Domknij ingest wpisem do kroniki: `append_log({"werdykt":"INGEST","decyzja":"Zbudowano kanon z pomysl.json + konspekt.md: N postaci, M zasad świata, K haseł glosariusza"})`. Szczegóły kształtu, merge idempotentny i walidacja: **`references/build-and-verify.md`**.
 
-## Krok 6 — podsumowanie
+Waliduj: `python3 ${CLAUDE_PLUGIN_ROOT}/scripts/bible.py validate` — `LUKI:` (twarde braki: zepsuty frontmatter, pusta sekcja RO, postać bez łuku, zasada bez kosztu, niepełna odmiana — to bramkuje pipeline) oraz `UWAGI (lint):` (miękki lint w duchu LLM-wiki: nazwy spoza glosariusza, integralność `glos_ref` — advisory, NIE bramkuje; przejrzyj i popraw albo świadomie zignoruj).
 
-Pokaż autorowi: ścieżki obu plików, liczbę postaci, zasad świata i haseł glosariusza, oraz **luki do uzupełnienia** (np. brak kosztu przy zasadzie świata, postać bez łuku). Surowo zgłaszaj braki — pusta biblia gorzej trzyma kanon.
+## Krok 6 — podsumowanie i „lint"
+
+To operacja **lint** wzorca LLM-wiki. Pokaż autorowi: ścieżki obu plików, liczbę postaci, zasad świata i haseł glosariusza, **twarde luki** z `LUKI:` (np. brak kosztu przy zasadzie świata, postać bez łuku) oraz **uwagi** z `UWAGI (lint):` (nazwy bez ochrony odmiany, wiszące/sierote głosy). Surowo zgłaszaj braki — pusta biblia gorzej trzyma kanon; uwagi lintu zostawiasz autorowi do decyzji.
 
 ## Quick reference
 
@@ -57,7 +59,8 @@ Pokaż autorowi: ścieżki obu plików, liczbę postaci, zasad świata i haseł 
 | Pola | RO (ustalenia) vs RUNTIME (stan; rośnie tylko przez bramkę ciągłości) |
 | Nazwy | Glosariusz z pełną polską odmianą + warianty zakazane |
 | Idempotencja | Ponowne uruchomienie uzupełnia, nie nadpisuje RO bez zgody |
-| Język | Naturalna polszczyzna + `/humanizer:humanizer` na opisach |
+| Operacje (LLM-wiki) | **ingest** (Krok 5: źródła→strony + wpis do `log.md`) · **lint** (Krok 6: `validate` → `LUKI` twarde + `UWAGI` advisory) · **query** (kolejne etapy czytają cały kanon przez `load_all()`) |
+| Język | Naturalna polszczyzna + `/humanizer:humanizer` na opisach (jedyny przebieg — faza redakcji w roju usunięta) |
 
 ## Najczęstsze błędy
 

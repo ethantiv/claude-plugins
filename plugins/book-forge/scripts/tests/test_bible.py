@@ -297,6 +297,14 @@ def main():
         braki = bible.validate_canon()
         check("walidator czysty", braki == [], "; ".join(braki))
 
+        # 7-lint. lint_canon (advisory, NIE bramka): wykrywa nazwy spoza glosariusza,
+        # ale validate_canon ich NIE zgłasza — czyli check_stage nie blokuje na nich pipeline'u
+        uwagi = bible.lint_canon()
+        check("lint: postać spoza glosariusza wykryta",
+              any("spoza glosariusza" in u and "Kalina" in u for u in uwagi), "; ".join(uwagi))
+        check("lint advisory: validate_canon nie zawiera uwag lintu",
+              not any("spoza glosariusza" in x for x in braki))
+
         # 7a. assert_ro_unchanged WYKRYWA forsowaną zmianę RO (ro_guard=False to świadomy override)
         ro_snap2 = bible.ro_snapshot()
         bible.write_entity("postac", {"imie": "Kalina", "opis_fizyczny": "INNA"}, ro_guard=False)

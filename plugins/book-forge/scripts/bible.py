@@ -736,6 +736,41 @@ def validate_canon():
     return braki
 
 
+def lint_canon():
+    """Miękki lint (wzorzec LLM-wiki Karpathy'ego): cross-referencje strukturalne, nie
+    wikilinkowe (strony encji są frontmatter-only — linki [[…]] żyją tylko w index.md).
+    Zwraca UWAGI advisory — NIE bramkuje pipeline'u (check_stage używa wyłącznie
+    validate_canon). Ma świadome wyjątki (postać z nazwą-rolą, lokacja bez potrzeby odmiany),
+    więc autor je przegląda i ignoruje, a nie blokuje pracy."""
+    try:
+        b = load_all()
+    except Exception as e:  # noqa: BLE001 — raport, nie crash
+        return [f"load_all() rzucił: {e}"]
+    uwagi = []
+    # (1) nazwy spoza glosariusza — brak ochrony polskiej odmiany
+    glos_slugs = {slugify(g.get("nazwa", "")) for g in b.get("glosariusz", [])}
+    for p in b.get("postacie", []):
+        if p.get("imie") and slugify(p["imie"]) not in glos_slugs:
+            uwagi.append(f"postać spoza glosariusza (brak ochrony odmiany): {p['imie']}")
+    for lok in b.get("swiat", {}).get("lokacje", []):
+        if lok.get("nazwa") and slugify(lok["nazwa"]) not in glos_slugs:
+            uwagi.append(f"lokacja spoza glosariusza (brak ochrony odmiany): {lok['nazwa']}")
+    # (2) integralność glos_ref dwukierunkowo (głosy są kluczowane nazwą postaci → slug)
+    glosy = b.get("glosy_postaci", [])
+    glos_postac_slugs = {slugify(v.get("postac", "")) for v in glosy}
+    postac_slugs = {slugify(p.get("imie", "")) for p in b.get("postacie", [])}
+    glos_ref_slugs = {slugify(p["glos_ref"]) for p in b.get("postacie", []) if p.get("glos_ref")}
+    for p in b.get("postacie", []):
+        gr = p.get("glos_ref")
+        if gr and slugify(gr) not in glos_postac_slugs:
+            uwagi.append(f"wisząca referencja glos_ref: postać {p.get('imie', '?')} → nieistniejący głos „{gr}”")
+    for v in glosy:
+        slug = slugify(v.get("postac", ""))
+        if slug and slug not in postac_slugs and slug not in glos_ref_slugs:
+            uwagi.append(f"głos-sierota (brak postaci): {v.get('postac', '?')}")
+    return uwagi
+
+
 # --------------------------------------------------------------------------- #
 # Preflight etapów i dashboard (czysty odczyt)
 # --------------------------------------------------------------------------- #
@@ -932,6 +967,9 @@ def _cli(argv):
     if cmd == "validate":
         braki = validate_canon()
         print("OK, brak luk" if not braki else "LUKI:\n- " + "\n- ".join(braki))
+        uwagi = lint_canon()  # miękki lint Karpathy'ego — raport, NIE bramka (exit liczy tylko LUKI)
+        if uwagi:
+            print("UWAGI (lint):\n- " + "\n- ".join(uwagi))
         return 1 if braki else 0
     if cmd == "render-index":
         render_index()

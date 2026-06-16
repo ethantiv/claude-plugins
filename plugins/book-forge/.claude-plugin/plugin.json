@@ -1,6 +1,6 @@
 {
   "name": "book-forge",
-  "version": "1.12.0",
+  "version": "1.14.0",
   "description": "Kompletny pipeline do tworzenia powieści rojem agentów (Workflow), 12 etapów: od luki rynkowej i pomysłu, przez konspekt, biblię książki, pisanie i redakcję scen ze spójnością opartą na biblii, po złożony maszynopis i pakiet wydawniczy. Każdy etap z obowiązkową redakcją na poprawną, naturalną polszczyznę (humanizer, anty-AI-slop); research przez agent-browser w etapach analitycznych i world-research.",
   "author": {
     "name": "Mirek Zaniewicz"
