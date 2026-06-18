@@ -10,6 +10,10 @@
 | **babysit-pr** | uniwersalna | Lokalny odpowiednik `autofix-pr`: monitoruje bieżący pull request i naprawia go w sesji Claude Code – błędy CI, komentarze z review proszące o zmiany, konflikty scalania. |
 | **read-arxiv-paper** | uniwersalna | Pobiera źródło LaTeX artykułu z arXiv, analizuje je i tworzy streszczenie osadzone w kontekście Twojego projektu. |
 | **roadmap** | uniwersalna | Generuje `docs/ROADMAP.md` rojem agentów: wiele perspektyw proponuje funkcje, a panel product managerów ocenia je pod kątem przydatności, sprzedawalności i efektu „wow". |
+| **teach-me** | uniwersalna | Interaktywny korepetytor, który krok po kroku doprowadza Cię do głębokiego zrozumienia tematu (zmiana w kodzie, PR, plik lub pojęcie abstrakcyjne): lista kontrolna, drążenie „dlaczego" i quizy. Nie kończy, dopóki nie potwierdzi pełnego zrozumienia. |
+| **visual-prompt** | uniwersalna | Generuje trzy pliki `.txt` z artystycznymi promptami text-to-image w trzech kontrastujących kierunkach, pisane równolegle przez osobne subagenty. Dwa profile: `art` (grafika, plakaty, fotografia) i `ui` (artystyczne makiety interfejsów). Komendy: `/visual-prompt-art`, `/visual-prompt-ui`. |
+| **dependency-update** | uniwersalna | Skanuje zależności projektu we wszystkich ekosystemach i bezpiecznie je aktualizuje: minor/patch jednym przejściem, major po kolei z osobnym researchem każdego. |
+| **eli** | uniwersalna | Wyjaśnij jak stażyście: tłumaczy dowolne pojęcie, termin lub fragment kodu mądrej osobie, której brakuje tylko wiedzy dziedzinowej — krótko, obrazowo, na przykładach, bez lania wody. |
 
 ## Instalacja
 
@@ -21,6 +25,10 @@ W sesji Claude Code uruchom komendy (`/plugin` to wbudowana komenda Claude Code)
 /plugin install babysit-pr@ethantiv-plugins
 /plugin install read-arxiv-paper@ethantiv-plugins
 /plugin install roadmap@ethantiv-plugins
+/plugin install teach-me@ethantiv-plugins
+/plugin install visual-prompt@ethantiv-plugins
+/plugin install dependency-update@ethantiv-plugins
+/plugin install eli@ethantiv-plugins
 ```
 
 Albo z terminala, przez CLI:
@@ -31,6 +39,10 @@ claude plugin install book-forge@ethantiv-plugins
 claude plugin install babysit-pr@ethantiv-plugins
 claude plugin install read-arxiv-paper@ethantiv-plugins
 claude plugin install roadmap@ethantiv-plugins
+claude plugin install teach-me@ethantiv-plugins
+claude plugin install visual-prompt@ethantiv-plugins
+claude plugin install dependency-update@ethantiv-plugins
+claude plugin install eli@ethantiv-plugins
 ```
 
 Instaluj tylko to, czego potrzebujesz; wtyczki są od siebie niezależne. Po instalacji sprawdź stan:
@@ -49,7 +61,7 @@ claude plugin marketplace update ethantiv-plugins
 
 ## Wymagania
 
-Obie wtyczki potrzebują działającego Claude Code. Poza tym:
+Wszystkie wtyczki potrzebują działającego Claude Code. Poza tym:
 
 **book-forge**
 - **Python 3** – tylko biblioteka standardowa, bez `pip install`.
@@ -85,6 +97,15 @@ npx agent-browser open example.com
 **roadmap**
 - Narzędzie **Workflow** (rój agentów); bez niego skill ma zapasowe wywołanie agentów `Task`.
 
+**teach-me**, **eli**
+- Bez dodatkowych zależności poza Claude Code.
+
+**visual-prompt**
+- Narzędzie **Workflow** (rój agentów) do równoległego pisania promptów; bez niego skille mają zapasowe wywołanie agentów `Task`.
+
+**dependency-update**
+- Menedżery pakietów Twoich ekosystemów (np. `npm`, `pip`, `cargo`, `go`) dostępne w `PATH` — używane do sprawdzania i instalowania aktualizacji.
+
 ## Użycie
 
 Po instalacji każda wtyczka udostępnia swoje skille jako komendy `/<wtyczka>:<skill>`.
@@ -93,6 +114,10 @@ Po instalacji każda wtyczka udostępnia swoje skille jako komendy `/<wtyczka>:<
 - **babysit-pr** – wywołaj `/babysit-pr` na gałęzi z otwartym PR, żeby monitorować i naprawiać CI, review i konflikty lokalnie. Dla ciągłego pilnowania uruchom go w pętli, np. `/loop 10m /babysit-pr` – Claude sprawdza PR co 10 minut.
 - **read-arxiv-paper** – `/read-arxiv-paper:read-arxiv-paper` z URL-em lub ID artykułu (np. `2401.12345`); dostajesz streszczenie w kontekście repo.
 - **roadmap** – `/roadmap:roadmap` zbiera pomysły rojem agentów i zapisuje `docs/ROADMAP.md`.
+- **teach-me** – `/teach-me:teach-me` z tematem (zmiana w kodzie, PR, plik lub pojęcie); prowadzi naukę aż do potwierdzonego zrozumienia.
+- **visual-prompt** – `/visual-prompt-art` lub `/visual-prompt-ui` (albo opisz potrzebę naturalnym językiem) generuje trzy pliki `.txt` z promptami w kontrastujących kierunkach.
+- **dependency-update** – `/dependency-update:dependency-update` skanuje i bezpiecznie aktualizuje zależności projektu.
+- **eli** – `/eli:eli` z pojęciem, terminem lub fragmentem kodu; dostajesz krótkie, obrazowe wyjaśnienie.
 
 ## Licencja
 
