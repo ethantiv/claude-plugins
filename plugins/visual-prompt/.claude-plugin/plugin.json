@@ -1,0 +1,8 @@
+{
+  "name": "visual-prompt",
+  "version": "0.6.0",
+  "description": "Generate three .txt files with artistic text-to-image prompts in three contrasting visual directions, written by separate subagents in parallel. Two profiles: art (artwork, posters, photography) and ui (artistic interface mockups). Slash-invocable skills: /visual-prompt-art, /visual-prompt-ui.",
+  "author": {
+    "name": "Mirek Zaniewicz"
+  }
+}

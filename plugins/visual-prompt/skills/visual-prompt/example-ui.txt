@@ -1,0 +1,6 @@
+INTERFACE: operational dashboard for marine fleet monitoring
+PHILOSOPHY: Ledger Calm — gridded restraint where every datum sits in measured silence, the screen behaves like a printed page, decisions emerge from spatial rhythm rather than visual noise.
+HIDDEN REFERENCE: Bloomberg terminal monospace gravitas
+AXIS: Data-dense admin
+
+A wide horizontal mockup of an operational dashboard for marine fleet monitoring, three columns separated by hairline dividers, left rail housing a vertical fleet list with thin sans-serif labels and small status dots, central canvas dominated by a calm cartographic field with vessel tracks rendered in muted teal over warm off-white, right rail stacking sparse data cards with monospace numerals breathing inside generous padding, focus state rendering one selected vessel with a soft inner halo, alert state encoding through restrained ochre marker rather than red noise, typography arranged as a clear hierarchy of display and body weights, every grid module aligned to a strict eight-pixel system, framed as a single spread in a softcover design annual on heavy uncoated stock, meticulously crafted, painstaking attention to numerical legibility, master-level execution, nothing falling off the frame, every element contained with proper margins and breathing room

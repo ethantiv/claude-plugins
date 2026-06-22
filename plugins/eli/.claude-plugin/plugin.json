@@ -1,0 +1,8 @@
+{
+  "name": "eli",
+  "version": "0.1.0",
+  "description": "Explain like I'm an intern: explain any concept, term, or piece of code to a smart adult who simply lacks domain knowledge — short, vivid, example-driven, no fluff.",
+  "author": {
+    "name": "Mirek Zaniewicz"
+  }
+}

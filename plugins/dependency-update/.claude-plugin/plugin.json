@@ -1,0 +1,8 @@
+{
+  "name": "dependency-update",
+  "version": "0.2.0",
+  "description": "Scan project dependencies across all ecosystems and update them safely — minor/patch in a sweep, major bumps researched one at a time",
+  "author": {
+    "name": "Mirek Zaniewicz"
+  }
+}

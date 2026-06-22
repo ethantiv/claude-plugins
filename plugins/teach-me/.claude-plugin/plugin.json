@@ -1,0 +1,8 @@
+{
+  "name": "teach-me",
+  "version": "0.1.0",
+  "description": "Interactive tutor that guides you to a deep understanding of a subject (a code change, PR, file, or abstract topic) incrementally — running checklist, drilling into the \"why\", and quizzes; doesn't finish until full understanding is verified.",
+  "author": {
+    "name": "Mirek Zaniewicz"
+  }
+}

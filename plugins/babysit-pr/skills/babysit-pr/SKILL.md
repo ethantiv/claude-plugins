@@ -7,7 +7,7 @@ description: >
   autofix-pr: it inspects the current pull request and pushes fixes for failing
   CI, review comments requesting changes, and merge conflicts — all in the
   local session, not a remote cloud session.
-argument-hint: "[PR number]"
+argument-hint: "[PR number] [--auto]"
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob
 ---
 
@@ -23,6 +23,12 @@ One pass is deliberate: continuity comes from running this skill under the
 `/loop` skill, e.g. `/loop 10m /babysit-pr`. Each pass is self-contained and
 emits a clear terminal signal so the loop knows when to stop.
 
+**Optional `--auto` mode.** Adding `--auto` (e.g. `/loop 10m /babysit-pr --auto`)
+lets the skill close the loop by itself: after **two consecutive clean passes**
+(green CI, no conflicts, no open reviewer comments) it merges the PR and deletes
+its branch, then signals the loop to stop. Without `--auto` the skill never
+merges — behaviour is exactly as before. See Step 5.
+
 ## When NOT to use
 
 - No open PR exists for the branch yet — open the PR first.
@@ -31,12 +37,17 @@ emits a clear terminal signal so the loop knows when to stop.
 
 ## Step 1 — Snapshot the PR
 
-Run the snapshot script. Pass the PR number through if the user gave one
-(`$ARGUMENTS`), otherwise let it resolve the PR from the current branch:
+First parse `$ARGUMENTS` (order-independent): if it contains the `--auto` token,
+**auto-mode is on** (remember this for Step 5) — strip that token out. Any
+remaining bare integer is the PR number; pass **only** that to the snapshot
+script (never pass `--auto` to it). With no PR number it resolves the open PR for
+the current branch:
 
 ```bash
-"${CLAUDE_PLUGIN_ROOT}/scripts/pr-snapshot.sh" $ARGUMENTS
+"${CLAUDE_PLUGIN_ROOT}/scripts/pr-snapshot.sh" <PR_NUMBER or empty>
 ```
+
+Keep the snapshot JSON — Step 5 feeds it to the auto-gate without re-querying `gh`.
 
 The script prints one JSON object and never mutates anything. Branch on
 `.status` before doing anything else:
@@ -164,8 +175,64 @@ Close the pass with a one-paragraph status, then one of:
   will re-check CI.
 - **Nothing to do**: PR is green, no actionable comments, no conflicts —
   say so plainly. Under a fixed-interval `/loop` this is normal; keep waiting.
+  When `--auto` is on, proceed to Step 5 (this is the only path that can merge).
 - **Done**: PR is merged or closed — state the outcome and tell the user to
   stop the loop.
 - **Blocked**: a problem needs a human — state exactly what and why.
 
 Keep the report short; the user can see the diffs and `gh` output.
+
+## Step 5 — Auto-merge gate (only when `--auto` is on)
+
+Skip this whole step unless auto-mode was set in Step 1. **Run the gate ONLY on a
+"Nothing to do" pass** — one where Step 3 made no commits and no push, and the
+snapshot's `unpushed_local_commits == false`. Never run it after a fix: the
+snapshot was taken *before* the fix, so a pushed pass must just end and let the
+next pass re-evaluate the new commit from scratch.
+
+Feed the Step 1 snapshot to the gate (no extra `gh` calls):
+
+```bash
+echo "$SNAPSHOT" | "${CLAUDE_PLUGIN_ROOT}/scripts/auto-gate.sh"
+```
+
+It tracks consecutive clean passes per PR, anchored to HEAD's sha, and prints
+`{clean, consecutive, sha, should_merge}`. "Clean" is positive confirmation of
+mergeability (`mergeStateStatus == CLEAN` plus no failing/pending checks, no
+conflicts, no open review threads, no changes-requested reviews) — not mere
+absence of red, so an empty CI rollup right after a push does not look clean.
+The first clean pass yields `consecutive: 1` (no merge); the second clean pass at
+the *same* sha yields `should_merge: true`.
+
+**Invariant that keeps this safe:** a finding you hand off to a human stays an
+*unresolved* review thread (Step 3), so `review_threads` is non-empty → not clean
+→ the gate never merges a PR with an open human decision on it.
+
+When `should_merge == true`, merge against the exact verified commit:
+
+```bash
+gh pr merge <number> --merge --delete-branch --match-head-commit <gate_sha>
+```
+
+- Merge method defaults to `--merge` (merge commit); override via
+  `$BABYSIT_MERGE_METHOD` (`squash` | `merge` | `rebase`).
+- `--match-head-commit <gate_sha>` (the `sha` the gate printed) makes the merge
+  fail safely if anyone pushed between the second clean read and now.
+- **Never use `--admin`.** Branch protection and required approvals must be
+  respected — if GitHub blocks the merge, that is the system working.
+
+After the command, **verify the real state** — `gh pr merge` may *enable*
+auto-merge or queue the PR rather than merge immediately:
+
+```bash
+gh pr view <number> --json state -q .state
+```
+
+- `MERGED`: delete the gate's state file
+  (`rm -f "$(git rev-parse --absolute-git-dir)/babysit-pr-<number>.json"`), report
+  the merge and branch deletion, and **tell the user to stop the loop** (`Esc`).
+- Auto-merge enabled / queued: report that and **keep looping** — a later pass
+  sees `merged` via Step 1 and signals done.
+- Merge rejected (method disallowed, branch protection, missing approval, moved
+  HEAD): report the exact reason, reset the streak by writing
+  `{"count":0,"sha":"<gate_sha>"}` to the state file, and keep looping.

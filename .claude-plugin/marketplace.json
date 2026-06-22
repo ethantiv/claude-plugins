@@ -6,14 +6,24 @@
   },
   "plugins": [
     {
+      "name": "babysit-pr",
+      "description": "Local equivalent of autofix-pr: monitor and fix the current PR (CI failures, review comments, merge conflicts) in the local Claude Code session instead of a remote cloud session",
+      "source": "./plugins/babysit-pr"
+    },
+    {
       "name": "book-forge",
       "description": "Kompletny pipeline do tworzenia powieści rojem agentów (Workflow), 12 etapów: od luki rynkowej i pomysłu, przez konspekt, biblię książki, pisanie i redakcję scen ze spójnością opartą na biblii, po złożony maszynopis i pakiet wydawniczy. Każdy etap z obowiązkową redakcją na poprawną, naturalną polszczyznę (humanizer, anty-AI-slop); research przez agent-browser w etapach analitycznych i world-research.",
       "source": "./plugins/book-forge"
     },
     {
-      "name": "babysit-pr",
-      "description": "Local equivalent of autofix-pr: monitor and fix the current PR (CI failures, review comments, merge conflicts) in the local Claude Code session instead of a remote cloud session",
-      "source": "./plugins/babysit-pr"
+      "name": "dependency-update",
+      "description": "Scan project dependencies across all ecosystems and update them safely — minor/patch in a sweep, major bumps researched one at a time",
+      "source": "./plugins/dependency-update"
+    },
+    {
+      "name": "eli",
+      "description": "Explain like I'm an intern: explain any concept, term, or piece of code to a smart adult who simply lacks domain knowledge — short, vivid, example-driven, no fluff.",
+      "source": "./plugins/eli"
     },
     {
       "name": "read-arxiv-paper",
@@ -24,6 +34,16 @@
       "name": "roadmap",
       "description": "Generate docs/ROADMAP.md via an agent swarm: many perspectives propose features, a product-manager panel scores them for usefulness, sellability and wow-factor",
       "source": "./plugins/roadmap"
+    },
+    {
+      "name": "teach-me",
+      "description": "Interactive tutor that guides you to a deep understanding of a subject (a code change, PR, file, or abstract topic) incrementally — running checklist, drilling into the \"why\", and quizzes; doesn't finish until full understanding is verified.",
+      "source": "./plugins/teach-me"
+    },
+    {
+      "name": "visual-prompt",
+      "description": "Generate three .txt files with artistic text-to-image prompts in three contrasting visual directions, written by separate subagents in parallel. Two profiles: art (artwork, posters, photography) and ui (artistic interface mockups). Slash-invocable skills: /visual-prompt-art, /visual-prompt-ui.",
+      "source": "./plugins/visual-prompt"
     }
   ]
 }
