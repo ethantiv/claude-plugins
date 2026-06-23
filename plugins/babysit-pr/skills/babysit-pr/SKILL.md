@@ -6,8 +6,9 @@ description: >
   invokes /babysit-pr. It is the local equivalent of Claude Code's built-in
   autofix-pr: it inspects the current pull request and pushes fixes for failing
   CI, review comments requesting changes, and merge conflicts — all in the
-  local session, not a remote cloud session.
-argument-hint: "[PR number] [--auto]"
+  local session, not a remote cloud session. After two consecutive clean passes
+  it merges the PR and deletes its branch on its own.
+argument-hint: "[PR number]"
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob
 ---
 
@@ -23,11 +24,9 @@ One pass is deliberate: continuity comes from running this skill under the
 `/loop` skill, e.g. `/loop 10m /babysit-pr`. Each pass is self-contained and
 emits a clear terminal signal so the loop knows when to stop.
 
-**Optional `--auto` mode.** Adding `--auto` (e.g. `/loop 10m /babysit-pr --auto`)
-lets the skill close the loop by itself: after **two consecutive clean passes**
-(green CI, no conflicts, no open reviewer comments) it merges the PR and deletes
-its branch, then signals the loop to stop. Without `--auto` the skill never
-merges — behaviour is exactly as before. See Step 5.
+**Auto-merge is always on.** The skill closes the loop by itself: after **two
+consecutive clean passes** (green CI, no conflicts, no open reviewer comments) it
+merges the PR and deletes its branch, then signals the loop to stop. See Step 5.
 
 ## When NOT to use
 
@@ -37,11 +36,8 @@ merges — behaviour is exactly as before. See Step 5.
 
 ## Step 1 — Snapshot the PR
 
-First parse `$ARGUMENTS` (order-independent): if it contains the `--auto` token,
-**auto-mode is on** (remember this for Step 5) — strip that token out. Any
-remaining bare integer is the PR number; pass **only** that to the snapshot
-script (never pass `--auto` to it). With no PR number it resolves the open PR for
-the current branch:
+Parse `$ARGUMENTS`: a bare integer is the PR number; pass it to the snapshot
+script. With no PR number it resolves the open PR for the current branch:
 
 ```bash
 "${CLAUDE_PLUGIN_ROOT}/scripts/pr-snapshot.sh" <PR_NUMBER or empty>
@@ -175,16 +171,16 @@ Close the pass with a one-paragraph status, then one of:
   will re-check CI.
 - **Nothing to do**: PR is green, no actionable comments, no conflicts —
   say so plainly. Under a fixed-interval `/loop` this is normal; keep waiting.
-  When `--auto` is on, proceed to Step 5 (this is the only path that can merge).
+  Proceed to Step 5 (this is the only path that can merge).
 - **Done**: PR is merged or closed — state the outcome and tell the user to
   stop the loop.
 - **Blocked**: a problem needs a human — state exactly what and why.
 
 Keep the report short; the user can see the diffs and `gh` output.
 
-## Step 5 — Auto-merge gate (only when `--auto` is on)
+## Step 5 — Auto-merge gate
 
-Skip this whole step unless auto-mode was set in Step 1. **Run the gate ONLY on a
+**Run the gate ONLY on a
 "Nothing to do" pass** — one where Step 3 made no commits and no push, and the
 snapshot's `unpushed_local_commits == false`. Never run it after a fix: the
 snapshot was taken *before* the fix, so a pushed pass must just end and let the
