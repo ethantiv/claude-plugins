@@ -1,6 +1,6 @@
 {
   "name": "babysit-pr",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Local equivalent of autofix-pr: monitor and fix the current PR (CI failures, review comments, merge conflicts) in the local Claude Code session instead of a remote cloud session",
   "author": {
     "name": "Mirek Zaniewicz"
