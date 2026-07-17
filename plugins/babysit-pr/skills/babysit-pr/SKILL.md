@@ -6,8 +6,8 @@ description: >
   invokes /babysit-pr. It is the local equivalent of Claude Code's built-in
   autofix-pr: it inspects the current pull request and pushes fixes for failing
   CI, review comments requesting changes, and merge conflicts — all in the
-  local session, not a remote cloud session. After two consecutive clean passes
-  it merges the PR and deletes its branch on its own.
+  local session, not a remote cloud session. After one clean pass it merges the
+  PR and deletes its branch on its own.
 argument-hint: "[PR number]"
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob
 ---
@@ -18,7 +18,7 @@ Run **one monitoring pass** over a pull request: detect its state, fix what is b
 
 One pass is deliberate: continuity comes from running this skill under the `/loop` skill, e.g. `/loop 10m /babysit-pr`. Each pass is self-contained and emits a clear terminal signal so the loop knows when to stop.
 
-**Auto-merge is always on.** The skill closes the loop by itself: after **two consecutive clean passes** (green CI, no conflicts, no open reviewer comments) it merges the PR and deletes its branch, then signals the loop to stop. See Step 5.
+**Auto-merge is always on.** The skill closes the loop by itself: after **one clean pass** (green CI, no conflicts, no open reviewer comments) it merges the PR and deletes its branch, then signals the loop to stop. See Step 5.
 
 ## When NOT to use
 
@@ -125,18 +125,18 @@ Feed the Step 1 snapshot to the gate (no extra `gh` calls):
 echo "$SNAPSHOT" | "${CLAUDE_PLUGIN_ROOT}/scripts/auto-gate.sh"
 ```
 
-It tracks consecutive clean passes per PR, anchored to HEAD's sha, and prints `{clean, consecutive, sha, should_merge}`. "Clean" is positive confirmation of mergeability (`mergeStateStatus == CLEAN` plus no failing/pending checks, no conflicts, no open review threads, no changes-requested reviews) — not mere absence of red, so an empty CI rollup right after a push does not look clean. The first clean pass yields `consecutive: 1` (no merge); the second clean pass at the *same* sha yields `should_merge: true`.
+It prints `{clean, sha}`. "Clean" is positive confirmation of mergeability (`mergeStateStatus == CLEAN` plus no failing/pending checks, no conflicts, no open review threads, no changes-requested reviews) — not mere absence of red, so an empty CI rollup right after a push does not look clean. One clean pass is enough: `clean == true` means merge.
 
 **Invariant that keeps this safe:** a finding you hand off to a human stays an *unresolved* review thread (Step 3), so `review_threads` is non-empty → not clean → the gate never merges a PR with an open human decision on it.
 
-When `should_merge == true`, merge against the exact verified commit:
+When `clean == true`, merge against the exact verified commit:
 
 ```bash
 gh pr merge <number> --merge --delete-branch --match-head-commit <gate_sha>
 ```
 
 - Merge method defaults to `--merge` (merge commit); override via `$BABYSIT_MERGE_METHOD` (`squash` | `merge` | `rebase`).
-- `--match-head-commit <gate_sha>` (the `sha` the gate printed) makes the merge fail safely if anyone pushed between the second clean read and now.
+- `--match-head-commit <gate_sha>` (the `sha` the gate printed) makes the merge fail safely if anyone pushed between the clean read and now.
 - **Never use `--admin`.** Branch protection and required approvals must be respected — if GitHub blocks the merge, that is the system working.
 
 After the command, **verify the real state** — `gh pr merge` may *enable* auto-merge or queue the PR rather than merge immediately:
@@ -145,6 +145,6 @@ After the command, **verify the real state** — `gh pr merge` may *enable* auto
 gh pr view <number> --json state -q .state
 ```
 
-- `MERGED`: delete the gate's state file (`rm -f "$(git rev-parse --absolute-git-dir)/babysit-pr-<number>.json"`), report the merge and branch deletion, and **tell the user to stop the loop** (`Esc`).
+- `MERGED`: report the merge and branch deletion, and **tell the user to stop the loop** (`Esc`).
 - Auto-merge enabled / queued: report that and **keep looping** — a later pass sees `merged` via Step 1 and signals done.
-- Merge rejected (method disallowed, branch protection, missing approval, moved HEAD): report the exact reason, reset the streak by writing `{"count":0,"sha":"<gate_sha>"}` to the state file, and keep looping.
+- Merge rejected (method disallowed, branch protection, missing approval, moved HEAD): report the exact reason and keep looping.
