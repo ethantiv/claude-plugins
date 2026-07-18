@@ -30,8 +30,8 @@ One pass is deliberate: continuity comes from running this skill under the `/loo
 
 Parse `$ARGUMENTS` first: a bare integer is the PR number; `--loop` and `--push` change the mode. A token right after either flag that looks like a duration (`5m`, `30m`, `1h`) is the loop interval; the default is `10m`. Both flags accept the same interval argument.
 
-- **`--push [interval]`**: the branch has unpushed or uncommitted work and no PR yet. First invoke the `commit-commands:commit-push-pr` skill to commit, push, and open the PR. Then continue exactly as `--loop` below.
-- **`--loop [interval]`**: do **not** run a single pass yourself. Invoke the `loop` skill with `<interval> /babysit-pr` (append the PR number if one was given, e.g. `10m /babysit-pr 123`) and end the turn — the loop drives every subsequent pass, each of which runs this skill flagless from Step 1.
+- **`--push [interval]`**: the branch has unpushed or uncommitted work and no PR yet. Two mandatory tool calls, in order: **(1)** invoke the `commit-commands:commit-push-pr` skill to commit, push, and open the PR; **(2)** invoke the `loop` skill (see `--loop` below). Step (2) is not optional and not the user's job — the flag *is* the request to start the loop. After commit-push-pr finishes, do **not** slide into Step 1, do not run "one first pass", and do not end the turn telling the user to run `/loop` themselves; the only correct next action is the `loop` skill invocation.
+- **`--loop [interval]`**: do **not** run any monitoring pass yourself — with this flag, Steps 1–5 are executed only by the loop's future iterations, never in this turn. Invoke the `loop` skill via the Skill tool with args `<interval> /babysit-pr` (append the PR number if one was given, e.g. `10m /babysit-pr 123`), then end the turn. A `--loop`/`--push` turn that ends without a completed `loop` skill invocation is a bug.
 - **No flags**: run one pass, starting at Step 1.
 
 ## Step 1 — Snapshot the PR
