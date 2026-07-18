@@ -1,23 +1,23 @@
 # claude-plugins
 
-**Marketplace wtyczek do [Claude Code](https://claude.com/claude-code)**. Dodajesz go raz, potem instalujesz wtyczki jedną komendą. Działają w terminalu, aplikacji desktopowej i rozszerzeniach IDE.
+**A plugin marketplace for [Claude Code](https://claude.com/claude-code)**. Add it once, then install plugins with a single command. They work in the terminal, the desktop app, and the IDE extensions.
 
-## Wtyczki
+## Plugins
 
-| Wtyczka | Język | Co robi |
+| Plugin | Language | What it does |
 | --- | --- | --- |
-| **book-forge** | polski | 12-etapowy pipeline do pisania powieści rojem agentów: od luki rynkowej i pomysłu, przez konspekt i „biblię książki", po pisanie, redakcję i pakiet wydawniczy. Każdy etap kończy obowiązkowa redakcja na naturalną polszczyznę (bez AI-slopu). |
-| **babysit-pr** | uniwersalna | Lokalny odpowiednik `autofix-pr`: monitoruje bieżący pull request i naprawia go w sesji Claude Code – błędy CI, komentarze z review proszące o zmiany, konflikty scalania. |
-| **read-arxiv-paper** | uniwersalna | Pobiera źródło LaTeX artykułu z arXiv, analizuje je i tworzy streszczenie osadzone w kontekście Twojego projektu. |
-| **roadmap** | uniwersalna | Generuje `docs/ROADMAP.md` rojem agentów: wiele perspektyw proponuje funkcje, a panel product managerów ocenia je pod kątem przydatności, sprzedawalności i efektu „wow". |
-| **teach-me** | uniwersalna | Interaktywny korepetytor, który krok po kroku doprowadza Cię do głębokiego zrozumienia tematu (zmiana w kodzie, PR, plik lub pojęcie abstrakcyjne): lista kontrolna, drążenie „dlaczego" i quizy. Nie kończy, dopóki nie potwierdzi pełnego zrozumienia. |
-| **visual-prompt** | uniwersalna | Generuje trzy pliki `.txt` z artystycznymi promptami text-to-image w trzech kontrastujących kierunkach, pisane równolegle przez osobne subagenty. Dwa profile: `art` (grafika, plakaty, fotografia) i `ui` (artystyczne makiety interfejsów). Komendy: `/visual-prompt-art`, `/visual-prompt-ui`. |
-| **dependency-update** | uniwersalna | Skanuje zależności projektu we wszystkich ekosystemach i bezpiecznie je aktualizuje: minor/patch jednym przejściem, major po kolei z osobnym researchem każdego. |
-| **eli** | uniwersalna | Wyjaśnij jak stażyście: tłumaczy dowolne pojęcie, termin lub fragment kodu mądrej osobie, której brakuje tylko wiedzy dziedzinowej — krótko, obrazowo, na przykładach, bez lania wody. |
+| **book-forge** | Polish | A 12-stage novel-writing pipeline run by an agent swarm: from a market gap and an idea, through an outline and a "book bible", to writing, editing, and a submission package. Every stage ends with a mandatory edit for natural Polish (no AI slop). |
+| **babysit-pr** | universal | A local equivalent of `autofix-pr`: it watches the current pull request and fixes it in your Claude Code session, covering CI failures, review comments that request changes, and merge conflicts. After one clean pass it merges the PR and deletes the branch. Run it with `--loop` to keep watching on an interval, or `--push` to commit, push, and open the PR first. |
+| **read-arxiv-paper** | universal | Downloads the LaTeX source of an arXiv paper, analyzes it, and writes a summary grounded in the context of your project. |
+| **roadmap** | universal | Generates `docs/ROADMAP.md` with an agent swarm: multiple perspectives propose features, then a panel of product managers scores them for usefulness, sellability, and wow factor. |
+| **teach-me** | universal | An interactive tutor that walks you step by step to a deep understanding of a topic (a code change, a PR, a file, or an abstract concept): a running checklist, "why" drills, and quizzes. It doesn't stop until your understanding is confirmed. |
+| **visual-prompt** | universal | Generates three `.txt` files with artistic text-to-image prompts in three contrasting directions, written in parallel by separate subagents. Two profiles: `art` (artwork, posters, photography) and `ui` (artistic interface mockups). Commands: `/visual-prompt-art`, `/visual-prompt-ui`. |
+| **dependency-update** | universal | Scans your project's dependencies across all ecosystems and updates them safely: minor/patch in one pass, majors one at a time with separate research for each. |
+| **eli** | universal | Explain like I'm an intern: explains any concept, term, or piece of code to a smart person who just lacks the domain knowledge. Short, concrete, example-driven, no padding. |
 
-## Instalacja
+## Installation
 
-W sesji Claude Code uruchom komendy (`/plugin` to wbudowana komenda Claude Code):
+In a Claude Code session, run these commands (`/plugin` is built into Claude Code):
 
 ```text
 /plugin marketplace add ethantiv/claude-plugins
@@ -31,7 +31,7 @@ W sesji Claude Code uruchom komendy (`/plugin` to wbudowana komenda Claude Code)
 /plugin install eli@ethantiv-plugins
 ```
 
-Albo z terminala, przez CLI:
+Or from the terminal, via the CLI:
 
 ```bash
 claude plugin marketplace add ethantiv/claude-plugins
@@ -45,80 +45,80 @@ claude plugin install dependency-update@ethantiv-plugins
 claude plugin install eli@ethantiv-plugins
 ```
 
-Instaluj tylko to, czego potrzebujesz; wtyczki są od siebie niezależne. Po instalacji sprawdź stan:
+Install only what you need; the plugins are independent of each other. After installing, check the state:
 
 ```bash
 claude plugin marketplace list
 ```
 
-### Aktualizacje
+### Updates
 
-Marketplace jest dodawany przez `git clone`, więc wtyczki aktualizują się przy odświeżeniu marketplace'u, bez ponownej instalacji:
+The marketplace is added via `git clone`, so plugins update when you refresh the marketplace, with no reinstall:
 
 ```bash
 claude plugin marketplace update ethantiv-plugins
 ```
 
-## Wymagania
+## Requirements
 
-Wszystkie wtyczki potrzebują działającego Claude Code. Poza tym:
+All plugins need a working Claude Code. Beyond that:
 
 **book-forge**
-- **Python 3** – tylko biblioteka standardowa, bez `pip install`.
-- **Node.js** – walidacja generowanych artefaktów HTML (`node --check`).
-- Narzędzie **Workflow** (rój agentów); bez niego skille mają zapasowe wywołanie agentów `Task`.
-- Skill **`/humanizer:humanizer`** – obowiązkowy przebieg redakcji językowej.
-- Skill **agent-browser** – research i weryfikacja realiów; strona projektu: [agent-browser.dev](https://agent-browser.dev).
+- **Python 3**, standard library only, no `pip install`.
+- **Node.js**, used to validate generated HTML artifacts (`node --check`).
+- The **Workflow** tool (agent swarm); without it the skills fall back to parallel `Task` agents.
+- The **`/humanizer:humanizer`** skill, a mandatory language-editing pass.
+- The **agent-browser** skill, used for research and fact checking; project page: [agent-browser.dev](https://agent-browser.dev).
 
-Oba skille zainstalujesz komendami:
+Install both skills with:
 
 ```bash
 npx skills add https://github.com/softaworks/agent-toolkit --skill humanizer
 npx skills add https://github.com/vercel-labs/agent-browser --skill agent-browser
 ```
 
-agent-browser ma dwie warstwy: **skill** to integracja z Claude Code (powyższa komenda `npx skills add`), a **CLI** to samo narzędzie sterujące przeglądarką, którego skill używa pod spodem. **Skill nie zadziała bez CLI** — to nie alternatywa, tylko zależność, więc zacznij właśnie od niego. CLI z pobraną przeglądarką instalujesz tak:
+agent-browser has two layers: the **skill** is the Claude Code integration (the `npx skills add` command above), and the **CLI** is the browser-driving tool the skill uses under the hood. **The skill won't work without the CLI.** It's a dependency, not an alternative, so start with the CLI:
 
 ```bash
-npm install -g agent-browser      # wszystkie platformy
+npm install -g agent-browser      # all platforms
 brew install agent-browser        # macOS
-agent-browser install             # pobranie Chrome (przy pierwszym uruchomieniu)
+agent-browser install             # downloads Chrome on first run
 
-# albo bez instalacji
+# or without installing
 npx agent-browser open example.com
 ```
 
 **babysit-pr**
-- **`gh`** (GitHub CLI, zalogowane), **`jq`**, **`git`** dostępne w `PATH`.
+- **`gh`** (GitHub CLI, logged in), **`jq`**, and **`git`** available in `PATH`.
 
 **read-arxiv-paper**
-- **`curl`** i **`tar`** (zwykle są w systemie) – pobranie i rozpakowanie źródła z arXiv.
+- **`curl`** and **`tar`** (usually already on your system), used to download and unpack the arXiv source.
 
 **roadmap**
-- Narzędzie **Workflow** (rój agentów); bez niego skill ma zapasowe wywołanie agentów `Task`.
+- The **Workflow** tool (agent swarm); without it the skill falls back to parallel `Task` agents.
 
 **teach-me**, **eli**
-- Bez dodatkowych zależności poza Claude Code.
+- No dependencies beyond Claude Code.
 
 **visual-prompt**
-- Narzędzie **Workflow** (rój agentów) do równoległego pisania promptów; bez niego skille mają zapasowe wywołanie agentów `Task`.
+- The **Workflow** tool (agent swarm) for writing prompts in parallel; without it the skills fall back to parallel `Task` agents.
 
 **dependency-update**
-- Menedżery pakietów Twoich ekosystemów (np. `npm`, `pip`, `cargo`, `go`) dostępne w `PATH` — używane do sprawdzania i instalowania aktualizacji.
+- The package managers of your ecosystems (e.g. `npm`, `pip`, `cargo`, `go`) available in `PATH`, used to check for and install updates.
 
-## Użycie
+## Usage
 
-Po instalacji każda wtyczka udostępnia swoje skille jako komendy `/<wtyczka>:<skill>`.
+After installation, each plugin exposes its skills as `/<plugin>:<skill>` commands.
 
-- **book-forge** – pełny pipeline opisany w [`plugins/book-forge/README.md`](plugins/book-forge/README.md); wizualny przewodnik po 12 etapach: [`przewodnik.html`](plugins/book-forge/przewodnik.html). Start: `/book-forge:market-report` (lub lekki `/book-forge:idea-spark`).
-- **babysit-pr** – wywołaj `/babysit-pr` na gałęzi z otwartym PR, żeby monitorować i naprawiać CI, review i konflikty lokalnie. Dla ciągłego pilnowania uruchom go w pętli, np. `/loop 10m /babysit-pr` – Claude sprawdza PR co 10 minut.
-- **read-arxiv-paper** – `/read-arxiv-paper:read-arxiv-paper` z URL-em lub ID artykułu (np. `2401.12345`); dostajesz streszczenie w kontekście repo.
-- **roadmap** – `/roadmap:roadmap` zbiera pomysły rojem agentów i zapisuje `docs/ROADMAP.md`.
-- **teach-me** – `/teach-me:teach-me` z tematem (zmiana w kodzie, PR, plik lub pojęcie); prowadzi naukę aż do potwierdzonego zrozumienia.
-- **visual-prompt** – `/visual-prompt-art` lub `/visual-prompt-ui` (albo opisz potrzebę naturalnym językiem) generuje trzy pliki `.txt` z promptami w kontrastujących kierunkach.
-- **dependency-update** – `/dependency-update:dependency-update` skanuje i bezpiecznie aktualizuje zależności projektu.
-- **eli** – `/eli:eli` z pojęciem, terminem lub fragmentem kodu; dostajesz krótkie, obrazowe wyjaśnienie.
+- **book-forge**: the full pipeline is described in [`plugins/book-forge/README.md`](plugins/book-forge/README.md); a visual guide to the 12 stages: [`przewodnik.html`](plugins/book-forge/przewodnik.html). Start with `/book-forge:market-report` (or the lighter `/book-forge:idea-spark`).
+- **babysit-pr**: run `/babysit-pr` on a branch with an open PR to monitor and fix CI, reviews, and conflicts locally; once a pass comes back clean, it merges the PR and deletes the branch. `/babysit-pr --loop 10m` keeps watching by re-running the check every 10 minutes (the interval is yours to pick). No PR yet? `/babysit-pr --push` commits your work, pushes it, opens the PR, and then starts the same watch loop.
+- **read-arxiv-paper**: `/read-arxiv-paper:read-arxiv-paper` with a paper URL or ID (e.g. `2401.12345`); you get a summary in the context of your repo.
+- **roadmap**: `/roadmap:roadmap` gathers ideas with an agent swarm and writes `docs/ROADMAP.md`.
+- **teach-me**: `/teach-me:teach-me` with a topic (a code change, a PR, a file, or a concept); it teaches until your understanding is confirmed.
+- **visual-prompt**: `/visual-prompt-art` or `/visual-prompt-ui` (or just describe what you need) generates three `.txt` files with prompts in contrasting directions.
+- **dependency-update**: `/dependency-update:dependency-update` scans and safely updates your project's dependencies.
+- **eli**: `/eli:eli` with a concept, term, or piece of code; you get a short, vivid explanation.
 
-## Licencja
+## License
 
-[MIT](LICENSE). Możesz swobodnie używać, modyfikować i rozpowszechniać.
+[MIT](LICENSE). Use, modify, and redistribute freely.

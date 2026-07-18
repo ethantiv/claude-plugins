@@ -8,7 +8,7 @@ description: >
   CI, review comments requesting changes, and merge conflicts — all in the
   local session, not a remote cloud session. After one clean pass it merges the
   PR and deletes its branch on its own.
-argument-hint: "[PR number]"
+argument-hint: "[PR number] [--loop [interval]] [--push [interval]]"
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob
 ---
 
@@ -16,19 +16,27 @@ allowed-tools: Bash, Read, Edit, Write, Grep, Glob
 
 Run **one monitoring pass** over a pull request: detect its state, fix what is broken, push the fix to the PR branch, then report. This is the local-session counterpart of the built-in `autofix-pr` command — the difference is that a local session receives no GitHub webhooks, so state is gathered by polling `gh` rather than arriving as push notifications.
 
-One pass is deliberate: continuity comes from running this skill under the `/loop` skill, e.g. `/loop 10m /babysit-pr`. Each pass is self-contained and emits a clear terminal signal so the loop knows when to stop.
+One pass is deliberate: continuity comes from running this skill under the `/loop` skill, e.g. `/loop 10m /babysit-pr` — or the `--loop` shorthand, which sets that up for you (Step 0). Each pass is self-contained and emits a clear terminal signal so the loop knows when to stop.
 
 **Auto-merge is always on.** The skill closes the loop by itself: after **one clean pass** (green CI, no conflicts, no open reviewer comments) it merges the PR and deletes its branch, then signals the loop to stop. See Step 5.
 
 ## When NOT to use
 
-- No open PR exists for the branch yet — open the PR first.
+- No open PR exists for the branch yet — open the PR first (or run with `--push`, which does it for you).
 - The user wants a one-off review or critique of the diff — that is `/code-review`, not this.
 - Changes need design discussion or a human decision — this skill fixes mechanical breakage, it does not negotiate.
 
+## Step 0 — Parse flags
+
+Parse `$ARGUMENTS` first: a bare integer is the PR number; `--loop` and `--push` change the mode. A token right after either flag that looks like a duration (`5m`, `30m`, `1h`) is the loop interval; the default is `10m`. Both flags accept the same interval argument.
+
+- **`--push [interval]`**: the branch has unpushed or uncommitted work and no PR yet. First invoke the `commit-commands:commit-push-pr` skill to commit, push, and open the PR. Then continue exactly as `--loop` below.
+- **`--loop [interval]`**: do **not** run a single pass yourself. Invoke the `loop` skill with `<interval> /babysit-pr` (append the PR number if one was given, e.g. `10m /babysit-pr 123`) and end the turn — the loop drives every subsequent pass, each of which runs this skill flagless from Step 1.
+- **No flags**: run one pass, starting at Step 1.
+
 ## Step 1 — Snapshot the PR
 
-Parse `$ARGUMENTS`: a bare integer is the PR number; pass it to the snapshot script. With no PR number it resolves the open PR for the current branch:
+Take the PR number parsed in Step 0 (if any) and pass it to the snapshot script. With no PR number it resolves the open PR for the current branch:
 
 ```bash
 "${CLAUDE_PLUGIN_ROOT}/scripts/pr-snapshot.sh" <PR_NUMBER or empty>
