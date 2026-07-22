@@ -49,6 +49,23 @@ Hard rules:
 - **Horizontal rules before headings** → remove; the heading is the break.
 - **Tables for prose** — tables holding sentences instead of data → convert to prose.
 
+## Leftover LLM artifacts
+
+Certain proof of AI generation — grep each file for these before reading, and delete every hit (the whole tag, keeping any human-readable text it wraps):
+
+- ChatGPT: `oaicite`, `contentReference`, `turn0search`, `citeturn`
+- Gemini: `[cite: 1]`-style tags, `[cite_start]`
+- Grok: `grok_card`, `render_inline_citation`
+- DeepSeek: lenticular-bracket citations `【…】`
+- Perplexity: `ppl-ai-file-upload`
+- Generic: `:contentReference[oaicite:0]{index=0}`, stray `[1]`-style citation markers pointing at nothing, unresolved placeholders (`[Company Name]`, `[insert date]`)
+
+## Link and citation hygiene
+
+- **Tracking parameters** — strip `?utm_source=…` (and other `utm_*`, `ref=`) from URLs; `utm_source=chatgpt.com` is itself an AI tell.
+- **Suspicious citations** — a DOI/ISBN that looks malformed, a source whose title doesn't match the claim, or a reference with no locator (no page, no URL): do not "fix" by guessing and do not delete silently — leave it and flag it in the summary as unverified.
+- **Fabrication risk** — never repair a broken citation by inventing a plausible one; that converts detectable slop into undetectable misinformation.
+
 ## AI vocabulary
 
 Replace with the plain equivalent, or delete the phrase when it carries no content. A single occurrence can be innocent — density is the signal; when several of these cluster, rewrite the passage.
