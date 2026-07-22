@@ -38,9 +38,9 @@ Uruchom rój według **`references/workflow-swarm.md`**. Fazy:
 2. **Ocena** — agent literacki sprawdza: czy się sprzedaje, czy comps są ujęte przez odbiorcę (nie imitację), czy opis nie zdradza zakończenia, czy synopsis jest kompletny, czy nie ma zmyślonych referencji, a w serii — czy pitch serii nie psuje samodzielności tomu 1. Poprawki.
 3. **Redakcja PL** — naturalna polszczyzna.
 
-## Krok 3 — humanizer (główna sesja)
+## Krok 3 — unslop (główna sesja)
 
-Na prozie pakietu (pitch, opis z okładki, synopsis, list) uruchom `/humanizer:humanizer`. Nazw własnych z glosariusza i tytułów porównawczych nie zniekształcaj.
+Na prozie pakietu (pitch, opis z okładki, synopsis, list) uruchom `/unslop:unslop`. Nazw własnych z glosariusza i tytułów porównawczych nie zniekształcaj.
 
 ## Krok 4 — zapis i walidacja
 
@@ -59,7 +59,7 @@ Pokaż autorowi: logline, długość książki, comp titles (ujęte przez odbior
 | Komponenty | logline, pitch, opis (bez spoilerów), synopsis (z końcem), list, comps |
 | Comps | „dla czytelników X i Y”, nie „w stylu autora Z” |
 | Uczciwość | Bez zmyślonych nagród/sprzedaży/referencji; bio = pole do uzupełnienia |
-| Język | Naturalna polszczyzna + `/humanizer:humanizer` |
+| Język | Naturalna polszczyzna + `/unslop:unslop` |
 | Wynik | `pakiet.md` + `pakiet-<slug>.html` |
 
 ## Najczęstsze błędy
@@ -68,4 +68,4 @@ Pokaż autorowi: logline, długość książki, comp titles (ujęte przez odbior
 - **Spoiler w opisie z okładki.** Naprawa: opis kusi, synopsis zdradza — rozdziel.
 - **Zmyślone referencje/nagrody.** Naprawa: tylko fakty; bio jako pole do uzupełnienia.
 - **Synopsis bez zakończenia.** Naprawa: agent musi znać całość — synopsis kompletny.
-- **Anglicyzmy w materiałach.** Naprawa: słownik z `polish-style.md` + humanizer.
+- **Anglicyzmy w materiałach.** Naprawa: słownik z `polish-style.md` + unslop.

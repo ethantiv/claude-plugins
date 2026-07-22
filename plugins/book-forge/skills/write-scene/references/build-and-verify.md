@@ -25,9 +25,9 @@ PY
 
 Rój zwraca `propozycje` jako obiekt (nowe fakty, nowe nazwy z kategorią, zmiany `_stan` postaci, dotknięte zasiewy). Nie zapisuj ich do pliku ani do kanonu — przekaż jako wejście do bramki `continuity-check` (jedyny etap z prawem zapisu przez `bible.py`). Kształt obiektu zgodny z `args.propozycje` w `${CLAUDE_PLUGIN_ROOT}/skills/continuity-check/references/workflow-swarm.md`.
 
-## Bez humanizera na tym etapie
+## Bez unslopa na tym etapie
 
-Nie uruchamiaj `/humanizer:humanizer`. Kolejność redakcji prozy (patrz `${CLAUDE_PLUGIN_ROOT}/shared/biblia-spec.md`): treść (tu) → pogłębienie + dev-edit (`revise-scene`) → kontrola ciągłości (`continuity-check`) → humanizer → korekta PL (`polish-pl`). Humanizer przed kontrolą ciągłości mógłby złamać fakt, głos lub odmianę nazw.
+Nie uruchamiaj `/unslop:unslop`. Kolejność redakcji prozy (patrz `${CLAUDE_PLUGIN_ROOT}/shared/biblia-spec.md`): treść (tu) → pogłębienie + dev-edit (`revise-scene`) → kontrola ciągłości (`continuity-check`) → unslop → korekta PL (`polish-pl`). Unslop przed kontrolą ciągłości mógłby złamać fakt, głos lub odmianę nazw.
 
 ## Walidacja (obowiązkowa)
 

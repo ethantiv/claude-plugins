@@ -68,7 +68,7 @@ return {
 
 ## Po powrocie roju (główna sesja)
 
-1. **Humanizer** na opisowych partiach ustaleń.
+1. **Unslop** na opisowych partiach ustaleń.
 2. **Zapis do biblii** (przez `bible.py`): dopisz `fakty` i `zrodla` pętlą `bible.append_record(...)`; doprecyzowanie istniejących `swiat.zasady` (RO) tylko po potwierdzeniu autora (`bible.write_section('swiat', ...)`); na końcu `bible.render_index()`. Szczegóły: `build-and-verify.md`.
 3. **Bez osobnych artefaktów** (`research.md`/`.html` nie powstają) — wynik żyje w biblii; pokaż autorowi nieustalone i oflagowane pytania.
 

@@ -10,7 +10,7 @@ Szablon: `${CLAUDE_PLUGIN_ROOT}/skills/market-report/assets/report-template.html
 
 ## Punkt wstrzyknięcia danych
 
-W szablonie jest punkt: `const DATA = /*__INJECT_DATA__*/ null;`. Dane `DATA` (po polsku, po redakcji i humanizerze) zapisz jako **plik JSON** i wstrzyknij skryptem z sekcji „Wstrzyknięcie” (przez `json.dumps`) — nie sklejaj literału ręcznie.
+W szablonie jest punkt: `const DATA = /*__INJECT_DATA__*/ null;`. Dane `DATA` (po polsku, po redakcji i unslopie) zapisz jako **plik JSON** i wstrzyknij skryptem z sekcji „Wstrzyknięcie” (przez `json.dumps`) — nie sklejaj literału ręcznie.
 
 ## Kształt obiektu DATA (dokładnie taki — JS render tego oczekuje)
 

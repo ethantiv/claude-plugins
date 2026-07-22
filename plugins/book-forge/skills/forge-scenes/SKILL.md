@@ -33,7 +33,7 @@ Dla każdego id z zakresu:
 1. `bible.py check-stage write-scene` (karty mogły się zmienić) → **`/book-forge:write-scene <id>`** z zapamiętanymi odpowiedziami; przekaż instrukcję **pominięcia auto-handoffu** — bramki prowadzi orkiestrator (patrz adnotacja w write-scene, Krok 5).
 2. **`/book-forge:revise-scene <id>`** z limitem prób i uwagami z Kroku 1 (bez ponownych pytań).
 3. **`/book-forge:continuity-check <id>`** z obiektem `propozycje` z kroków 1–2. **PASS** → dalej. **CONFLICT RO** → twardy stop: pokaż konflikt autorowi (`AskUserQuestion`), zgodnie z regułami bramki — taśma nie kanonizuje niczego „na ślepo".
-4. **`/book-forge:polish-pl <id>`** (humanizer → korekta PL, powstaje `korekta-<id>.md`).
+4. **`/book-forge:polish-pl <id>`** (unslop → korekta PL, powstaje `korekta-<id>.md`).
 5. Linia postępu: `bible.py status` → pokaż „scena X/N gotowa · słowa Y / budżet (Z%)".
 
 **Punkty zatrzymania (jedyne):** konflikt RO bramki; wyczerpany limit rewizji przy polityce „pytaj"; nieprzechodzący preflight. Wszystko inne płynie bez pytań.

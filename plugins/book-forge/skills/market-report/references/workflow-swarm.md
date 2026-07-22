@@ -4,7 +4,7 @@ Skopiuj ten skrypt do narzędzia **Workflow** i podstaw dane wejściowe przez `a
 
 > **Uwaga o `args` (częsta pułapka).** Narzędzie Workflow bywa, że podaje `args` do skryptu jako **string JSON**, nie jako gotowy obiekt — wtedy `args.genre` zwróci `undefined`, a puste pole wpłynie do promptu każdego agenta (cały rój zwróci „gatunek: undefined” i odmówi pracy). Skrypt poniżej parsuje `args` odpornie i **przerywa z błędem**, gdy brakuje gatunku lub czytelnika — to celowa bramka wejścia (zasada „fail loud”). Jeśli widzisz ten błąd, sprawdź, czy w wywołaniu Workflow faktycznie przekazujesz `genre` i `reader`.
 
-> **Wariant odchudzony (szybszy).** Ten skrypt to lżejsza wersja: **6 perspektyw rynku** (zamiast 11), **4 obiektywy luk** (zamiast 6), **6 generatorów pomysłów** (zamiast 8) z **audytem różnorodności wtopionym w syntezę** (bez osobnego agenta), **3 sędziów na pomysł** (zamiast 5) **bez ponownego WebSearch w ocenie** (oceniają na danych z fazy 1) oraz **bez osobnej fazy redakcji PL** (zasady polszczyzny wbite w `ROLE`; finalny szlif robi obowiązkowy `/humanizer:humanizer` w głównej sesji). Core bez zmian: ugruntowanie rynkowe przez WebSearch + 10 bestsellerów, 3 luki, 5 pomysłów, oceny, werdykt.
+> **Wariant odchudzony (szybszy).** Ten skrypt to lżejsza wersja: **6 perspektyw rynku** (zamiast 11), **4 obiektywy luk** (zamiast 6), **6 generatorów pomysłów** (zamiast 8) z **audytem różnorodności wtopionym w syntezę** (bez osobnego agenta), **3 sędziów na pomysł** (zamiast 5) **bez ponownego WebSearch w ocenie** (oceniają na danych z fazy 1) oraz **bez osobnej fazy redakcji PL** (zasady polszczyzny wbite w `ROLE`; finalny szlif robi obowiązkowy `/unslop:unslop` w głównej sesji). Core bez zmian: ugruntowanie rynkowe przez WebSearch + 10 bestsellerów, 3 luki, 5 pomysłów, oceny, werdykt.
 
 Zasady wbudowane w prompty:
 - **brief autora** (`subgenre, conventions, protagonist, protAge, protType, form, format, tone, spice, taboo`) wstrzyknięty do `ROLE`/`BRIEF` jako twarde wymagania; przy „dowolny/zróżnicuj" rój nie narzuca persony,
@@ -13,7 +13,7 @@ Zasady wbudowane w prompty:
 - rola: starszy redaktor do spraw zakupów z 20-letnim doświadczeniem,
 - **twarda blokada gatunku**: każdy tytuł, każda luka i każdy pomysł MUSI być w podanym gatunku; po fazie 1 działa bramka walidacyjna, która odrzuca pozycje spoza gatunku i **uzupełnia je z sieci TYLKO, gdy po filtrze zostało mniej niż 10** (bez tego rój dryfuje ku temu, co dominuje listy ogólne — np. romantasy),
 - świeże dane przez **WebSearch** oraz **agent-browser** (z `Bash`) **w fazach 1-2**; **faza oceny NIE używa WebSearch** — sędziowie oceniają na danych rynkowych zebranych w fazie 1; cytuj źródła,
-- proza wraca już po polsku (zasady w `ROLE`), w polach zgodnych z kształtem `DATA` (patrz `build-and-verify.md`); osobnej fazy redakcji nie ma — patrz `${CLAUDE_PLUGIN_ROOT}/shared/polish-style.md` i obowiązkowy humanizer w głównej sesji.
+- proza wraca już po polsku (zasady w `ROLE`), w polach zgodnych z kształtem `DATA` (patrz `build-and-verify.md`); osobnej fazy redakcji nie ma — patrz `${CLAUDE_PLUGIN_ROOT}/shared/polish-style.md` i obowiązkowy unslop w głównej sesji.
 
 ```javascript
 export const meta = {
@@ -209,7 +209,7 @@ return {
 
 ## Po powrocie roju agentów (główna sesja)
 
-1. **Humanizer** — wywołaj `/humanizer:humanizer` i nanieś poprawki na prozę (patrz `${CLAUDE_PLUGIN_ROOT}/shared/polish-style.md`). To **jedyny** przebieg redakcji (osobna faza w roju została usunięta, proza wraca po polsku z `ROLE`) — obowiązkowy.
+1. **Unslop** — wywołaj `/unslop:unslop` i nanieś poprawki na prozę (patrz `${CLAUDE_PLUGIN_ROOT}/shared/polish-style.md`). To **jedyny** przebieg redakcji (osobna faza w roju została usunięta, proza wraca po polsku z `ROLE`) — obowiązkowy.
 2. **Lokalizacja tytułów** — zweryfikuj polskie wydania przez agent-browser **tylko dla 10 bestsellerów** (nie dla comps), w **równoległym batchu** sesji (best-effort: błąd/timeout → zostaw tytuł oryginalny). Procedura i pułapki: `${CLAUDE_PLUGIN_ROOT}/shared/polish-style.md`.
 3. **Mapowanie do `DATA`** i budowa HTML — `build-and-verify.md`.
 

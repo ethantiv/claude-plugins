@@ -1,6 +1,6 @@
 # book-forge — pipeline i planowane etapy
 
-Plugin prowadzi autora od pomysłu do gotowego maszynopisu, etap po etapie. Każdy etap wykonuje rój agentów, z obowiązkową redakcją na naturalną polszczyznę (humanizer), a od momentu pisania prozy ze wspólnym fundamentem — **biblią książki** (`${CLAUDE_PLUGIN_ROOT}/shared/biblia-spec.md`).
+Plugin prowadzi autora od pomysłu do gotowego maszynopisu, etap po etapie. Każdy etap wykonuje rój agentów, z obowiązkową redakcją na naturalną polszczyznę (unslop), a od momentu pisania prozy ze wspólnym fundamentem — **biblią książki** (`${CLAUDE_PLUGIN_ROOT}/shared/biblia-spec.md`).
 
 Status: ✅ gotowe · 🔜 planowane.
 
@@ -17,7 +17,7 @@ Status: ✅ gotowe · 🔜 planowane.
 | 7–10T | `forge-scenes` | ✅ | Tryb taśmowy pętli scen: pytania raz, potem write→revise→continuity→polish dla N scen | nie pisze sam — bramki w wołanych etapach |
 | 8 | `revise-scene` | ✅ | Pogłębienie prozą + redakcja developmentalna (generuj→oceń) | czyta kanon fabularny, stawkę, łuki; notatka QA |
 | 9 | `continuity-check` | ✅ | Bramka spójności (jedyny write-back do kanonu w pętli prozy) | czyta wszystko; **pisze** runtime + streszczenie sceny |
-| 10 | `polish-pl` | ✅ | Humanizer (zakotwiczony stylem) → korekta PL + walidacja nazw | czyta kartę stylu i glosariusz |
+| 10 | `polish-pl` | ✅ | Unslop (zakotwiczony stylem) → korekta PL + walidacja nazw | czyta kartę stylu i glosariusz |
 | 11 | `assemble-book` | ✅ | Złożyć sceny w rozdziały i książkę; przeglądy całości (domknięcie łuku, wypłata zasiewów, tempo); arkusze wydawnicze, echo-hunter, work-lista `redakcja-todo.md` | czyta zasiewy i wypłaty, oś czasu, motyw, streszczenia |
 | 12 | `publishing-package` | ✅ | Pakiet sprzedażowy: logline, pitch, synopsis, list do agenta | czyta meta/postacie/stawkę |
 
@@ -43,10 +43,10 @@ Wynikają z analizy wielu perspektyw (pisarz, redaktor prowadzący, redaktor ję
 - **Jednostką jest SCENA, nie rozdział-esej:** cel postaci → konflikt → zwrot (zmiana wartości). Przemianę przechodzi **bohater** (rana → kłamstwo → zmiana), nie „czytelnik”.
 - **Głos = narrator + idiolekty postaci**, nie „głos autora”. Jeden ton dla wszystkich spłaszcza obsadę.
 - **Bez wstrzykiwania anegdot/statystyk i zwrotów „stop and think”** — to wytrąca czytelnika z lektury. Scenę wzmacnia się środkami prozy (podtekst, charakteryzacja przez działanie, detal sensoryczny, mikrozwrot, zasiew). Research świata trafia do biblii z cytowaniem, nie do prozy.
-- **Bez sztywnych metryk** („co N słów”, „cliffhanger co rozdział”, reguła trójki) — generują schematyczność, którą humanizer ma usuwać.
+- **Bez sztywnych metryk** („co N słów”, „cliffhanger co rozdział”, reguła trójki) — generują schematyczność, którą unslop ma usuwać.
 - **Pola RO i RUNTIME** w biblii — bramka ciągłości waliduje ustalenia (CONFLICT), a zapisuje tylko stan bieżący. To jedyne miejsce zapisu do kanonu.
 - **Proza sekwencyjna** (scena N widzi N-1); rój do researchu, krytyki i wariantów. Równolegle pisze się tylko sceny niezależne („frozen prefix”).
-- **Mikrokolejność redakcji:** humanizer NAJPIERW (zakotwiczony kartą stylu), potem korekta polonistyczna i walidacja glosariusza oraz nazw OSTATNIA (humanizer nie psuje odmiany nazw ani interpunkcji dialogowej).
+- **Mikrokolejność redakcji:** unslop NAJPIERW (zakotwiczony kartą stylu), potem korekta polonistyczna i walidacja glosariusza oraz nazw OSTATNIA (unslop nie psuje odmiany nazw ani interpunkcji dialogowej).
 - **Limit iteracji i eskalacja:** po N nieudanych próbach — eskalacja do autora albo `accept-with-debt` z wpisem w logu QA (nigdy cicha, nieskończona pętla).
 
 ## Kryteria bramki redakcyjnej (fabularne, nie eseistyczne)

@@ -15,7 +15,7 @@ const DATA = {
 };
 ```
 
-`meta.words` z `ksiazka.md`; reszta z wyniku roju (po humanizerze). Placeholdery `{{TITLE}}`, `{{GENRE}}`; wstrzyknięcie jak w pozostałych szablonach — `DATA` zapisz jako plik JSON i wstrzyknij przez `json.dumps` (wzorzec w `outline-to-scenes`/`market-report`).
+`meta.words` z `ksiazka.md`; reszta z wyniku roju (po unslopie). Placeholdery `{{TITLE}}`, `{{GENRE}}`; wstrzyknięcie jak w pozostałych szablonach — `DATA` zapisz jako plik JSON i wstrzyknij przez `json.dumps` (wzorzec w `outline-to-scenes`/`market-report`).
 
 ## Format `pakiet.md`
 
@@ -34,6 +34,6 @@ Sprawdź ręcznie:
 - **Tytuły porównawcze** każdy ujęty jako „dla czytelników X i Y” — żadnego „w stylu autora Z”.
 - **Opis z okładki** nie zdradza zakończenia; **synopsis** je zawiera.
 - **Brak zmyślonych** nagród/sprzedaży/cytatów; bio i kontakt to pola do uzupełnienia.
-- **Język** naturalny, bez anglicyzmów (po humanizerze i redakcji).
+- **Język** naturalny, bez anglicyzmów (po unslopie i redakcji).
 
 To finalny etap pipeline'u — po nim autor ma maszynopis (`ksiazka.md`) i komplet materiałów do wysyłki.

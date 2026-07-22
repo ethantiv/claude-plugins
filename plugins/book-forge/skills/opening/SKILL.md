@@ -1,7 +1,7 @@
 ---
 name: opening
 description: >
-  Użyj, gdy autor ma konspekt i biblię i chce mocny początek powieści — wyzwalacze: "początek książki", "pierwsza strona", "pierwsza scena", "mocne otwarcie", "opening", "book-forge początek". Rój agentów pisze 3 warianty pierwszej sceny (filmowa scena, mocne zdanie otwierające, intymna spowiedź bohatera), każdy zakotwiczony w głosie i świecie z biblii, po czym ocenia je kryteriami fabularnymi, sprawdza zgodność z kanonem i wygładza (humanizer → korekta PL). Wynik: .book-forge/poczatek.md + interaktywny HTML. Etap 4 pipeline'u book-forge — pierwszy etap pisania prozy.
+  Użyj, gdy autor ma konspekt i biblię i chce mocny początek powieści — wyzwalacze: "początek książki", "pierwsza strona", "pierwsza scena", "mocne otwarcie", "opening", "book-forge początek". Rój agentów pisze 3 warianty pierwszej sceny (filmowa scena, mocne zdanie otwierające, intymna spowiedź bohatera), każdy zakotwiczony w głosie i świecie z biblii, po czym ocenia je kryteriami fabularnymi, sprawdza zgodność z kanonem i wygładza (unslop → korekta PL). Wynik: .book-forge/poczatek.md + interaktywny HTML. Etap 4 pipeline'u book-forge — pierwszy etap pisania prozy.
 argument-hint: "(opcjonalnie ścieżki do konspektu/biblii — skill i tak dopyta)"
 allowed-tools: Workflow, AskUserQuestion, Skill, Bash, Read, Write, Edit, WebSearch, WebFetch
 ---
@@ -36,9 +36,9 @@ Uruchom rój według **`references/workflow-swarm.md`**. Fazy:
 3. **Kontrola ciągłości** — każdy wariant porównany z biblią: nazwy i ich odmiana, opisy postaci, zasady świata, POV/czas. Zgłoś CONFLICT, jeśli coś przeczy kanonowi.
 4. **Werdykt** — który wariant rozwijać i dlaczego (lub jak je połączyć).
 
-## Krok 3 — humanizer, potem korekta PL (kolejność!)
+## Krok 3 — unslop, potem korekta PL (kolejność!)
 
-Na prozie wariantów: **najpierw `/humanizer:humanizer`** (zakotwiczony kartą stylu z biblii), **potem** finalna korekta polonistyczna i walidacja nazw z glosariusza (humanizer bazuje na wzorcach angielskich i mógłby zepsuć odmianę nazw lub interpunkcję dialogową — dlatego korekta PL jest ostatnia). Szczegóły: `${CLAUDE_PLUGIN_ROOT}/shared/biblia-spec.md` (sekcja „kolejność redakcji”).
+Na prozie wariantów: **najpierw `/unslop:unslop`** (zakotwiczony kartą stylu z biblii), **potem** finalna korekta polonistyczna i walidacja nazw z glosariusza (unslop mógłby zepsuć odmianę nazw lub interpunkcję dialogową — dlatego korekta PL jest ostatnia). Szczegóły: `${CLAUDE_PLUGIN_ROOT}/shared/biblia-spec.md` (sekcja „kolejność redakcji”).
 
 ## Krok 4 — zapis i walidacja
 
@@ -64,7 +64,7 @@ Pokaż autorowi: ścieżki plików, rekomendowany wariant z uzasadnieniem, oceny
 | Głos | Narrator + idiolekty z biblii (NIE „głos autora”) |
 | Ocena | Kryteria fabularne (haczyk, głos, POV, pokazuj nie opowiadaj, tempo) |
 | Spójność | Kontrola względem biblii; CONFLICT zamiast cichej zmiany |
-| Redakcja | Humanizer NAJPIERW, korekta PL + walidacja nazw OSTATNIA |
+| Redakcja | Unslop NAJPIERW, korekta PL + walidacja nazw OSTATNIA |
 | Wynik | `poczatek-<slug>.html` + `.book-forge/poczatek.md`; propozycje runtime tylko w podsumowaniu (zapis robi później `continuity-check`) |
 
 ## Najczęstsze błędy
@@ -73,4 +73,4 @@ Pokaż autorowi: ścieżki plików, rekomendowany wariant z uzasadnieniem, oceny
 - **Ekspozycja/przeładowanie informacjami na wejściu.** Naprawa: konkret sensoryczny i akcja; świat dawkuj.
 - **Haczyk doklejony.** Naprawa: napięcie ma wynikać ze sceny, nie z gadżetu.
 - **Złamanie kanonu** (nazwa, opis, POV). Naprawa: kontrola ciągłości + glosariusz.
-- **Humanizer po korekcie PL.** Naprawa: humanizer najpierw, korekta PL ostatnia.
+- **Unslop po korekcie PL.** Naprawa: unslop najpierw, korekta PL ostatnia.

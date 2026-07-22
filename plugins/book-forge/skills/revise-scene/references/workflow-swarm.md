@@ -35,7 +35,7 @@ const PROP = { type:'object', required:['fakty','nazwy','zasiewy_dotkniete'], pr
   zasiewy_dotkniete:{type:'array',items:{type:'string'}} } }
 const DISR = { type:'object', required:['text','operacje','celowe_odstepstwa'], properties:{
   text:{type:'string'}, operacje:{type:'array',items:{type:'string'}},
-  celowe_odstepstwa:{type:'array',items:{type:'string'}} } }   // fragmenty chronione przed korektą/humanizerem w polish-pl
+  celowe_odstepstwa:{type:'array',items:{type:'string'}} } }   // fragmenty chronione przed korektą/unslopem w polish-pl
 
 phase('Rewizja')
 // Werdykt liczymy DETERMINISTYCZNIE z ocen (nie ufamy polu `verdict` od agenta — inaczej ta sama
@@ -76,7 +76,7 @@ const CHAOS = (W.postacie || []).map(p => (p && p.chaos) ? { imie: p.imie, chaos
 let celowe_odstepstwa = []
 if (!FORMA) {
   const disr = await agent(
-    `Jesteś redaktorem anty-przewidywalności. Tekst jest poprawny — Twoim zadaniem jest USUNĄĆ jego gładką sztuczność, NIE „poprawiać”. Wykonaj 2-4 operacje (więcej, im bardziej tekst jest przewidywalny):\n- wstrzyknij JEDNĄ nieistotną myśl z obsesji postaci (z profilu chaosu, bez uzasadnienia — postać nie reflektuje, czemu o tym myśli);\n- w jednym miejscu złam nadmierną kontrolę emocji (postać próbuje opanować i jej się NIE udaje — drobno, bez melodramatu, bez autorefleksji);\n- zostaw jedno celowo chropawe, niegładkie zdanie (poprawne gramatycznie, ale rytmicznie niewygodne);\n- zaszum najczystszy, „najbardziej pisany” dialog (przerwania, powtórzenia, odpowiedzi obok pytania) ALBO usuń najbardziej przewidywalny akapit lub jego puentę.\nNIE ruszaj zdarzeń, POV/czasu ani nazw z glosariusza. Zwróć text, operacje (co zrobiłeś) oraz celowe_odstepstwa[] — krótkie cytaty fragmentów, których późniejsza korekta i humanizer NIE mają „naprawiać”.${CHAOS.length?`\n\nPROFILE CHAOSU OBECNYCH POSTACI:\n${JSON.stringify(CHAOS)}`:''}\n\nTEKST:\n${proza}`,
+    `Jesteś redaktorem anty-przewidywalności. Tekst jest poprawny — Twoim zadaniem jest USUNĄĆ jego gładką sztuczność, NIE „poprawiać”. Wykonaj 2-4 operacje (więcej, im bardziej tekst jest przewidywalny):\n- wstrzyknij JEDNĄ nieistotną myśl z obsesji postaci (z profilu chaosu, bez uzasadnienia — postać nie reflektuje, czemu o tym myśli);\n- w jednym miejscu złam nadmierną kontrolę emocji (postać próbuje opanować i jej się NIE udaje — drobno, bez melodramatu, bez autorefleksji);\n- zostaw jedno celowo chropawe, niegładkie zdanie (poprawne gramatycznie, ale rytmicznie niewygodne);\n- zaszum najczystszy, „najbardziej pisany” dialog (przerwania, powtórzenia, odpowiedzi obok pytania) ALBO usuń najbardziej przewidywalny akapit lub jego puentę.\nNIE ruszaj zdarzeń, POV/czasu ani nazw z glosariusza. Zwróć text, operacje (co zrobiłeś) oraz celowe_odstepstwa[] — krótkie cytaty fragmentów, których późniejsza korekta i unslop NIE mają „naprawiać”.${CHAOS.length?`\n\nPROFILE CHAOSU OBECNYCH POSTACI:\n${JSON.stringify(CHAOS)}`:''}\n\nTEKST:\n${proza}`,
     {label:'disruption',phase:'Disruption',schema:DISR})
   if (disr && disr.text && disr.text.length >= proza.length * 0.6) proza = disr.text
   celowe_odstepstwa = (disr && disr.celowe_odstepstwa) || []
@@ -84,7 +84,7 @@ if (!FORMA) {
 
 phase('Redakcja PL')
 const red = await agent(
-  `Jesteś redaktorem języka polskiego. Lekka korekta: anglicyzmy/kalki, AI-slop, interpunkcja dialogowa (myślnik), aspekt, szyk. NIE wygładzaj „pod humanizer” i nie ruszaj nazw własnych ani zdarzeń.${celowe_odstepstwa.length?` CHRONIONE ODSTĘPSTWA (NIE naprawiaj — to celowa szorstkość z fazy disruption; wolno tylko poprawić ewidentny błąd ortografii/odmiany nazwy): ${JSON.stringify(celowe_odstepstwa)}.`:''} Zwróć text i words.\n\n${proza}`,
+  `Jesteś redaktorem języka polskiego. Lekka korekta: anglicyzmy/kalki, AI-slop, interpunkcja dialogowa (myślnik), aspekt, szyk. NIE wygładzaj „pod unslop” i nie ruszaj nazw własnych ani zdarzeń.${celowe_odstepstwa.length?` CHRONIONE ODSTĘPSTWA (NIE naprawiaj — to celowa szorstkość z fazy disruption; wolno tylko poprawić ewidentny błąd ortografii/odmiany nazwy): ${JSON.stringify(celowe_odstepstwa)}.`:''} Zwróć text i words.\n\n${proza}`,
   {label:'redakcja-pl',phase:'Redakcja PL',schema:DEEP})
 if (red && red.text) proza = red.text
 
@@ -98,7 +98,7 @@ return { id: SC.id, text: proza, verdict, dlug, rundy, celowe_odstepstwa, propoz
 
 ## Po powrocie roju (główna sesja)
 
-1. **Bez humanizera** (kolejność redakcji — `${CLAUDE_PLUGIN_ROOT}/shared/biblia-spec.md`).
+1. **Bez unslopa** (kolejność redakcji — `${CLAUDE_PLUGIN_ROOT}/shared/biblia-spec.md`).
 2. Nadpisz `.book-forge/sceny/<id>.md` (opcjonalnie kopia `.book-forge/sceny/<id>.v1.md`). Zapisz `.book-forge/sceny/<id>.qa.md` (werdykt, oceny, zapis rund, dług). Obiekt `propozycje` z roju trzymaj w pamięci — **nie** zapisuj pliku propozycji ani kanonu `.book-forge/biblia/`. Szczegóły: `build-and-verify.md`.
 3. **Handoff:** uruchom `/book-forge:continuity-check` dla `<id>`, przekazując `propozycje` jako wejście bramki (to ona zapisuje do biblii i pyta autora o konflikty RO).
 4. Pokaż autorowi werdykt, liczbę rund, ewentualny dług i werdykt bramki ciągłości.

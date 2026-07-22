@@ -14,7 +14,7 @@ Buduje i utrzymuje **biblię** powieści: jedno źródło prawdy, które każdy 
 
 ## Zasada nadrzędna: spójność + polszczyzna
 
-Dwa kryteria równorzędne. **Spójność:** nic nie może sobie przeczyć (to po to jest biblia). **Polszczyzna:** opisy w biblii mają brzmieć naturalnie, bez anglicyzmów i AI-slopu (faza redakcji + `/humanizer:humanizer` na partiach opisowych).
+Dwa kryteria równorzędne. **Spójność:** nic nie może sobie przeczyć (to po to jest biblia). **Polszczyzna:** opisy w biblii mają brzmieć naturalnie, bez anglicyzmów i AI-slopu (faza redakcji + `/unslop:unslop` na partiach opisowych).
 
 ## Krok 1 — wejście
 
@@ -34,9 +34,9 @@ Rozpoznaj stan katalogu `.book-forge/biblia/`:
 
 Uruchom rój według **`references/workflow-swarm.md`**. Agenci wypełniają sekcje z różnych ról: architekt świata (zasady z KOSZTEM), twórca postaci (want/need/rana/kłamstwo/łuk + **profil chaosu**: obsesja, zniekształcenie poznawcze, niechciane wspomnienie, nieudana kontrola emocji — skalowany gatunkiem, pomijany dla non-fiction), projektant głosów (narrator + osobne idiolekty postaci), redaktor nazewnictwa (glosariusz z pełną polską odmianą i wariantami zakazanymi), strażnik motywu. Potem synteza spójności scala i usuwa sprzeczności. **Lekki research** realiów (agent-browser) tylko dla twardych filarów świata koniecznych do planowania — właściwy, ukierunkowany research zostaw na później (etap `world-research`).
 
-## Krok 4 — humanizer (główna sesja)
+## Krok 4 — unslop (główna sesja)
 
-Na partiach **opisowych** (opisy świata, postaci, motyw) uruchom `/humanizer:humanizer` i nanieś poprawki. Nie ruszaj nim nazw własnych z glosariusza (chronione).
+Na partiach **opisowych** (opisy świata, postaci, motyw) uruchom `/unslop:unslop` i nanieś poprawki. Nie ruszaj nim nazw własnych z glosariusza (chronione).
 
 ## Krok 5 — zapis (kanon-wiki, „ingest") i walidacja
 
@@ -60,12 +60,12 @@ To operacja **lint** wzorca LLM-wiki. Pokaż autorowi: ścieżki obu plików, li
 | Nazwy | Glosariusz z pełną polską odmianą + warianty zakazane |
 | Idempotencja | Ponowne uruchomienie uzupełnia, nie nadpisuje RO bez zgody |
 | Operacje (LLM-wiki) | **ingest** (Krok 5: źródła→strony + wpis do `log.md`) · **lint** (Krok 6: `validate` → `LUKI` twarde + `UWAGI` advisory) · **query** (kolejne etapy czytają cały kanon przez `load_all()`) |
-| Język | Naturalna polszczyzna + `/humanizer:humanizer` na opisach (jedyny przebieg — faza redakcji w roju usunięta) |
+| Język | Naturalna polszczyzna + `/unslop:unslop` na opisach (jedyny przebieg — faza redakcji w roju usunięta) |
 
 ## Najczęstsze błędy
 
 - **Zasada świata bez kosztu/ograniczenia.** Naprawa: każda zasada mówi, co jest niemożliwe i dlaczego (inaczej świat traci napięcie).
 - **Jeden głos dla wszystkich.** Naprawa: osobne idiolekty postaci obok głosu narratora.
-- **Nazwy bez odmiany.** Naprawa: pełna deklinacja w glosariuszu + warianty zakazane (ochrona przed dryfem i przed „poprawkami” humanizera).
+- **Nazwy bez odmiany.** Naprawa: pełna deklinacja w glosariuszu + warianty zakazane (ochrona przed dryfem i przed „poprawkami” unslopa).
 - **Nadpisanie ustaleń.** Naprawa: pola RO zmieniaj tylko za zgodą autora.
 - **Ręczna edycja treści/indeksu.** Naprawa: zmieniaj frontmatter stron przez `bible.py`; treść stron i `index.md` regeneruj (`render_index`).

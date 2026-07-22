@@ -18,7 +18,7 @@ Trzy reguły wbudowane: (1) jednostką jest scena z celem, konfliktem i zwrotem 
 
 ## Kolejność redakcji — gdzie jesteśmy
 
-To jest etap **„treść”**. Zgodnie ze specyfikacją: treść (tu) → pogłębienie + redakcja developmentalna (`revise-scene`) → kontrola ciągłości (`continuity-check`, jedyny zapis do kanonu) → **humanizer → korekta PL** (`polish-pl`). Dlatego **nie uruchamiaj tu `/humanizer:humanizer`** — to surowa wersja robocza. Pisz od razu dobrą polszczyzną (słownik z `polish-style.md`), ale właściwy przebieg humanizera jest później, by jego wygładzanie nie złamało faktu, głosu ani odmiany nazw przed kontrolą ciągłości.
+To jest etap **„treść”**. Zgodnie ze specyfikacją: treść (tu) → pogłębienie + redakcja developmentalna (`revise-scene`) → kontrola ciągłości (`continuity-check`, jedyny zapis do kanonu) → **unslop → korekta PL** (`polish-pl`). Dlatego **nie uruchamiaj tu `/unslop:unslop`** — to surowa wersja robocza. Pisz od razu dobrą polszczyzną (słownik z `polish-style.md`), ale właściwy przebieg unslopa jest później, by jego wygładzanie nie złamało faktu, głosu ani odmiany nazw przed kontrolą ciągłości.
 
 ## Krok 1 — wejście (sekwencyjnie)
 
@@ -39,7 +39,7 @@ Uruchom rój według **`references/workflow-swarm.md`**. Fazy:
 2. **Wersja robocza** — dwa warianty prozy z różnym naciskiem (np. mocniej na podtekst dialogu albo mocniej na warstwę zmysłową i akcję), oba zakotwiczone w głosie z biblii. Jeśli z Kroku 1 jest gotowe otwarcie (`proza_zrodlo`/`.book-forge/poczatek.md`), oba warianty muszą z niego WYRASTAĆ (zachować jego początek i głos), a nie pisać sceny od zera.
 3. **Wybór/scalenie** — wybór mocniejszego wariantu lub połączenie ich atutów w jedną wersję roboczą.
 4. **Zgodność** — niezależny sprawdzający: czy proza jest zgodna z POV/czasem, głosem (karta), nazwami z glosariusza; czy scena realizuje swój cel i ma zwrot ze zmianą wartości. Jeśli FIX — jedna rewizja.
-5. **Redakcja PL (lekka)** — czysta polszczyzna (bez anglicyzmów i AI-slopu), bez humanizera.
+5. **Redakcja PL (lekka)** — czysta polszczyzna (bez anglicyzmów i AI-slopu), bez unslopa.
 
 ## Krok 3 — propozycje do kanonu (w pamięci, nie zapis)
 
@@ -47,7 +47,7 @@ Z gotowej sceny wyodrębnij **propozycje** dopisów RUNTIME dla bramki `continui
 
 ## Krok 4 — zapis i walidacja
 
-Zapisz prozę do **`.book-forge/sceny/<id>.md`** (tylko proza — żadnego pliku propozycji). Szczegóły i walidacja (długość, zgodność, brak humanizera na tym etapie): **`references/build-and-verify.md`**. Ten etap nie generuje HTML — proza jest tekstem; widok całości powstaje w `assemble-book`.
+Zapisz prozę do **`.book-forge/sceny/<id>.md`** (tylko proza — żadnego pliku propozycji). Szczegóły i walidacja (długość, zgodność, brak unslopa na tym etapie): **`references/build-and-verify.md`**. Ten etap nie generuje HTML — proza jest tekstem; widok całości powstaje w `assemble-book`.
 
 > **Tryb serii** (gdy istnieje `.book-forge/seria.md` — `${CLAUDE_PLUGIN_ROOT}/shared/biblia-spec.md` → „Tryb serii"): ustaw `BOOK_DIR=tom-NN/`, `WORK=tom-NN/.book-forge/`, `BIBLE_DIR=tom-NN/.book-forge/biblia`, a prozę zapisuj do `${WORK}sceny/<id>.md` (ID scen mają wtedy prefiks tomu, np. `T2R1S1`). Wyciąg z `bible.load_all()` automatycznie zawiera dziedziczony, zamrożony kanon poprzednich tomów (warstwa `_dziedziczone`, RO). Pojedyncza książka: ścieżki płaskie, bez zmian.
 
@@ -65,7 +65,7 @@ Na koniec pokaż autorowi: ścieżkę sceny, liczbę słów, wynik kontroli zgod
 | Silnik | Rój agentów (`references/workflow-swarm.md`) |
 | Jednostka | Scena: cel → konflikt → zwrot; głos narratora + idiolekty |
 | Tryb | Sekwencyjny; tylko czyta i PROPONUJE (bez zapisu do kanonu) |
-| Humanizer | NIE tutaj — dopiero `polish-pl` (po kontroli ciągłości) |
+| Unslop | NIE tutaj — dopiero `polish-pl` (po kontroli ciągłości) |
 | Wynik | `.book-forge/sceny/<id>.md` + handoff do `continuity-check` (zapis do biblii) |
 | Walidacja | Długość, zgodność POV/głos/nazwy, cel i zwrot obecne |
 
@@ -75,5 +75,5 @@ Na koniec pokaż autorowi: ścieżkę sceny, liczbę słów, wynik kontroli zgod
 - **Streszczenie zamiast sceny.** Naprawa: realny cel, konflikt i zwrot ze zmianą wartości.
 - **Przeładowanie informacjami (wykład).** Naprawa: świat dawkuj przez akcję i zmysły.
 - **Zapis do kanonu z surowej sceny.** Naprawa: tylko propozycje; zapis robi `continuity-check`.
-- **Humanizer za wcześnie.** Naprawa: nie tutaj; po kontroli ciągłości w `polish-pl`.
+- **Unslop za wcześnie.** Naprawa: nie tutaj; po kontroli ciągłości w `polish-pl`.
 - **Amnezja między scenami.** Naprawa: streszczenia poprzednich scen w wyciągu; pisz sekwencyjnie.

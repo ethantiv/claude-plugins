@@ -20,7 +20,7 @@ To dwa scalone i przerobione pod prozę etapy: **pogłębienie** wzmacnia scenę
 
 ## Kolejność redakcji — gdzie jesteśmy
 
-Etap **„pogłębienie + dev-edit”**: po `write-scene` (treść), przed `continuity-check`. Dlatego **nadal bez `/humanizer:humanizer`** — humanizer i finalna korekta PL przychodzą w `polish-pl`, po kontroli ciągłości. Tu pilnujemy treści, struktury i siły prozy, nie wygładzania pod wzorce AI.
+Etap **„pogłębienie + dev-edit”**: po `write-scene` (treść), przed `continuity-check`. Dlatego **nadal bez `/unslop:unslop`** — unslop i finalna korekta PL przychodzą w `polish-pl`, po kontroli ciągłości. Tu pilnujemy treści, struktury i siły prozy, nie wygładzania pod wzorce AI.
 
 ## Krok 1 — wejście
 
@@ -40,11 +40,11 @@ Uruchom rój według **`references/workflow-swarm.md`**. W pętli (do `N` prób)
 
 **Limit iteracji + eskalacja:** po `N` próbach bez PASS — zapisz z adnotacją `accept-with-debt` w notatce QA i zgłoś autorowi (nigdy cicha, nieskończona pętla).
 
-Po pętli (na ZAAKCEPTOWANEJ prozie) działa faza **Disruption** — anty-przewidywalność: 2–4 operacje, które usuwają gładką sztuczność, a nie „poprawiają” (nieistotna myśl z `chaos.obsesja` postaci, złamana kontrola emocji, jedno celowo chropawe zdanie, zaszumiony dialog / wycięty przewidywalny akapit). Działa POZA bramką dev-edit (która ukarałaby celową szorstkość) i jest **wyłączona dla non-fiction** (`meta.forma`). Zwraca `celowe_odstepstwa` — listę fragmentów chronionych przed korektą i humanizerem w `polish-pl`.
+Po pętli (na ZAAKCEPTOWANEJ prozie) działa faza **Disruption** — anty-przewidywalność: 2–4 operacje, które usuwają gładką sztuczność, a nie „poprawiają” (nieistotna myśl z `chaos.obsesja` postaci, złamana kontrola emocji, jedno celowo chropawe zdanie, zaszumiony dialog / wycięty przewidywalny akapit). Działa POZA bramką dev-edit (która ukarałaby celową szorstkość) i jest **wyłączona dla non-fiction** (`meta.forma`). Zwraca `celowe_odstepstwa` — listę fragmentów chronionych przed korektą i unslopem w `polish-pl`.
 
-## Krok 3 — bez humanizera, lekka redakcja PL
+## Krok 3 — bez unslopa, lekka redakcja PL
 
-Po przejściu pętli zrób tylko **lekką redakcję polonistyczną** (anglicyzmy, AI-slop, interpunkcja dialogowa) — **nie** humanizer (ten w `polish-pl`). Nazw własnych z glosariusza nie ruszaj.
+Po przejściu pętli zrób tylko **lekką redakcję polonistyczną** (anglicyzmy, AI-slop, interpunkcja dialogowa) — **nie** unslop (ten w `polish-pl`). Nazw własnych z glosariusza nie ruszaj.
 
 ## Krok 4 — zapis i QA
 
@@ -71,7 +71,7 @@ Pokaż autorowi: werdykt (PASS/FIX), liczbę rund, najważniejsze poprawki, czy 
 | Rozdzielność | Krytyk czyta tylko kartę + biblię + tekst (na ślepo) |
 | Bramka | Dev-edit PASS/FIX, kryteria fabularne, „trzy najważniejsze poprawki” |
 | Limit | N prób (domyślnie 3) → `accept-with-debt` + eskalacja |
-| Humanizer | NIE tutaj — w `polish-pl` |
+| Unslop | NIE tutaj — w `polish-pl` |
 | Wynik | poprawiona `.book-forge/sceny/<id>.md` + `.book-forge/sceny/<id>.qa.md` + handoff do `continuity-check` |
 
 ## Najczęstsze błędy
@@ -80,4 +80,4 @@ Pokaż autorowi: werdykt (PASS/FIX), liczbę rund, najważniejsze poprawki, czy 
 - **Wstrzykiwanie anegdot/statystyk.** Naprawa: wzmacniaj środkami prozy, nie wstawkami.
 - **Kryteria eseistyczne.** Naprawa: oceniaj fabularnie (cel, zwrot, stawka, sprawczość, podtekst).
 - **Nieskończona pętla.** Naprawa: twardy limit prób + `accept-with-debt` + eskalacja.
-- **Humanizer za wcześnie.** Naprawa: dopiero `polish-pl`, po kontroli ciągłości.
+- **Unslop za wcześnie.** Naprawa: dopiero `polish-pl`, po kontroli ciągłości.

@@ -34,9 +34,9 @@ PY
 
 QA to plik, **nie** wpis do kanonu `.book-forge/biblia/`. Kanonu fabularnego ten etap nie zmienia; `log_ciaglosci` w biblii aktualizuje dopiero `continuity-check`.
 
-## Bez humanizera na tym etapie
+## Bez unslopa na tym etapie
 
-Nie uruchamiaj `/humanizer:humanizer`. Kolejność: treść (`write-scene`) → pogłębienie + dev-edit (tu) → kontrola ciągłości (`continuity-check`) → humanizer → korekta PL (`polish-pl`).
+Nie uruchamiaj `/unslop:unslop`. Kolejność: treść (`write-scene`) → pogłębienie + dev-edit (tu) → kontrola ciągłości (`continuity-check`) → unslop → korekta PL (`polish-pl`).
 
 ## Walidacja (obowiązkowa)
 

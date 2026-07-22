@@ -82,7 +82,7 @@ return {
 
 ## Po powrocie roju (główna sesja)
 
-1. **Humanizer NAJPIERW** (`/humanizer:humanizer`) na prozie wariantów, zakotwiczony kartą stylu z biblii; **potem** korekta polonistyczna + walidacja nazw z glosariusza.
+1. **Unslop NAJPIERW** (`/unslop:unslop`) na prozie wariantów, zakotwiczony kartą stylu z biblii; **potem** korekta polonistyczna + walidacja nazw z glosariusza.
 2. Oznacz `recommended:true` na wariancie z `werdykt.recommended`.
 3. Budowa HTML + `.book-forge/poczatek.md` (rekomendowany wariant) — `build-and-verify.md`.
 4. Zaproponuj autorowi dopisy RUNTIME do biblii (nowe nazwy/fakty) — zapis dopiero po potwierdzeniu.

@@ -294,7 +294,7 @@ details.faq summary:focus-visible{outline-offset:-3px}
 
     <div class="reqs">
       <div class="req reveal"><div class="t">Workflow</div><div class="d">Silnik roju agentów. Bez niego skille mają zapas: równoległe agenty <span class="mono">Task</span>.</div></div>
-      <div class="req reveal"><div class="t">/humanizer:humanizer</div><div class="d">Obowiązkowy przebieg redakcji — usuwa wzorce „pisma AI”.</div></div>
+      <div class="req reveal"><div class="t">/unslop:unslop</div><div class="d">Obowiązkowy przebieg redakcji — usuwa wzorce „pisma AI”.</div></div>
       <div class="req reveal"><div class="t">agent-browser</div><div class="d"><span class="mono">npm i -g agent-browser &amp;&amp; agent-browser install</span> — research i weryfikacja realiów oraz polskich wydań tytułów.</div></div>
       <div class="req reveal"><div class="t">Node.js + Python 3</div><div class="d">Walidacja artefaktów: <span class="mono">node --check</span> na HTML, <span class="mono">bible.py validate</span> na kanonie.</div></div>
     </div>
@@ -323,7 +323,7 @@ details.faq summary:focus-visible{outline-offset:-3px}
         <h3>Tekst, który brzmi po ludzku</h3>
         <p>Mówimy o literaturze. Jeśli zdanie zgrzyta, żadna fabuła go nie uratuje. Dlatego każdy etap kończy redakcja językowa, a nie korekta literówek.</p>
         <ul>
-          <li>Skill <span class="mono">/humanizer:humanizer</span> ścina wzorce „pisma AI”</li>
+          <li>Skill <span class="mono">/unslop:unslop</span> ścina wzorce „pisma AI”</li>
           <li>Słownik kalk, anglicyzmów i fałszywych przyjaciół (<span class="mono">shared/polish-style.md</span>)</li>
           <li>Polska typografia: cudzysłowy „ ”, półpauzy w dialogach, przecinek dziesiętny</li>
           <li>Lokalizacja tytułów — sprawdzana w sieci, a nie zmyślana</li>
@@ -420,7 +420,7 @@ details.faq summary:focus-visible{outline-offset:-3px}
           <span class="node">04</span>
           <div class="stage-top">
             <button class="cmd" data-cmd="/book-forge:opening">/book-forge:opening<span class="cp">kopiuj</span></button>
-            <span class="badge lang">humanizer</span>
+            <span class="badge lang">unslop</span>
           </div>
           <h3>Mocny początek</h3>
           <p>Rój pisze 3 warianty pierwszej sceny (filmowa scena, mocne zdanie otwierające, intymna spowiedź bohatera), każdy w głosie z biblii, ocenia je kryteriami fabularnymi, sprawdza zgodność z kanonem i wygładza.</p>
@@ -459,7 +459,7 @@ details.faq summary:focus-visible{outline-offset:-3px}
             <button class="cmd" data-cmd="/book-forge:revise-scene">/book-forge:revise-scene<span class="cp">kopiuj</span></button>
           </div>
           <h3>Pogłębienie i dev-edit</h3>
-          <p>Pętla generuj→oceń: rój wzmacnia prozę środkami literackimi (podtekst, charakteryzacja przez działanie, sensoryka, mikro-zwrot, zasiew), a osobny krytyk „na ślepo” ocenia ją jako bramka PASS/FIX. Z limitem prób i opcją <span class="mono">accept-with-debt</span>. Po przejściu bramki działa faza <b>Disruption</b> (anty-przewidywalność): nieistotna myśl z chaosu postaci, złamana kontrola emocji, celowa szorstkość — chroniona przed humanizerem aż do korekty.</p>
+          <p>Pętla generuj→oceń: rój wzmacnia prozę środkami literackimi (podtekst, charakteryzacja przez działanie, sensoryka, mikro-zwrot, zasiew), a osobny krytyk „na ślepo” ocenia ją jako bramka PASS/FIX. Z limitem prób i opcją <span class="mono">accept-with-debt</span>. Po przejściu bramki działa faza <b>Disruption</b> (anty-przewidywalność): nieistotna myśl z chaosu postaci, złamana kontrola emocji, celowa szorstkość — chroniona przed unslopem aż do korekty.</p>
           <div class="io"><span><b>Wejście</b>draft sceny</span><span class="out"><b>Wynik</b>poprawiona scena + QA + handoff</span><span class="bib"><b>Biblia</b>handoff do continuity-check</span></div>
         </article>
         <article class="stage write reveal">
@@ -476,10 +476,10 @@ details.faq summary:focus-visible{outline-offset:-3px}
           <span class="node">10</span>
           <div class="stage-top">
             <button class="cmd" data-cmd="/book-forge:polish-pl">/book-forge:polish-pl<span class="cp">kopiuj</span></button>
-            <span class="badge lang">humanizer → korekta PL</span>
+            <span class="badge lang">unslop → korekta PL</span>
           </div>
           <h3>Finalna polszczyzna</h3>
-          <p>Najpierw <span class="mono">/humanizer:humanizer</span> (zakotwiczony kartą stylu z biblii), POTEM korekta polonistyczna i walidacja nazw z glosariusza. Ta mikrokolejność jest krytyczna — humanizer bazuje na wzorcach angielskich, więc polski musi być ostatni. Celowe odstępstwa z fazy Disruption są tu chronione — ani humanizer, ani korekta ich nie wygładzają.</p>
+          <p>Najpierw <span class="mono">/unslop:unslop</span> (zakotwiczony kartą stylu z biblii), POTEM korekta polonistyczna i walidacja nazw z glosariusza. Ta mikrokolejność jest krytyczna — korekta polonistyczna musi mieć ostatnie słowo po ingerencjach unslopa. Celowe odstępstwa z fazy Disruption są tu chronione — ani unslop, ani korekta ich nie wygładzają.</p>
           <div class="io"><span><b>Wejście</b>scena po ciągłości</span><span class="out"><b>Wynik</b>wygładzona scena + raport</span><span class="bib"><b>Biblia</b>karta stylu, glosariusz</span></div>
         </article>
         <article class="stage write reveal">
@@ -570,10 +570,10 @@ details.faq summary:focus-visible{outline-offset:-3px}
   <div class="wrap">
     <div class="sec-kick reveal">Filar językowy w praktyce</div>
     <h2 class="reveal">Dlaczego <em>kolejność</em> redakcji ma znaczenie</h2>
-    <p class="sec-intro reveal">Redakcja językowa to nie jeden ruch, tylko sekwencja — i jej porządek jest celowy. Humanizer myśli wzorcami angielskimi, więc polonistyka musi mieć ostatnie słowo.</p>
+    <p class="sec-intro reveal">Redakcja językowa to nie jeden ruch, tylko sekwencja — i jej porządek jest celowy. Unslop to ogólny przebieg anty-slopowy, więc polonistyka musi mieć ostatnie słowo.</p>
     <div class="steps">
-      <div class="step reveal"><span class="num"></span><div class="b"><h3>Humanizer najpierw</h3><p><code>/humanizer:humanizer</code> ścina wzorce „pisma AI” (nadęta waga, kalki, rule of three, nadmiar półpauz), zakotwiczony kartą stylu z biblii — żeby nie spłaszczył głosu postaci.</p></div></div>
-      <div class="step reveal"><span class="num"></span><div class="b"><h3>Korekta polonistyczna na końcu</h3><p>Rój czyści kalki składniowe, anglicyzmy i fałszywych przyjaciół wg <code>shared/polish-style.md</code> — bo humanizer mógł coś przesunąć w stronę angielskiego.</p></div></div>
+      <div class="step reveal"><span class="num"></span><div class="b"><h3>Unslop najpierw</h3><p><code>/unslop:unslop</code> ścina wzorce „pisma AI” (nadęta waga, kalki, rule of three, nadmiar półpauz), zakotwiczony kartą stylu z biblii — żeby nie spłaszczył głosu postaci.</p></div></div>
+      <div class="step reveal"><span class="num"></span><div class="b"><h3>Korekta polonistyczna na końcu</h3><p>Rój czyści kalki składniowe, anglicyzmy i fałszywych przyjaciół wg <code>shared/polish-style.md</code> — i przywraca wszystko, co unslop mógł naruszyć.</p></div></div>
       <div class="step reveal"><span class="num"></span><div class="b"><h3>Walidacja nazw z glosariusza</h3><p>Ostatni strażnik: poprawna polska odmiana nazw własnych i odsianie wariantów zakazanych — żeby bohater nie zmienił nazwiska między rozdziałami.</p></div></div>
       <div class="step reveal"><span class="num"></span><div class="b"><h3>Typografia</h3><p>Cudzysłowy „ ”, półpauzy w dialogach, przecinek dziesiętny (7,3 a nie 7.3). Drobiazgi, które odróżniają tekst złożony od wklejonego.</p></div></div>
     </div>
@@ -605,7 +605,7 @@ details.faq summary:focus-visible{outline-offset:-3px}
 <span class="ln"><span class="pr">&gt;</span> <span class="cm">/book-forge:write-scene</span> R1S1</span>
 <span class="ln"><span class="pr">&gt;</span> <span class="cm">/book-forge:revise-scene</span> R1S1   <span class="co"># pętla pogłębienia</span></span>
 <span class="ln"><span class="pr">&gt;</span> <span class="cm">/book-forge:continuity-check</span> R1S1 <span class="ar">→ zapis do kanonu</span></span>
-<span class="ln"><span class="pr">&gt;</span> <span class="cm">/book-forge:polish-pl</span> R1S1       <span class="co"># humanizer → korekta PL</span></span>
+<span class="ln"><span class="pr">&gt;</span> <span class="cm">/book-forge:polish-pl</span> R1S1       <span class="co"># unslop → korekta PL</span></span>
 <span class="ln"><span class="co">#   …albo taśmowo, pytania raz: /book-forge:forge-scenes „kolejne 3”</span></span>
 <span class="ln"><span class="co">#   (luka w realiach? → /book-forge:world-research)</span></span>
 <span class="ln"><span class="co">#   (gdzie jestem? → bible.py status: sceny, słowa vs budżet, zasiewy)</span></span>

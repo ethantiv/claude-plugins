@@ -8,7 +8,7 @@ allowed-tools: Workflow, AskUserQuestion, Skill, Bash, Read, Write, Edit, WebSea
 
 # Raport rynku → pomysł na książkę (rój agentów)
 
-Generuje **interaktywny raport HTML** dla autora, który chce znaleźć lukę na rynku i najlepszy pomysł na książkę, zanim zacznie pisać. Napędza go **rój agentów** przez narzędzie **Workflow**: pięć faz analizy plus faza redakcji językowej, a potem główna sesja domyka raport (humanizer, lokalizacja tytułów, budowa HTML).
+Generuje **interaktywny raport HTML** dla autora, który chce znaleźć lukę na rynku i najlepszy pomysł na książkę, zanim zacznie pisać. Napędza go **rój agentów** przez narzędzie **Workflow**: pięć faz analizy plus faza redakcji językowej, a potem główna sesja domyka raport (unslop, lokalizacja tytułów, budowa HTML).
 
 Wynik odpowiada na pięć pytań z briefu autora:
 1. 10 najlepiej sprzedających się książek w niszy,
@@ -21,7 +21,7 @@ Wynik odpowiada na pięć pytań z briefu autora:
 
 Mówimy o **literaturze**. Jeśli konspekt brzmi sztucznie albo niezrozumiale, nie powstanie z niego dobra książka. Dlatego najważniejszym kryterium jakości jest **poprawna, naturalna polszczyzna** — bez AI-slopu i bez polsko-angielskich potworków typu „competence porn”, „hook”, „worldbuilding”, „found family”.
 
-To nie jest etap kosmetyczny na końcu — to wbudowana faza roju **oraz** obowiązkowy przebieg `/humanizer:humanizer` w głównej sesji. Pełne reguły, słownik zamian i zasady lokalizacji tytułów: **`${CLAUDE_PLUGIN_ROOT}/shared/polish-style.md`** (czytaj zanim zbudujesz raport).
+To nie jest etap kosmetyczny na końcu — to wbudowana faza roju **oraz** obowiązkowy przebieg `/unslop:unslop` w głównej sesji. Pełne reguły, słownik zamian i zasady lokalizacji tytułów: **`${CLAUDE_PLUGIN_ROOT}/shared/polish-style.md`** (czytaj zanim zbudujesz raport).
 
 ## Krok 1 — zebranie wejścia (zawsze interaktywnie)
 
@@ -70,13 +70,13 @@ Uruchom rój narzędziem **Workflow** według skryptu w **`references/workflow-s
 4. **Ocena** — panel **3 sędziów** na pomysł (redaktor/finanse-rynek, marketing, **adwokat innowacji**) → średnia 1–10, **bez ponownego WebSearch** (oceniają na danych rynkowych z fazy 1). Adwokat innowacji premiuje odwagę i działający silnik, nie karze ryzyka.
 5. **Werdykt** — wybór zwycięzcy z uzasadnieniem, „dlaczego teraz”, krokami i wicemistrzem.
 
-Redakcja językowa nie jest już osobną fazą — zasady poprawnej polszczyzny (zakaz anglicyzmów i AI-slopu) są wbite w `ROLE` każdego agenta, więc proza wraca po polsku; finalny szlif robi obowiązkowy `/humanizer:humanizer` w głównej sesji (Krok 3).
+Redakcja językowa nie jest już osobną fazą — zasady poprawnej polszczyzny (zakaz anglicyzmów i AI-slopu) są wbite w `ROLE` każdego agenta, więc proza wraca po polsku; finalny szlif robi obowiązkowy `/unslop:unslop` w głównej sesji (Krok 3).
 
 **Świeże dane z rynku są obowiązkowe — w fazach 1-2.** Agenci sięgają po nie przez **WebSearch / WebFetch** oraz CLI **agent-browser** (uruchamiane z `Bash`) — listy bestsellerów, Goodreads/lubimyczytać, Reddit, BookTok, nagrody gatunku, transakcje wydawnicze. Nie zmyślaj liczb; każdą opieraj na źródle. **Faza oceny (4) NIE używa WebSearch** — sędziowie oceniają na danych zebranych w fazie 1 (świadomy kompromis „szybciej": tracisz drugie, niezależne sprawdzenie realiów w momencie scoringu). Sterowania realną przeglądarką nie odpalaj w dziesiątkach kopii naraz (bywa zawodne) — używaj go celowo.
 
-## Krok 3 — humanizer (główna sesja)
+## Krok 3 — unslop (główna sesja)
 
-Po powrocie roju na prozie polskiej **wywołaj skill `/humanizer:humanizer`** (przez narzędzie `Skill`) i nanieś jego poprawki na pola tekstowe raportu. To **jedyny** przebieg redakcji (osobna faza w roju została usunięta, proza wraca po polsku z `ROLE`) — obowiązkowy, nie opcja. Humanizer czyści wzorce AI; słownik z `${CLAUDE_PLUGIN_ROOT}/shared/polish-style.md` pilnuje polskości słownictwa — stosuj oba.
+Po powrocie roju na prozie polskiej **wywołaj skill `/unslop:unslop`** (przez narzędzie `Skill`) i nanieś jego poprawki na pola tekstowe raportu. To **jedyny** przebieg redakcji (osobna faza w roju została usunięta, proza wraca po polsku z `ROLE`) — obowiązkowy, nie opcja. Unslop czyści wzorce AI; słownik z `${CLAUDE_PLUGIN_ROOT}/shared/polish-style.md` pilnuje polskości słownictwa — stosuj oba.
 
 ## Krok 4 — lokalizacja tytułów (agent-browser)
 
@@ -88,7 +88,7 @@ Zbuduj raport z gotowego szablonu `${CLAUDE_PLUGIN_ROOT}/skills/market-report/as
 
 ## Krok 6 — zapis i podsumowanie
 
-Zapisz do **bieżącego katalogu** jako `market-report-<slug-gatunku>.html` (np. `market-report-science-fiction.html`). Pokaż autorowi: ścieżkę pliku, zwycięski pomysł z oceną, 3 luki i krótką notę, że tekst przeszedł redakcję PL + humanizer. Surowo zgłaszaj, czego nie udało się zweryfikować (np. brak danych rynkowych dla niszowego gatunku).
+Zapisz do **bieżącego katalogu** jako `market-report-<slug-gatunku>.html` (np. `market-report-science-fiction.html`). Pokaż autorowi: ścieżkę pliku, zwycięski pomysł z oceną, 3 luki i krótką notę, że tekst przeszedł redakcję PL + unslop. Surowo zgłaszaj, czego nie udało się zweryfikować (np. brak danych rynkowych dla niszowego gatunku).
 
 **Zapisz też deterministyczny artefakt danych `.book-forge/pomysl.json`** w folderze roboczym (utwórz `.book-forge/`, jeśli nie istnieje): `{ "idea": <zwycięski pomysł: t, en, silnik, op, hook, gap, comps, protagonista>, "brief": DATA.brief, "verdict": DATA.verdict, "genre": "...", "reader": "..." }`. To **kanoniczny most** do etapów 2–3: outline i book-bible czytają najpierw `.book-forge/pomysl.json` (deterministycznie), a HTML traktują jako fallback. HTML jest formatem prezentacyjnym — nie zmuszaj kolejnych etapów do wyłuskiwania `DATA` z `<script>` (kruche przy wielu raportach i zmianie szablonu).
 
@@ -102,14 +102,14 @@ Zapisz do **bieżącego katalogu** jako `market-report-<slug-gatunku>.html` (np.
 | Rola agentów | Starszy redaktor ds. zakupów, 20 lat |
 | Dane | Świeże, przez agent-browser + WebSearch w **fazach 1-2**; ocena bez re-searchu; cytuj źródła |
 | Język | Poprawna, naturalna polszczyzna — kryterium #1 |
-| Redakcja | Wbita w prompty roju + `/humanizer:humanizer` w głównej sesji (brak osobnej fazy) |
+| Redakcja | Wbita w prompty roju + `/unslop:unslop` w głównej sesji (brak osobnej fazy) |
 | Tytuły | PL gdy jest wydanie (agent-browser, **tylko 10 bestsellerów, równolegle, best-effort**); inaczej oryginał |
 | Walidacja | `node --check` na JS + podgląd/zrzut w agent-browser |
 
 ## Najczęstsze błędy
 
-- **Anglicyzmy i kalki** w polskim tekście („hook”, „found family”, „plot armor”). Naprawa: słownik zamian z `${CLAUDE_PLUGIN_ROOT}/shared/polish-style.md` + humanizer.
-- **AI-slop** (nadęcia „stanowi/podkreśla”, triady, nadmiar myślników). Naprawa: humanizer i krótsze, konkretne zdania.
+- **Anglicyzmy i kalki** w polskim tekście („hook”, „found family”, „plot armor”). Naprawa: słownik zamian z `${CLAUDE_PLUGIN_ROOT}/shared/polish-style.md` + unslop.
+- **AI-slop** (nadęcia „stanowi/podkreśla”, triady, nadmiar myślników). Naprawa: unslop i krótsze, konkretne zdania.
 - **Zepsuty JS** przez prosty `"` zamiast `”` wewnątrz stringów. Naprawa: trzymaj cudzysłowy treści jako `„ ”`, waliduj `node --check` (patrz build-and-verify.md).
 - **Zmyślone liczby/daty.** Naprawa: każdą daną opieraj na źródle z sieci.
 - **Dryf gatunkowy.** Rój sięga po listy ogólne (NYT, Amazon, Empik), gdzie dominują inne gatunki, i podaje romantasy/poradniki zamiast pozycji z niszy. Szczególnie groźne dla gatunków spoza ścisłej czołówki sprzedaży (np. hard SF). Naprawa: twarda blokada gatunku w `ROLE` + bramka walidacyjna po fazie 1 (oba w `references/workflow-swarm.md`); sięgaj po listy i nagrody gatunkowe.
@@ -117,4 +117,4 @@ Zapisz do **bieżącego katalogu** jako `market-report-<slug-gatunku>.html` (np.
 - **Monokultura pomysłów (np. „90% bohaterka 50–60 lat").** Bias nie jest zaszyty w kodzie — jest emergentny: rój szukający „niedoobsługiwanej" niszy konwerguje na jednej demografii. Naprawa: pytanie P3 (profil bohatera) daje autorowi kontrolę, a rozproszony wektor demografii + twarde guardy różnorodności w syntezie (max 1 luka persony, ≥3 osie różnicy między 5 pomysłami) i audytor różnorodności przed werdyktem łamią monokulturę (wszystko w `references/workflow-swarm.md`). Gdy autor jawnie ustalił profil — monokultura jest OK i audytor ją przepuszcza.
 - **`args` jako string JSON.** Workflow bywa, że podaje `args` jako tekst, nie obiekt — `args.genre` wychodzi `undefined` i całe wejście roju jest puste. Naprawa: skrypt parsuje `args` odpornie w `try/catch` (`typeof args === 'string' ? JSON.parse(args) : (args || {})`) i przerywa z czytelnym błędem przy braku gatunku/czytelnika lub niepoprawnym JSON (guard w `references/workflow-swarm.md`); w fazie 1 (Analiza rynku) działa bramka gatunku — po niej sprawdź, czy tytuły są z gatunku, a nie „undefined”.
 - **Pomysł bez silnika premisy** (płaska sytuacja, konflikt doklejony z zewnątrz). Naprawa: każdy pomysł ma pole `silnik` — strukturalną sprzeczność, która sama generuje fabułę; wymóg w prompcie generowania i u adwokata innowacji, który premiuje odwagę zamiast karać ryzyko.
-- **Pominięcie humanizera.** Obowiązkowy przebieg w głównej sesji, nie opcja.
+- **Pominięcie unslopa.** Obowiązkowy przebieg w głównej sesji, nie opcja.

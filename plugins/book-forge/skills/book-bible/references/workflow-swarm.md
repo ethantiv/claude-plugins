@@ -62,13 +62,13 @@ const spojna = await agent(
      glos_narratora:{type:'object'}, glosy_postaci:{type:'array'}, glosariusz:{type:'array'}, temat:{type:'object'}}}})
 
 // Redakcja PL nie jest osobną fazą roju — zasady polszczyzny są w ROLE (proza wraca czysta);
-// finalny szlif robi obowiązkowy /humanizer:humanizer w głównej sesji (patrz „Po powrocie roju").
+// finalny szlif robi obowiązkowy /unslop:unslop w głównej sesji (patrz „Po powrocie roju").
 return spojna
 ```
 
 ## Po powrocie roju (główna sesja)
 
-1. **Humanizer** na partiach opisowych (`/humanizer:humanizer`), z pominięciem nazw własnych. To **jedyny** przebieg redakcji (osobna faza w roju została usunięta — proza wraca po polsku z `ROLE`).
+1. **Unslop** na partiach opisowych (`/unslop:unslop`), z pominięciem nazw własnych. To **jedyny** przebieg redakcji (osobna faza w roju została usunięta — proza wraca po polsku z `ROLE`).
 2. **Złożenie kanonu-wiki** przez `${CLAUDE_PLUGIN_ROOT}/scripts/bible.py` (`write_section`/`write_entity` dla sekcji RO + `write_scene_grid` z beatami/scenami z konspektu; sekcje RUNTIME `os_czasu`/`setup_payoff`/`fakty`/`log_ciaglosci` zostają puste) i **`render_index()`**. Na koniec dopisz wpis ingestu do kroniki: `append_log({"werdykt":"INGEST","decyzja":"Zbudowano kanon z pomysl.json + konspekt.md: N postaci, M zasad świata, K haseł glosariusza"})` (operacja „ingest" wzorca LLM-wiki — patrz `build-and-verify.md`). Szczegóły: `build-and-verify.md`.
 
 ## Wariant awaryjny

@@ -82,7 +82,7 @@ if (adher.naprawic && adher.naprawic.length) {
 
 phase('Redakcja PL')
 const red = await agent(
-  `Jesteś redaktorem języka polskiego. Wyczyść tekst sceny: usuń anglicyzmy i kalki, AI-slop, popraw interpunkcję dialogową (myślnik, nie cudzysłów angielski), zadbaj o aspekt czasowników i naturalny szyk. NIE wygładzaj „pod humanizer” (to później) i NIE ruszaj nazw własnych z glosariusza ani zdarzeń. Zwróć text i words.\n\nTEKST:\n${final.text}`,
+  `Jesteś redaktorem języka polskiego. Wyczyść tekst sceny: usuń anglicyzmy i kalki, AI-slop, popraw interpunkcję dialogową (myślnik, nie cudzysłów angielski), zadbaj o aspekt czasowników i naturalny szyk. NIE wygładzaj „pod unslop” (to później) i NIE ruszaj nazw własnych z glosariusza ani zdarzeń. Zwróć text i words.\n\nTEKST:\n${final.text}`,
   {label:'redakcja-pl',phase:'Redakcja PL',schema:DRAFT})
 // guard: przyjmij redakcję tylko, gdy zwróciła pełnoprawny tekst (nie skrót/halucynację)
 if (red && red.text && red.text.length >= final.text.length * 0.7) final = red
@@ -97,7 +97,7 @@ return { id: SC.id, text: final.text, words: final.words, adherencja: adher, pro
 
 ## Po powrocie roju (główna sesja)
 
-1. **Bez humanizera** na tym etapie (kolejność redakcji — patrz `${CLAUDE_PLUGIN_ROOT}/shared/biblia-spec.md`).
+1. **Bez unslopa** na tym etapie (kolejność redakcji — patrz `${CLAUDE_PLUGIN_ROOT}/shared/biblia-spec.md`).
 2. Zapisz `.book-forge/sceny/<id>.md` (sama proza). Obiekt `propozycje` z roju trzymaj w pamięci — **nie** zapisuj pliku propozycji ani kanonu `.book-forge/biblia/`. Szczegóły: `build-and-verify.md`.
 3. **Handoff:** uruchom `/book-forge:continuity-check` dla `<id>`, przekazując `propozycje` jako wejście bramki (to ona zapisuje do biblii i pyta autora o konflikty RO).
 4. Pokaż autorowi długość, wynik adherencji i werdykt bramki ciągłości.

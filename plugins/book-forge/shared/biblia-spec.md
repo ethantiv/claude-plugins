@@ -136,12 +136,12 @@ Slug liczony jest z **mianownika** nazwy (transliteracja: ł→l, ż→z, ą→a
 
 ## Glosariusz: ochrona nazw własnych
 
-Każda nazwa ma gotową **polską odmianę przez przypadki** i listę **wariantów zakazanych**. To najtańsza ochrona przed tym, że „Arrakis” odmieni się inaczej w rozdziale 1 i 12, oraz przed tym, że humanizer „poprawi” nazwę własną. Glosariusz i czarna lista AI-izmów (z `${CLAUDE_PLUGIN_ROOT}/shared/polish-style.md`) są wspólne dla wszystkich agentów i dla humanizera.
+Każda nazwa ma gotową **polską odmianę przez przypadki** i listę **wariantów zakazanych**. To najtańsza ochrona przed tym, że „Arrakis” odmieni się inaczej w rozdziale 1 i 12, oraz przed tym, że unslop „poprawi” nazwę własną. Glosariusz i czarna lista AI-izmów (z `${CLAUDE_PLUGIN_ROOT}/shared/polish-style.md`) są wspólne dla wszystkich agentów i dla unslopa.
 
 ## Kolejność redakcji per scena (ważne)
 
-1. treść → 2. pogłębienie → 3. redakcja developmentalna → 3b. **disruption** (anty-przewidywalność, po PASS dev-edit, na zaakceptowanej prozie — poza zasięgiem dev-edit; wyłączona dla non-fiction) → 4. **kontrola ciągłości** (jedyny zapis do kanonu) → 5. **humanizer** (zakotwiczony kartą stylu/głosu) → 6. **finalna korekta polonistyczna + walidacja glosariusza/nazw** (ostatnia, by humanizer nie zepsuł odmiany nazw ani interpunkcji dialogowej).
+1. treść → 2. pogłębienie → 3. redakcja developmentalna → 3b. **disruption** (anty-przewidywalność, po PASS dev-edit, na zaakceptowanej prozie — poza zasięgiem dev-edit; wyłączona dla non-fiction) → 4. **kontrola ciągłości** (jedyny zapis do kanonu) → 5. **unslop** (zakotwiczony kartą stylu/głosu) → 6. **finalna korekta polonistyczna + walidacja glosariusza/nazw** (ostatnia, by unslop nie zepsuł odmiany nazw ani interpunkcji dialogowej).
 
-Faza disruption (3b) zwraca listę `celowe_odstepstwa` — fragmenty celowej szorstkości, niesione przez `.book-forge/sceny/<id>.qa.md` aż do kroków 5–6, by humanizer i korekta ich NIE cofnęły (mają przeciwny wektor: wygładzają, a disruption celowo wprowadza tarcie).
+Faza disruption (3b) zwraca listę `celowe_odstepstwa` — fragmenty celowej szorstkości, niesione przez `.book-forge/sceny/<id>.qa.md` aż do kroków 5–6, by unslop i korekta ich NIE cofnęły (mają przeciwny wektor: wygładzają, a disruption celowo wprowadza tarcie).
 
 Twardy **limit iteracji**: jeśli scena nie przechodzi po N próbach (np. 3) → eskalacja do autora albo `accept-with-debt` z wpisem w `log_ciaglosci` (nigdy cicha, nieskończona pętla).

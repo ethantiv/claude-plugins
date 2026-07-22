@@ -1,11 +1,11 @@
 # Skrypt roju agentów (Workflow) — korekta PL + walidacja nazw
 
-Uruchamiany na **tekście PO humanizerze** (humanizer uruchamia się wcześniej, w głównej sesji). `args`: `{ proza, karta_stylu, glosariusz, celowe_odstepstwa }`, gdzie `proza` to scena po humanizerze, `karta_stylu` to karta głosu narratora z biblii, `glosariusz` to nazwy własne z odmianą i wariantami zakazanymi, a `celowe_odstepstwa` to lista fragmentów z fazy Disruption (revise-scene), których korekta NIE ma wygładzać.
+Uruchamiany na **tekście PO unslopie** (unslop uruchamia się wcześniej, w głównej sesji). `args`: `{ proza, karta_stylu, glosariusz, celowe_odstepstwa }`, gdzie `proza` to scena po unslopie, `karta_stylu` to karta głosu narratora z biblii, `glosariusz` to nazwy własne z odmianą i wariantami zakazanymi, a `celowe_odstepstwa` to lista fragmentów z fazy Disruption (revise-scene), których korekta NIE ma wygładzać.
 
 ```javascript
 export const meta = {
   name: 'book-forge-polish-pl',
-  description: 'Korekta polonistyczna na tekscie po humanizerze + walidacja nazw z glosariusza',
+  description: 'Korekta polonistyczna na tekscie po unslopie + walidacja nazw z glosariusza',
   phases: [ { title: 'Korekta PL' }, { title: 'Kontrola' }, { title: 'Walidacja nazw' } ],
 }
 
@@ -18,7 +18,7 @@ const ODST = Array.isArray(A.celowe_odstepstwa) ? A.celowe_odstepstwa : []   // 
 let proza = A.proza
 
 const OCHRONA = ODST.length ? `\n\nCHRONIONE ODSTĘPSTWA (z fazy disruption — to CELOWA szorstkość/zaburzenie; NIE wygładzaj ich, NIE „naprawiaj” rytmu ani składni; wolno tylko poprawić ewidentny błąd ortografii lub odmianę nazwy własnej): ${JSON.stringify(ODST)}.` : ''
-const ROLE = `Jesteś korektorem i redaktorem języka polskiego z uchem do prozy. Pracujesz na tekście, który właśnie przeszedł przez humanizer (narzędzie oparte na ANGIELSKICH wzorcach), więc twoim zadaniem jest naprawić to, co humanizer mógł zepsuć, i doprowadzić tekst do naturalnej, poprawnej polszczyzny. Zachowaj rejestr i rytm z karty stylu. KARTA STYLU/GŁOSU:\n${JSON.stringify(STYL)}${OCHRONA}`
+const ROLE = `Jesteś korektorem i redaktorem języka polskiego z uchem do prozy. Pracujesz na tekście, który właśnie przeszedł przez unslop (narzędzie oparte na ANGIELSKICH wzorcach), więc twoim zadaniem jest naprawić to, co unslop mógł zepsuć, i doprowadzić tekst do naturalnej, poprawnej polszczyzny. Zachowaj rejestr i rytm z karty stylu. KARTA STYLU/GŁOSU:\n${JSON.stringify(STYL)}${OCHRONA}`
 
 const KOREKTA = { type:'object', required:['text','zmiany'], properties:{
   text:{type:'string'}, words:{type:'number'},
@@ -43,7 +43,7 @@ if (kon && kon.text) proza = kon.text
 
 phase('Walidacja nazw')
 const naz = await agent(
-  `Jesteś redaktorem nazewnictwa. Sprawdź każdą nazwę własną w tekście wobec glosariusza i przywróć poprawną formę/odmianę, jeśli humanizer lub korekta ją zmieniły. Pilnuj wariantów zakazanych. NIE zmieniaj niczego poza nazwami.\n\nGLOSARIUSZ:\n${JSON.stringify(GLOS)}\n\nTEKST:\n${proza}\n\nZwróć text (z poprawnymi nazwami), przywrocone (lista bylo→jest) i uwagi.`,
+  `Jesteś redaktorem nazewnictwa. Sprawdź każdą nazwę własną w tekście wobec glosariusza i przywróć poprawną formę/odmianę, jeśli unslop lub korekta ją zmieniły. Pilnuj wariantów zakazanych. NIE zmieniaj niczego poza nazwami.\n\nGLOSARIUSZ:\n${JSON.stringify(GLOS)}\n\nTEKST:\n${proza}\n\nZwróć text (z poprawnymi nazwami), przywrocone (lista bylo→jest) i uwagi.`,
   {label:'walidacja-nazw',phase:'Walidacja nazw',schema:NAZWY})
 if (naz && naz.text) proza = naz.text
 
@@ -55,9 +55,9 @@ return {
 }
 ```
 
-## Przed rojem agentów (główna sesja): humanizer NAJPIERW
+## Przed rojem agentów (główna sesja): unslop NAJPIERW
 
-Zanim uruchomisz ten rój agentów, uruchom `/humanizer:humanizer` na surowej (po `continuity-check`) prozie sceny — z poleceniem: zachowaj rejestr z karty stylu, nie ruszaj nazw z glosariusza, zachowaj polską interpunkcję dialogową i przecinek dziesiętny. **Jeśli istnieje `.book-forge/sceny/<id>.qa.md` z listą `celowe_odstepstwa` (z fazy Disruption), dołącz ją do polecenia humanizera: te fragmenty to celowa szorstkość — nie wygładzaj ich.** Dopiero wynik humanizera podaj jako `args.proza` (a `celowe_odstepstwa` przekaż też do `args`).
+Zanim uruchomisz ten rój agentów, uruchom `/unslop:unslop` na surowej (po `continuity-check`) prozie sceny — z poleceniem: zachowaj rejestr z karty stylu, nie ruszaj nazw z glosariusza, zachowaj polską interpunkcję dialogową i przecinek dziesiętny. **Jeśli istnieje `.book-forge/sceny/<id>.qa.md` z listą `celowe_odstepstwa` (z fazy Disruption), dołącz ją do polecenia unslopa: te fragmenty to celowa szorstkość — nie wygładzaj ich.** Dopiero wynik unslopa podaj jako `args.proza` (a `celowe_odstepstwa` przekaż też do `args`).
 
 ## Po powrocie roju agentów
 
@@ -66,4 +66,4 @@ Zanim uruchomisz ten rój agentów, uruchom `/humanizer:humanizer` na surowej (p
 3. Pokaż autorowi podsumowanie. Szczegóły: `build-and-verify.md`.
 
 ## Postępowanie awaryjne
-Brak Workflow → korektor i walidator nazw jako agenty `Task` (po humanizerze w głównej sesji).
+Brak Workflow → korektor i walidator nazw jako agenty `Task` (po unslopie w głównej sesji).

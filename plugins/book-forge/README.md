@@ -1,6 +1,6 @@
 # book-forge
 
-Pipeline do tworzenia powieści napędzany **rojem agentów** (narzędzie Workflow). Prowadzi autora od pomysłu do gotowego maszynopisu, etap po etapie. Każdy etap kończy **obowiązkowa redakcja na poprawną, naturalną polszczyznę** (skill `/humanizer:humanizer` + słownik anty-anglicyzmowy), a od momentu pisania prozy wszystko opiera się na wspólnym fundamencie — **biblii książki**.
+Pipeline do tworzenia powieści napędzany **rojem agentów** (narzędzie Workflow). Prowadzi autora od pomysłu do gotowego maszynopisu, etap po etapie. Każdy etap kończy **obowiązkowa redakcja na poprawną, naturalną polszczyznę** (skill `/unslop:unslop` + słownik anty-anglicyzmowy), a od momentu pisania prozy wszystko opiera się na wspólnym fundamencie — **biblii książki**.
 
 > Dwa równorzędne kryteria jakości: **naturalna polszczyzna** (bez AI-slopu i polsko-angielskich potworków) oraz **spójność** — świat, postacie, nazwy i fakty mają „trzymać się kupy” od pierwszej do ostatniej strony.
 
@@ -17,11 +17,11 @@ Status: ✅ gotowe · 🔜 planowane (mapa: `shared/roadmap.md`).
 | 4 | `/book-forge:opening` | ✅ | Mocny początek: 3 warianty pierwszej sceny w głosie z biblii, ocena fabularna, kontrola ciągłości, werdykt. `poczatek-<slug>.html` + `.book-forge/poczatek.md`. |
 | 5 | `/book-forge:outline-to-scenes` | ✅ | Konspekt → siatka scen (cel→konflikt→zwrot, wartość +/–), beaty, oś czasu, rejestr zasiewów. Zapisuje do biblii; siatka scen scalona do `konspekt-<slug>.html` jako zakładka „Sceny” (bez osobnego pliku). |
 | 6 | `/book-forge:world-research` | ✅ | Weryfikacja realiów przez agent-browser/WebSearch (na żądanie z luk scen), adwersaryjna weryfikacja faktów, zapis do kanonu z cytowaniem (fakty + rejestr źródeł). Bez osobnych plików — wynik żyje w biblii. |
-| 7 | `/book-forge:write-scene` | ✅ | Proza jednej sceny, sekwencyjnie, w głosie z biblii; preflight `bible.py check-stage`, wyciąg anty-amnezji ze streszczeń w kanonie; po napisaniu robi handoff do `continuity-check` (propozycje w pamięci → zapis do biblii). `.book-forge/sceny/<id>.md`. Bez humanizera (ten przychodzi w `polish-pl`). |
+| 7 | `/book-forge:write-scene` | ✅ | Proza jednej sceny, sekwencyjnie, w głosie z biblii; preflight `bible.py check-stage`, wyciąg anty-amnezji ze streszczeń w kanonie; po napisaniu robi handoff do `continuity-check` (propozycje w pamięci → zapis do biblii). `.book-forge/sceny/<id>.md`. Bez unslopa (ten przychodzi w `polish-pl`). |
 | 7–10T | `/book-forge:forge-scenes` | ✅ | **Tryb taśmowy pętli scen**: pytania RAZ na początku (zakres, długość, limit rewizji), potem sekwencyjnie `write-scene` → `revise-scene` → `continuity-check` → `polish-pl` dla N kolejnych scen; twardy stop tylko na konflikcie RO / wyczerpanym limicie. Postęp po każdej scenie z `bible.py status`. |
 | 8 | `/book-forge:revise-scene` | ✅ | Pętla pogłębienie prozą → dev-edit „na ślepo” (PASS/FIX), z limitem prób i `accept-with-debt`, a po PASS faza **Disruption** (anty-przewidywalność: nieistotna myśl z chaosu postaci, złamana kontrola emocji, celowa szorstkość — chroniona przez `celowe_odstepstwa`). Poprawiona `.book-forge/sceny/<id>.md` + notatka QA. |
 | 9 | `/book-forge:continuity-check` | ✅ | Bramka spójności i jedyny etap **prozy** zapisujący do kanonu: audyt vs biblia, RO → CONFLICT (blokada), RUNTIME → write-back + **streszczenie sceny** do agregatu `streszczenia` (wyciąg anty-amnezji). Aktualizacja biblii (kanon + `log_ciaglosci`); bez plików raportu. |
-| 10 | `/book-forge:polish-pl` | ✅ | Finalna polszczyzna: humanizer NAJPIERW (zakotwiczony stylem), potem korekta polonistyczna + walidacja nazw z glosariusza. Wygładzona `.book-forge/sceny/<id>.md` + `.book-forge/korekta-<id>.md`. |
+| 10 | `/book-forge:polish-pl` | ✅ | Finalna polszczyzna: unslop NAJPIERW (zakotwiczony stylem), potem korekta polonistyczna + walidacja nazw z glosariusza. Wygładzona `.book-forge/sceny/<id>.md` + `.book-forge/korekta-<id>.md`. |
 | 11 | `/book-forge:assemble-book` | ✅ | Złożenie scen w rozdziały i całą książkę + przeglądy całości (łuk fabularny i postaci, wypłata zasiewów, tempo, motyw, oś czasu); metryki polskiego rynku (znaki, **arkusze wydawnicze** vs norma subgatunku), detektor powtórzeń `echo.py` i work-lista `.book-forge/redakcja-todo.md`; zamrożenie kanonu working→published. `ksiazka.md` (ze stroną tytułową) + interaktywny HTML. |
 | 12 | `/book-forge:publishing-package` | ✅ | Pakiet wydawniczy: logline, elevator pitch, opis z okładki (bez spoilerów), synopsis (z zakończeniem), list do agenta, comp titles „dla czytelników X i Y”. `pakiet.md` + interaktywny HTML. |
 
@@ -204,7 +204,7 @@ Od etapu pisania całość stoi na **biblii książki** — usystematyzowanym, w
 
 - Zdekomponowany kanon-wiki: drzewo `.book-forge/biblia/**/*.md` (jedna encja = jeden plik; strony frontmatter-only — JSON to prawda, edytor renderuje go jako tabelę; pełną treść markdown mają tylko `.book-forge/biblia/index.md` (katalog) i `.book-forge/biblia/log.md` (kronika)). Całe I/O przez `scripts/bible.py`; `bible.load_all()` skleja to w obiekt o kształcie dawnego kanonu, więc skille czytające zmieniają tylko źródło wczytania.
 - Pola RO (ustalenia: POV, czas, opis postaci, łuki, zasady świata, nazwy) vs RUNTIME (stan bieżący). Etapy pisania tylko czytają i proponują; zapis do kanonu idzie wyłącznie przez bramkę kontroli ciągłości — to chroni przed kanonizacją błędu.
-- Glosariusz z pełną polską odmianą nazw i listą wariantów zakazanych (ochrona przed dryfem i „poprawkami” humanizera).
+- Glosariusz z pełną polską odmianą nazw i listą wariantów zakazanych (ochrona przed dryfem i „poprawkami” unslopa).
 
 ## Reguły języka (wspólne)
 
@@ -213,7 +213,7 @@ Od etapu pisania całość stoi na **biblii książki** — usystematyzowanym, w
 ## Wymagania
 
 - Narzędzie **Workflow** (rój agentów); bez niego skille mają zapasowe wywołanie równoległych agentów `Task`.
-- Skill **`/humanizer:humanizer`** — obowiązkowy przebieg redakcji.
+- Skill **`/unslop:unslop`** — obowiązkowy przebieg redakcji.
 - CLI **agent-browser** (`npm i -g agent-browser && agent-browser install`) — research i weryfikacja (np. polskich wydań tytułów).
 - **Node.js** + **Python 3** (tylko biblioteka standardowa — bez pyyaml) — walidacja artefaktów (`node --check` na HTML, `python3 scripts/bible.py validate` na kanonie-wiki).
 
@@ -241,7 +241,7 @@ book-forge/
   skills/forge-scenes/     # tryb taśmowy pętli 7-10 (orkiestrator bez własnego roju)
   skills/revise-scene/     # pogłębienie + dev-edit (pętla generuj→oceń)
   skills/continuity-check/ # bramka kanonu (jedyny zapis do biblii)
-  skills/polish-pl/        # finalna polszczyzna (humanizer → korekta PL)
+  skills/polish-pl/        # finalna polszczyzna (unslop → korekta PL)
   skills/assemble-book/    # złożenie + przeglądy całości (working→published)
   skills/publishing-package/ # pakiet wydawniczy (logline, synopsis, list do agenta)
 ```

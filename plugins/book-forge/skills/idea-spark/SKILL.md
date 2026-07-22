@@ -27,7 +27,7 @@ Wynik odpowiada na trzy pytania:
 
 Mówimy o **literaturze**. Jeśli pomysł brzmi sztucznie albo niezrozumiale, nie powstanie z niego dobra książka. Najważniejszym kryterium jakości jest **poprawna, naturalna polszczyzna** — bez AI-slopu i bez polsko-angielskich potworków typu „competence porn”, „hook”, „worldbuilding”, „found family”.
 
-W tym lekkim wariancie **nie ma osobnej fazy redakcji w roju** — zasady polszczyzny są wbite w prompty roju (proza wraca już po polsku), a finalny szlif robi **obowiązkowy** przebieg `/humanizer:humanizer` w głównej sesji. Pełne reguły i słownik zamian: **`${CLAUDE_PLUGIN_ROOT}/shared/polish-style.md`** (czytaj zanim zbudujesz raport).
+W tym lekkim wariancie **nie ma osobnej fazy redakcji w roju** — zasady polszczyzny są wbite w prompty roju (proza wraca już po polsku), a finalny szlif robi **obowiązkowy** przebieg `/unslop:unslop` w głównej sesji. Pełne reguły i słownik zamian: **`${CLAUDE_PLUGIN_ROOT}/shared/polish-style.md`** (czytaj zanim zbudujesz raport).
 
 ## Krok 1 — zebranie wejścia (zawsze interaktywnie, 2 ekrany)
 
@@ -74,9 +74,9 @@ Uruchom rój narzędziem **Workflow** według skryptu w **`references/workflow-s
 > redakcji to cechy tego wariantu, nie braki.** Fabuły powstają z wiedzy gatunkowej modelu. Nie
 > zmyślaj liczb sprzedaży ani cytatów ze źródeł.
 
-## Krok 3 — humanizer (główna sesja)
+## Krok 3 — unslop (główna sesja)
 
-Po powrocie roju na prozie polskiej **wywołaj skill `/humanizer:humanizer`** (przez narzędzie `Skill`) i nanieś jego poprawki na pola tekstowe raportu. To **jedyny** przebieg redakcji (faza w roju została usunięta) — obowiązkowy, nie opcja. Słownik z `${CLAUDE_PLUGIN_ROOT}/shared/polish-style.md` pilnuje polskości słownictwa — stosuj oba.
+Po powrocie roju na prozie polskiej **wywołaj skill `/unslop:unslop`** (przez narzędzie `Skill`) i nanieś jego poprawki na pola tekstowe raportu. To **jedyny** przebieg redakcji (faza w roju została usunięta) — obowiązkowy, nie opcja. Słownik z `${CLAUDE_PLUGIN_ROOT}/shared/polish-style.md` pilnuje polskości słownictwa — stosuj oba.
 
 ## Krok 4 — budowa raportu HTML
 
@@ -84,7 +84,7 @@ Zbuduj raport z gotowego szablonu `${CLAUDE_PLUGIN_ROOT}/skills/idea-spark/asset
 
 ## Krok 5 — zapis i podsumowanie
 
-Zapisz do **bieżącego katalogu** jako `idea-spark-<slug-gatunku>.html` (np. `idea-spark-science-fiction.html`). Pokaż autorowi: ścieżkę pliku, zwycięską fabułę z oceną, oraz krótką notę, że tekst przeszedł humanizer **oraz że to lekki tryb bez badania rynku** (wybór warto potwierdzić pełnym `market-report`).
+Zapisz do **bieżącego katalogu** jako `idea-spark-<slug-gatunku>.html` (np. `idea-spark-science-fiction.html`). Pokaż autorowi: ścieżkę pliku, zwycięską fabułę z oceną, oraz krótką notę, że tekst przeszedł unslop **oraz że to lekki tryb bez badania rynku** (wybór warto potwierdzić pełnym `market-report`).
 
 **Zapisz też deterministyczny artefakt danych `.book-forge/pomysl.json`** w folderze roboczym (utwórz `.book-forge/`, jeśli nie istnieje): `{ "idea": <zwycięska fabuła: t, en, silnik, op, hook, comps, protagonista>, "brief": DATA.brief, "verdict": DATA.verdict, "genre": "...", "reader": "..." }`. **Kontrakt jest IDENTYCZNY jak w `market-report` — nie dodawaj klucza `weird` ani nowych pól `brief`.** To **kanoniczny most** do etapów 2–3: outline i book-bible czytają najpierw `.book-forge/pomysl.json` (deterministycznie), a HTML traktują jako fallback. Etapy 2–3 nie widzą różnicy (nie wymagają pola `gap`).
 
@@ -99,13 +99,13 @@ Zapisz do **bieżącego katalogu** jako `idea-spark-<slug-gatunku>.html` (np. `i
 | Rola agentów | Starszy redaktor ds. zakupów, 20 lat |
 | Dane | Z wiedzy gatunkowej modelu — **bez WebSearch/agent-browser** |
 | Język | Poprawna, naturalna polszczyzna — kryterium #1 |
-| Redakcja | Wbita w prompty roju + `/humanizer:humanizer` w głównej sesji (brak osobnej fazy w roju) |
+| Redakcja | Wbita w prompty roju + `/unslop:unslop` w głównej sesji (brak osobnej fazy w roju) |
 | Walidacja | `node --check` na JS + podgląd/zrzut w agent-browser |
 
 ## Najczęstsze błędy
 
-- **Anglicyzmy i kalki** w polskim tekście („hook”, „found family”, „plot armor”). Naprawa: słownik zamian z `${CLAUDE_PLUGIN_ROOT}/shared/polish-style.md` + humanizer.
-- **AI-slop** (nadęcia „stanowi/podkreśla”, triady, nadmiar myślników). Naprawa: humanizer i krótsze, konkretne zdania.
+- **Anglicyzmy i kalki** w polskim tekście („hook”, „found family”, „plot armor”). Naprawa: słownik zamian z `${CLAUDE_PLUGIN_ROOT}/shared/polish-style.md` + unslop.
+- **AI-slop** (nadęcia „stanowi/podkreśla”, triady, nadmiar myślników). Naprawa: unslop i krótsze, konkretne zdania.
 - **Zepsuty JS** przez prosty `"` zamiast `”` wewnątrz stringów. Naprawa: trzymaj cudzysłowy treści jako `„ ”`, waliduj `node --check` (patrz build-and-verify.md).
 - **Zmyślone twarde dane.** To tryb bez badania rynku — NIE podawaj konkretnych liczb sprzedaży, zaliczek ani cytatów ze źródeł. Tytuły porównawcze podawaj orientacyjnie, z wiedzy.
 - **Przewidywalność nagradzana zamiast karana.** Bezpieczna, poprawna fabuła nie jest celem. Bramka anty-klisza (skalowana suwakiem dziwności) i krytyk świeżości premiują nieoczywistość; synteza podkręca finalistów regułą „wzmacniaj, nie podmieniaj". Klisza = kara.
@@ -114,4 +114,4 @@ Zapisz do **bieżącego katalogu** jako `idea-spark-<slug-gatunku>.html` (np. `i
 - **Fabuła bez silnika premisy** (płaska sytuacja, konflikt doklejony z zewnątrz). Naprawa: pole `silnik` w każdej fabule + wymiar `silnik` w ocenie.
 - **Hardkodowanie SF.** To skill ogólny — wszystko wynika z podanego gatunku i czytelnika.
 - **`args` jako string JSON.** Workflow bywa, że podaje `args` jako tekst, nie obiekt — `args.genre` wychodzi `undefined`. Naprawa: skrypt parsuje `args` odpornie w `try/catch` i przerywa z czytelnym błędem przy braku gatunku/czytelnika.
-- **Pominięcie humanizera.** Obowiązkowy przebieg w głównej sesji, nie opcja (zwłaszcza że faza redakcji w roju została usunięta).
+- **Pominięcie unslopa.** Obowiązkowy przebieg w głównej sesji, nie opcja (zwłaszcza że faza redakcji w roju została usunięta).

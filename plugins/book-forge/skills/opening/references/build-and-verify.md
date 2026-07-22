@@ -28,7 +28,7 @@ const DATA = {
 
 ## Mapowanie z wyniku roju
 
-Rój zwraca `{ variants:[...], werdykt:{...} }`. Ustaw `recommended:true` na wariancie, którego `key === werdykt.recommended`; `meta.recommended` ← `werdykt.recommended`. `meta.title/en/genre` ← z biblii/raportu; `meta.scene` ← obietnica pierwszej sceny. Tekst wariantów to wersja **po humanizerze i korekcie PL** (kolejność: humanizer najpierw, korekta PL ostatnia).
+Rój zwraca `{ variants:[...], werdykt:{...} }`. Ustaw `recommended:true` na wariancie, którego `key === werdykt.recommended`; `meta.recommended` ← `werdykt.recommended`. `meta.title/en/genre` ← z biblii/raportu; `meta.scene` ← obietnica pierwszej sceny. Tekst wariantów to wersja **po unslopie i korekcie PL** (kolejność: unslop najpierw, korekta PL ostatnia).
 
 ## Placeholdery i wstrzyknięcie
 

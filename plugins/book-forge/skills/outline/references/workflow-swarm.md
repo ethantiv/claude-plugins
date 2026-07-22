@@ -163,7 +163,7 @@ return {
 
 ## Po powrocie roju agentów (główna sesja)
 
-1. **Humanizer** — `/humanizer:humanizer` na całej prozie konspektu.
+1. **Unslop** — `/unslop:unslop` na całej prozie konspektu.
 2. **Budowa dwóch plików** (`.book-forge/konspekt.md` + `konspekt-<slug>.html`) i walidacja — patrz `build-and-verify.md`.
 
 ## Skalowanie i plan awaryjny

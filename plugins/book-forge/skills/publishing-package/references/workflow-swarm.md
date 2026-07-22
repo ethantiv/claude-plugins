@@ -58,7 +58,7 @@ return red && red.logline ? red : oceniony
 
 ## Po powrocie roju (główna sesja)
 
-1. **Humanizer** na prozie pakietu (pitch, blurb, synopsis, list); nie zniekształcaj nazw ani comp titles.
+1. **Unslop** na prozie pakietu (pitch, blurb, synopsis, list); nie zniekształcaj nazw ani comp titles.
 2. Zapisz `pakiet.md` (wszystkie komponenty) + `pakiet-<slug>.html`. Szczegóły: `build-and-verify.md`.
 3. Przypomnij autorowi o uzupełnieniu bio i danych kontaktowych w liście (pola zostawione puste).
 

@@ -36,9 +36,9 @@ Uruchom rój według **`references/workflow-swarm.md`**. Fazy:
 
 Nie odpalaj agent-browsera w dziesiątkach kopii naraz (bywa zawodne) — WebSearch jest podstawą, agent-browser celowo.
 
-## Krok 3 — humanizer (główna sesja)
+## Krok 3 — unslop (główna sesja)
 
-Na opisowych partiach ustaleń uruchom `/humanizer:humanizer`. Nazw własnych i cytowań nie ruszaj.
+Na opisowych partiach ustaleń uruchom `/unslop:unslop`. Nazw własnych i cytowań nie ruszaj.
 
 ## Krok 4 — zapis do biblii + artefakty
 

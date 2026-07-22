@@ -6,10 +6,10 @@ Ten etap produkuje **prozę** i raport, nie HTML. Pliki w roboczym katalogu `.bo
 
 ## Kolejność (krytyczna)
 
-1. **Humanizer NAJPIERW** — w głównej sesji, na prozie po `continuity-check`, zakotwiczony kartą stylu i ochroną nazw z glosariusza.
-2. **Rój: korekta PL → walidacja nazw** — na tekście po humanizerze.
+1. **Unslop NAJPIERW** — w głównej sesji, na prozie po `continuity-check`, zakotwiczony kartą stylu i ochroną nazw z glosariusza.
+2. **Rój: korekta PL → walidacja nazw** — na tekście po unslopie.
 
-Nigdy odwrotnie: korekta PL przed humanizerem zostałaby częściowo cofnięta przez wzorce angielskie humanizera.
+Nigdy odwrotnie: korekta PL przed unslopem zostałaby częściowo cofnięta przez jego poprawki.
 
 ## Zapis
 
@@ -25,7 +25,7 @@ open(p,'w',encoding='utf-8').write(r['text'].rstrip()+'\n')
 
 rap = [f"# Korekta językowa — scena {sid}", '', '## Zmiany']
 for z in r.get('zmiany', []): rap.append(f"- {z.get('kategoria','')}: {z.get('przyklad','')}")
-rap += ['', '## Przywrócone nazwy (po humanizerze)']
+rap += ['', '## Przywrócone nazwy (po unslopie)']
 for n in r.get('przywrocone_nazwy', []): rap.append(f"- {n.get('bylo','')} → {n.get('jest','')}")
 rap += ['', '## Propozycje nowych AI-izmów do czarnej listy']
 for a in r.get('nowe_aiizmy', []): rap.append(f"- {a}")
@@ -36,7 +36,7 @@ PY
 
 ## Walidacja (obowiązkowa)
 
-- **Nazwy własne**: każda nazwa z glosariusza występuje w poprawnej, kanonicznej odmianie; brak wariantów zakazanych. Sprawdź, czy humanizer żadnej nie „poprawił” (lista `przywrocone_nazwy` pokazuje, co naprawiono).
+- **Nazwy własne**: każda nazwa z glosariusza występuje w poprawnej, kanonicznej odmianie; brak wariantów zakazanych. Sprawdź, czy unslop żadnej nie „poprawił” (lista `przywrocone_nazwy` pokazuje, co naprawiono).
 - **Interpunkcja dialogowa**: dialogi myślnikiem, bez cudzysłowu angielskiego; szybki audyt:
   ```bash
   : "${ID:?ustaw ID sceny w powłoce, np. ID=R3S2}"   # fail loud — bez tego grep celowałby w .md i fałszywie raportował OK

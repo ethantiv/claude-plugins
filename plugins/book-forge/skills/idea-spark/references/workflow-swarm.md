@@ -29,7 +29,7 @@ Zasady wbudowane w prompty:
 - **bez WebSearch i bez agent-browser**: oceny i pomysły opierają się na wiedzy o gatunku
   i rzemiośle, nie na świeżych danych rynkowych (to świadomy kompromis „light" — zaznacz to autorowi),
 - **bez osobnej fazy redakcji PL**: zasady polszczyzny (zakaz anglicyzmów i AI-slopu) są wbite
-  w `ROLE`, więc proza wraca już czysta; finalny szlif robi obowiązkowy `/humanizer:humanizer`
+  w `ROLE`, więc proza wraca już czysta; finalny szlif robi obowiązkowy `/unslop:unslop`
   w głównej sesji (patrz `${CLAUDE_PLUGIN_ROOT}/shared/polish-style.md`),
 - proza wraca już po polsku, w polach zgodnych z kształtem `DATA` (patrz `build-and-verify.md`).
 
@@ -182,7 +182,7 @@ return {
 
 ## Po powrocie roju agentów (główna sesja)
 
-1. **Humanizer** — wywołaj `/humanizer:humanizer` i nanieś poprawki na prozę (patrz
+1. **Unslop** — wywołaj `/unslop:unslop` i nanieś poprawki na prozę (patrz
    `${CLAUDE_PLUGIN_ROOT}/shared/polish-style.md`). To jedyny przebieg redakcji (faza w roju
    została usunięta, bo proza wraca już po polsku z `ROLE`) — **obowiązkowy**.
 2. **Mapowanie do `DATA`** i budowa HTML — `build-and-verify.md`.

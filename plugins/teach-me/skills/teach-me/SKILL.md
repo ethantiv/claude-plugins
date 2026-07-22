@@ -30,9 +30,9 @@ Hard rules:
 - **No jargon without paying for it.** If a term is unavoidable, define it in the same breath, in plain words. Don't explain one unknown with three more.
 - **Short and dense.** Every sentence earns its place; if a line only restates the previous one, cut it. Reach for an example, an analogy, or a 3-line snippet before reaching for more sentences.
 
-**Humanizer edit.** Before writing your first longer explanation of the session, load the `humanizer:humanizer` skill once via the `Skill` tool and apply its editing rules to all Polish prose you produce from then on — chat explanations and checklist file content alike.
+**Unslop edit.** Before writing your first longer explanation of the session, load the `unslop:unslop` skill once via the `Skill` tool and apply its editing rules to all Polish prose you produce from then on — chat explanations and checklist file content alike.
 
-If `humanizer:humanizer` or `frontend-design:frontend-design` is not installed, continue without it — never abort the session over a missing helper skill.
+If `unslop:unslop` or `frontend-design:frontend-design` is not installed, continue without it — never abort the session over a missing helper skill.
 
 ## 1. Resolve the subject
 

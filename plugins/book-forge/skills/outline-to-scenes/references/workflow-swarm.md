@@ -90,7 +90,7 @@ return {
 
 ## Po powrocie roju (główna sesja)
 
-1. **Humanizer** na opisach scen (`/humanizer:humanizer`), nazwy własne chronione.
+1. **Unslop** na opisach scen (`/unslop:unslop`), nazwy własne chronione.
 2. **Zapis do biblii** (przez `bible.py`): siatka scen przez `bible.write_scene_grid(...)` (status `"planowana"`), `setup_payoff` i `os_czasu` pętlą `bible.append_record(...)`; na końcu `bible.render_index()`.
 3. **Scalenie** siatki scen do `konspekt-<slug>.html` jako zakładka „Sceny" (osobny plik scen ani `sceny.md` nie powstają) i walidacja — `build-and-verify.md`.
 4. Lista `research_needs` przekazana autorowi jako wejście do etapu `world-research`.

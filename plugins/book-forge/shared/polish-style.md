@@ -161,7 +161,7 @@ Słowa łudząco podobne, o INNYM znaczeniu. Nie tłumacz ich „na słuch”.
 
 **Zadomowione w polszczyźnie zapożyczenia:** bestseller, audiobook, thriller, space opera, noir, reality show, romantasy. **Nazwy własne zostają:** BookTok, TikTok, Goodreads, Reddit, nazwy nagród (Hugo, Nebula), nazwiska, tytuły książek na rynek anglojęzyczny bez polskiego wydania.
 
-## 2. Bez AI-slopu (zgodnie z humanizerem)
+## 2. Bez AI-slopu (zgodnie z unslopem)
 
 - Bez nadęć typu „stanowi”, „podkreśla znaczenie”, „świadectwo”, „w dzisiejszym dynamicznym świecie”.
 - Bez triad na siłę (trzy przymiotniki/elementy „dla efektu”).
@@ -171,7 +171,7 @@ Słowa łudząco podobne, o INNYM znaczeniu. Nie tłumacz ich „na słuch”.
 - Zmienny rytm zdań: krótkie obok dłuższych. Konkret zamiast ogólnika.
 - Głos redaktora: miej zdanie, nazywaj ryzyka wprost (zasada „fail loud”).
 
-Po fazie redakcji w roju **obowiązkowo** uruchom w głównej sesji skill `/humanizer:humanizer` i nanieś jego poprawki na pola tekstowe. To drugi, niezależny przebieg — nie pomijaj go.
+Po fazie redakcji w roju **obowiązkowo** uruchom w głównej sesji skill `/unslop:unslop` i nanieś jego poprawki na pola tekstowe. To drugi, niezależny przebieg — nie pomijaj go.
 
 ## 3. Lokalizacja tytułów (weryfikacja przez agent-browser)
 

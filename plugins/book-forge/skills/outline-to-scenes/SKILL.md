@@ -36,9 +36,9 @@ Uruchom rój według **`references/workflow-swarm.md`**. Fazy:
 
 Sceny mogą oznaczać **luki badawcze** (realia wymagające weryfikacji) — trafiają na listę dla etapu `world-research` (research na żądanie, nie na zapas).
 
-## Krok 3 — humanizer (główna sesja)
+## Krok 3 — unslop (główna sesja)
 
-Na opisach scen uruchom `/humanizer:humanizer` i nanieś poprawki (nazwy własne z glosariusza chronione).
+Na opisach scen uruchom `/unslop:unslop` i nanieś poprawki (nazwy własne z glosariusza chronione).
 
 ## Krok 4 — zapis do biblii + artefakty
 
@@ -64,7 +64,7 @@ Pokaż autorowi: liczbę scen, mapę beatów, ostrzeżenia (zasiew bez wypłaty,
 | Oś | Łuk protagonisty na beatach |
 | Zapis do kanonu | Tak (etap planowania): siatka scen, oś czasu, zasiewy i wypłaty |
 | Wynik | siatka scen w biblii + zakładka „Sceny" scalona do `konspekt-<slug>.html`; luki badawcze dla `world-research` |
-| Język | Naturalna polszczyzna + `/humanizer:humanizer` |
+| Język | Naturalna polszczyzna + `/unslop:unslop` |
 | Walidacja | `node --check` na JS + podgląd w agent-browser |
 
 ## Najczęstsze błędy
