@@ -1,6 +1,6 @@
 {
   "name": "unslop",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Edit LLM-generated documents to remove telltale signs of AI writing (per Wikipedia's \"Signs of AI writing\"): AI vocabulary, negative parallelisms, rule of three, promotional tone, vague attributions, formatting slop. Polish and English.",
   "author": {
     "name": "Mirek Zaniewicz"

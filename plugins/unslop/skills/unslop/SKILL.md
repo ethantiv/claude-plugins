@@ -43,6 +43,7 @@ Hard rules:
 - **Bold overuse** — mechanical bolding of "key terms" throughout prose → unbold; keep at most genuinely load-bearing emphasis.
 - **List-itis** — bullet lists of `**Header:** description` where flowing prose belongs → merge into sentences; keep lists only for genuinely enumerable items.
 - **Em-dash overuse** — more than an occasional `—` → commas, periods, or parentheses. In Polish use the en dash (–) sparingly and correctly.
+- **Semicolon overuse** — sentences glued together with `;` where a human would write two sentences or use a comma → split into separate sentences. Especially suspect in Polish, where semicolons are rare in ordinary prose; legitimate uses (complex list items) stay.
 - **Emoji as decoration** — 🚀 in headings or bullets of a serious document → remove.
 - **Title Case Headings** in English documents → sentence case (match the file's dominant convention if it already has one).
 - **Skipped heading levels** (H2 → H4) → restore the hierarchy.
