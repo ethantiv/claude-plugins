@@ -14,6 +14,7 @@
 | **visual-prompt** | universal | Generates three `.txt` files with artistic text-to-image prompts in three contrasting directions, written in parallel by separate subagents. Two profiles: `art` (artwork, posters, photography) and `ui` (artistic interface mockups). Commands: `/visual-prompt-art`, `/visual-prompt-ui`. |
 | **dependency-update** | universal | Scans your project's dependencies across all ecosystems and updates them safely: minor/patch in one pass, majors one at a time with separate research for each. |
 | **eli** | universal | Explain like I'm an intern: explains any concept, term, or piece of code to a smart person who just lacks the domain knowledge. Short, concrete, example-driven, no padding. |
+| **unslop** | universal | Edits LLM-generated documents in place to remove the telltale signs of AI writing catalogued by Wikipedia's ["Signs of AI writing"](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing): AI vocabulary, negative parallelisms, rule of three, promotional tone, vague attributions, formatting slop. Handles Polish and English. |
 
 ## Installation
 
@@ -29,6 +30,7 @@ In a Claude Code session, run these commands (`/plugin` is built into Claude Cod
 /plugin install visual-prompt@ethantiv-plugins
 /plugin install dependency-update@ethantiv-plugins
 /plugin install eli@ethantiv-plugins
+/plugin install unslop@ethantiv-plugins
 ```
 
 Or from the terminal, via the CLI:
@@ -43,6 +45,7 @@ claude plugin install teach-me@ethantiv-plugins
 claude plugin install visual-prompt@ethantiv-plugins
 claude plugin install dependency-update@ethantiv-plugins
 claude plugin install eli@ethantiv-plugins
+claude plugin install unslop@ethantiv-plugins
 ```
 
 Install only what you need; the plugins are independent of each other. After installing, check the state:
@@ -67,13 +70,13 @@ All plugins need a working Claude Code. Beyond that:
 - **Python 3**, standard library only, no `pip install`.
 - **Node.js**, used to validate generated HTML artifacts (`node --check`).
 - The **Workflow** tool (agent swarm); without it the skills fall back to parallel `Task` agents.
-- The **`/humanizer:humanizer`** skill, a mandatory language-editing pass.
+- The **`/unslop:unslop`** skill (the `unslop` plugin from this marketplace), a mandatory language-editing pass.
 - The **agent-browser** skill, used for research and fact checking; project page: [agent-browser.dev](https://agent-browser.dev).
 
 Install both skills with:
 
 ```bash
-npx skills add https://github.com/softaworks/agent-toolkit --skill humanizer
+claude plugin install unslop@ethantiv-plugins
 npx skills add https://github.com/vercel-labs/agent-browser --skill agent-browser
 ```
 
@@ -118,6 +121,7 @@ After installation, each plugin exposes its skills as `/<plugin>:<skill>` comman
 - **visual-prompt**: `/visual-prompt-art` or `/visual-prompt-ui` (or just describe what you need) generates three `.txt` files with prompts in contrasting directions.
 - **dependency-update**: `/dependency-update:dependency-update` scans and safely updates your project's dependencies.
 - **eli**: `/eli:eli` with a concept, term, or piece of code; you get a short, vivid explanation.
+- **unslop**: `/unslop:unslop` with a file path (or directory); it edits the document in place to remove signs of AI writing and reports what it fixed.
 
 ## License
 
