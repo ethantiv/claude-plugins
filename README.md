@@ -14,7 +14,7 @@
 | **visual-prompt** | universal | Generates three `.txt` files with artistic text-to-image prompts in three contrasting directions, written in parallel by separate subagents. Two profiles: `art` (artwork, posters, photography) and `ui` (artistic interface mockups). Commands: `/visual-prompt-art`, `/visual-prompt-ui`. |
 | **dependency-update** | universal | Scans your project's dependencies across all ecosystems and updates them safely: minor/patch in one pass, majors one at a time with separate research for each. |
 | **eli** | universal | Explain like I'm an intern: explains any concept, term, or piece of code to a smart person who just lacks the domain knowledge. Short, concrete, example-driven, no padding. |
-| **unslop** | universal | Edits LLM-generated documents in place to remove the telltale signs of AI writing catalogued by Wikipedia's ["Signs of AI writing"](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing): AI vocabulary, negative parallelisms, rule of three, promotional tone, vague attributions, formatting slop. Handles Polish and English. |
+| **unslop** | universal | Edits LLM-generated documents in place to remove the telltale signs of AI writing catalogued by Wikipedia's ["Signs of AI writing"](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing): AI vocabulary, negative parallelisms, rule of three, promotional tone, vague attributions, throat-clearing, fake-profound kickers, formatting slop. Handles Polish and English. A SessionStart hook applies the style to all agent prose; disable it by creating `.claude/unslop-off`. |
 
 ## Installation
 

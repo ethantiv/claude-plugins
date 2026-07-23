@@ -37,6 +37,11 @@ Hard rules:
 8. **Copula avoidance.** "serves as", "functions as", "boasts", "features" / "stanowi", "pełni funkcję", "może poszczycić się", "oferuje" (for mere possession) → plain "is" / "has" ("jest" / "ma").
 9. **Elegant variation.** Cycling synonyms for one referent (the city → the metropolis → the urban hub) → repeat the ordinary word; repetition is fine.
 10. **Chat artifacts.** "I hope this helps", "Let's dive in", "Certainly!", knowledge-cutoff disclaimers, "As an AI…", leftover placeholders ("[insert X]") / "Mam nadzieję, że to pomoże", "Zanurzmy się" → delete outright.
+11. **Throat-clearing and faux-insight setups.** "Here's the thing", "Let me be clear", "What nobody tells you", "The part everyone misses", "What if I told you…", "Plot twist:", self-answered "Question? Answer." pairs / "Powiedzmy sobie szczerze", "Tego nikt ci nie powie", "I tu robi się ciekawie", "Sekret polega na tym, że" → cut the setup and let the claim stand on its own.
+12. **Colon reveals and dramatic fragmentation.** A noun phrase, a colon, then a dramatic reveal ("The best part: it learns"), and staccato one-liners for effect ("That's it. That's the whole thing.") / "Najlepsze? Działa od razu.", "To wszystko. Naprawdę." → plain full sentences; colons stay for lists, labels, and quotes.
+13. **Fake-profound kickers.** A final "deep" metaphor, aphorism, or mic-drop line ("In the end, it's not about the code — it's about people" / "Bo w końcu nie chodzi o kod. Chodzi o ludzi.") → delete it — never rewrite it into a better metaphor; end on the last concrete point in the text.
+14. **Inflated verb phrases.** "made a decision", "has the ability to", "conducted an analysis" / "dokonać zakupu", "przeprowadzić analizę", "ulec poprawie" → the plain verb: "decided", "can", "analyzed" / "kupić", "przeanalizować", "poprawić się".
+15. **Robotic rhythm.** Runs of sentences with the same shape and length, identically built paragraphs, stacked punchy fragments → vary sentence length and structure; merge or recast a few so the passage stops ticking like a metronome.
 
 ## Formatting patterns
 
