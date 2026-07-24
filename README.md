@@ -6,6 +6,7 @@
 
 | Plugin | Language | What it does |
 | --- | --- | --- |
+| **action-first** | universal | A persistent response style for the whole session: every answer leads with the next concrete action, multi-step work is numbered, state is restated each turn, and preamble, recaps, and tangents are cut. Turn it off with "stop action-first" or "normal mode". |
 | **book-forge** | Polish | A 12-stage novel-writing pipeline run by an agent swarm: from a market gap and an idea, through an outline and a "book bible", to writing, editing, and a submission package. Every stage ends with a mandatory edit for natural Polish (no AI slop). |
 | **babysit-pr** | universal | A local equivalent of `autofix-pr`: it watches the current pull request and fixes it in your Claude Code session, covering CI failures, review comments that request changes, and merge conflicts. After one clean pass it merges the PR and deletes the branch. Run it with `--loop` to keep watching on an interval, or `--push` to commit, push, and open the PR first. |
 | **read-arxiv-paper** | universal | Downloads the LaTeX source of an arXiv paper, analyzes it, and writes a summary grounded in the context of your project. |
@@ -22,6 +23,7 @@ In a Claude Code session, run these commands (`/plugin` is built into Claude Cod
 
 ```text
 /plugin marketplace add ethantiv/claude-plugins
+/plugin install action-first@ethantiv-plugins
 /plugin install book-forge@ethantiv-plugins
 /plugin install babysit-pr@ethantiv-plugins
 /plugin install read-arxiv-paper@ethantiv-plugins
@@ -37,6 +39,7 @@ Or from the terminal, via the CLI:
 
 ```bash
 claude plugin marketplace add ethantiv/claude-plugins
+claude plugin install action-first@ethantiv-plugins
 claude plugin install book-forge@ethantiv-plugins
 claude plugin install babysit-pr@ethantiv-plugins
 claude plugin install read-arxiv-paper@ethantiv-plugins
@@ -100,7 +103,7 @@ npx agent-browser open example.com
 **roadmap**
 - The **Workflow** tool (agent swarm); without it the skill falls back to parallel `Task` agents.
 
-**teach-me**, **eli**
+**teach-me**, **eli**, **action-first**
 - No dependencies beyond Claude Code.
 
 **visual-prompt**
@@ -122,6 +125,7 @@ After installation, each plugin exposes its skills as `/<plugin>:<skill>` comman
 - **dependency-update**: `/dependency-update:dependency-update` scans and safely updates your project's dependencies.
 - **eli**: `/eli:eli` with a concept, term, or piece of code; you get a short, vivid explanation.
 - **unslop**: `/unslop:unslop` with a file path (or directory); it edits the document in place to remove signs of AI writing and reports what it fixed.
+- **action-first**: `/action-first:action-first` (or ask for "action-first mode") switches the whole session into the action-first response style; say "stop action-first" or "normal mode" to switch back.
 
 ## License
 

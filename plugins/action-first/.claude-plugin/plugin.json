@@ -1,0 +1,8 @@
+{
+  "name": "action-first",
+  "version": "0.1.0",
+  "description": "A persistent response style: every answer leads with the next concrete action, numbers multi-step work, restates state each turn, and cuts preamble, recaps, and tangents — output shaped to be acted on, not just read.",
+  "author": {
+    "name": "Mirek Zaniewicz"
+  }
+}

@@ -6,6 +6,11 @@
   },
   "plugins": [
     {
+      "name": "action-first",
+      "description": "A persistent response style: every answer leads with the next concrete action, numbers multi-step work, restates state each turn, and cuts preamble, recaps, and tangents — output shaped to be acted on, not just read.",
+      "source": "./plugins/action-first"
+    },
+    {
       "name": "babysit-pr",
       "description": "Local equivalent of autofix-pr: monitor and fix the current PR (CI failures, review comments, merge conflicts) in the local Claude Code session instead of a remote cloud session",
       "source": "./plugins/babysit-pr"
