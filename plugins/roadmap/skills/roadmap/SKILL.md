@@ -48,9 +48,11 @@ Distill this into a 5–10 line brief: what the product does, who uses it, its s
 
 ## The swarm
 
-Drive the swarm with the **Workflow tool** — a generate → judge → synthesize pipeline. Invoking this skill is the opt-in to run it. If the Workflow tool is unavailable, fall back to the **parallel `Task` agents** described under *Fallback* below; the two-group design is identical either way.
+Drive the swarm with the **Workflow tool** — a generate → judge → synthesize pipeline. Invoking this skill is the opt-in to run it. If the Workflow tool is unavailable, fall back to the **parallel `Agent` calls** described under *Fallback* below; the two-group design is identical either way.
 
 **Scale to the project.** Small/config/docs repo → 3 perspectives, 1 judge per idea. Real app → 5–6 perspectives, a 2–3 judge panel per idea.
+
+**These counts are the cap.** Spawn the ideation lenses and the PM judges, nothing else: no extra agent to re-read the brief, re-score the survivors, or double-check the synthesis. The judge panel *is* the verification step, and the synthesis, ranking, and file write happen in the main session.
 
 ### Group A — ideation perspectives
 
@@ -126,7 +128,7 @@ Use the returned survivors (with their `why_it_wins` lines and scores) to write 
 
 ### Fallback (no Workflow tool)
 
-Run the same two groups with the **Task tool**, `subagent_type="Explore"` for ideation agents (launch all lenses in one message, in parallel), then a second parallel batch of PM-judge agents over the collected ideas. Apply the same keep/kill majority rule and synthesis. Slower and held in context, but identical logic.
+Run the same two groups with the **Agent tool**, `subagent_type="Explore"` for ideation agents (launch all lenses in one message, in parallel), then a second parallel batch of PM-judge agents over the collected ideas. Apply the same keep/kill majority rule and synthesis. Slower and held in context, but identical logic — and the same cap applies: lenses plus judges, no additional agents.
 
 ## Priority tiers (product value, not engineering criticality)
 
@@ -169,6 +171,7 @@ Rank by aggregate score within each tier — highest wow/usefulness first.
 - Each proposal: H4 title, a 2–4 sentence description, then a single `**Why it wins:**` line.
 - Empty tiers may be omitted.
 - Write the file in the project's documentation language (default English).
+- The format above is the whole file. No intro paragraph, no methodology section, no closing summary, no "next steps" — the proposals carry the substance and padding around them dilutes it.
 
 ## Workflow
 
@@ -184,7 +187,7 @@ Rank by aggregate score within each tier — highest wow/usefulness first.
 | Aspect | Rule |
 | --- | --- |
 | Output file | `docs/ROADMAP.md` (regenerated; confirm overwrite first) |
-| Engine | Agent swarm via Workflow tool (Task-agent fallback) |
+| Engine | Agent swarm via Workflow tool (`Agent`-tool fallback) |
 | Ideation | 3–6 perspectives, each blind to the others |
 | Verification | 1–3 PM judges per idea; majority keep survives |
 | Selection | Top 4–7 survivors, ranked by wow × usefulness |

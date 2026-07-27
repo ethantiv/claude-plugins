@@ -139,6 +139,10 @@ Derive `tag` from the paper's core topic in snake_case (e.g. `conditional_memory
 {Interesting implementation details, hyperparameters, or insights worth remembering}
 ```
 
+#### Length
+
+Size each section to what the paper actually offers. Cover the method and the results properly, drop a section the paper gives you nothing for, and never restate the Key Idea further down. A long paper does not license a long summary — this file is what you want to re-read in six months, not a translation of the original.
+
 #### Project Contextualization
 
 The "Relevance to This Project" section is the value-add of this skill. To write it:

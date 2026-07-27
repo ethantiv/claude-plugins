@@ -99,7 +99,9 @@ Same topic, different cultural angle each time.
 
 ### 4. Dispatch three subagents in parallel
 
-In **one** assistant message, call the `Agent` tool three times with `subagent_type: "general-purpose"`. Each prompt contains:
+In **one** assistant message, call the `Agent` tool three times with `subagent_type: "general-purpose"`. Three is the cap — one per direction, and no fourth agent to review, compare, or re-rank what the three returned. The refinement checklist inside the brief is the quality gate; the orchestrator only reports paths.
+
+Each prompt contains:
 
 1. The verbatim content of the profile-appropriate brief (`subagent-brief-art.md` or `subagent-brief-ui.md`).
 2. The seeded direction (movement, essence, hidden reference, axis).

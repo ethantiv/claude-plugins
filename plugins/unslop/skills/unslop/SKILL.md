@@ -82,4 +82,4 @@ Replace with the plain equivalent, or delete the phrase when it carries no conte
 
 ## Success check
 
-Re-read each edited file once after the pass. It should read like a competent human wrote it: varied sentence rhythm, plain verbs, no pattern from the lists above left in bulk, and no changed meaning. If a paragraph still smells like AI but no listed pattern matches, apply the general test — does the sentence say something a knowledgeable human would bother to write? If not, cut it.
+The pass is done when the file reads like a competent human wrote it: varied sentence rhythm, plain verbs, no pattern from the lists above left in bulk, and no changed meaning. Judge that from the edits you made — a separate re-reading pass is warranted only for a file long enough that you edited it in chunks, where the seams between chunks are the thing to check. If a paragraph still smells like AI but no listed pattern matches, apply the general test — does the sentence say something a knowledgeable human would bother to write? If not, cut it.
