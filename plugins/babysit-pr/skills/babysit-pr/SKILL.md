@@ -9,7 +9,7 @@ description: >
   local session, not a remote cloud session. After one clean pass it merges the
   PR and deletes its branch on its own.
 argument-hint: "[PR number] [--loop [interval]] [--push [interval]]"
-allowed-tools: Bash, Read, Edit, Write, Grep, Glob
+allowed-tools: Bash, Read, Edit, Write, Grep, Glob, Skill, CronList, CronDelete, ScheduleWakeup
 ---
 
 # Babysit PR (local autofix)
@@ -19,6 +19,16 @@ Run **one monitoring pass** over a pull request: detect its state, fix what is b
 One pass is deliberate: continuity comes from running this skill under the `/loop` skill, e.g. `/loop 10m /babysit-pr` — or the `--loop` shorthand, which sets that up for you (Step 0). Each pass is self-contained and emits a clear terminal signal so the loop knows when to stop.
 
 **Auto-merge is always on.** The skill closes the loop by itself: after **one clean pass** (green CI, no conflicts, no open reviewer comments) it merges the PR and deletes its branch, then signals the loop to stop. See Step 5.
+
+## Stopping the loop
+
+Several paths below end the job for good: the PR is merged or closed, there is no PR, or the session is on the default branch. On any of them **stop the loop yourself** — never end the turn asking the user to press `Esc`:
+
+1. Call `CronList` and find the job whose prompt contains `/babysit-pr`.
+2. Call `CronDelete` with that job's `id`.
+3. If no such cron job is listed, the loop is self-paced — call `ScheduleWakeup` with `stop: true` instead.
+
+Do this **before** writing the report, then say in the report that the loop is stopped. Only if both tools are unavailable in the session, fall back to asking the user for `Esc` — and say why.
 
 ## When NOT to use
 
@@ -49,9 +59,9 @@ The script prints one JSON object and never mutates anything. Branch on `.status
 | `.status` | Action |
 |---|---|
 | `ok` | Continue to Step 2 with the payload. |
-| `no_pr` | Report: no open PR for this branch. Stop — and tell the user to stop the loop. |
-| `on_default_branch` | Report: on the default branch, check out a feature branch first. Stop the loop. |
-| `merged` / `closed` | Report the outcome. **The job is done — tell the user to stop the loop** (`Esc`). |
+| `no_pr` | No open PR for this branch — stop the loop (see "Stopping the loop"), then report. |
+| `on_default_branch` | On the default branch — stop the loop, then report that a feature branch must be checked out first. |
+| `merged` / `closed` | **The job is done** — stop the loop, then report the outcome. |
 | `gh_missing` | Report that `gh` is required but not installed. Stop. |
 | `gh_error` | Report `.error`. Stop this pass; the loop may retry. |
 
@@ -118,7 +128,7 @@ Close the pass with a one-paragraph status, then one of:
 
 - **Fixed and pushed**: list what was fixed in one line each. The next loop pass will re-check CI.
 - **Nothing to do**: PR is green, no actionable comments, no conflicts — say so plainly. Under a fixed-interval `/loop` this is normal; keep waiting. Proceed to Step 5 (this is the only path that can merge).
-- **Done**: PR is merged or closed — state the outcome and tell the user to stop the loop.
+- **Done**: PR is merged or closed — stop the loop (see "Stopping the loop") and state the outcome.
 - **Blocked**: a problem needs a human — state exactly what and why.
 
 Keep the report short; the user can see the diffs and `gh` output.
@@ -153,6 +163,6 @@ After the command, **verify the real state** — `gh pr merge` may *enable* auto
 gh pr view <number> --json state -q .state
 ```
 
-- `MERGED`: report the merge and branch deletion, and **tell the user to stop the loop** (`Esc`).
+- `MERGED`: **stop the loop** (see "Stopping the loop"), then report the merge and branch deletion.
 - Auto-merge enabled / queued: report that and **keep looping** — a later pass sees `merged` via Step 1 and signals done.
 - Merge rejected (method disallowed, branch protection, missing approval, moved HEAD): report the exact reason and keep looping.
