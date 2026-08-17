@@ -93,7 +93,7 @@ AXIS: <axis label>
 <prompt text>
 ```
 
-A complete example file is at `example-ui.txt` next to this brief.
+The orchestrator's message includes the absolute path of a complete example file — Read it before writing.
 
 ## Step 5 — Reply
 

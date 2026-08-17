@@ -1,6 +1,7 @@
 ---
 name: visual-prompt
 description: This skill should be used when the user asks to generate text-to-image prompts for AI image generators (Midjourney, DALL-E, Flux, Stable Diffusion, nano banana) — for artwork, posters, photography and key visuals, OR for artistic mockups of interfaces, websites, dashboards, landing pages and mobile screens. Also triggers on "design brief for AI", "image generation prompt", "UI mockup prompt", "interface concept", "website mockup prompt".
+allowed-tools: Read, Glob, Agent, Workflow
 ---
 
 # Visual Prompt — Orchestrator
@@ -31,14 +32,16 @@ The orchestrator never writes a prompt itself. Three prompts are written by thre
 
 | Profile | Subagent brief | Example output |
 |---|---|---|
-| `art` | `subagent-brief-art.md` | `example-art.txt` |
-| `ui` | `subagent-brief-ui.md` | `example-ui.txt` |
+| `art` | `${CLAUDE_PLUGIN_ROOT}/skills/visual-prompt/references/subagent-brief-art.md` | `${CLAUDE_PLUGIN_ROOT}/skills/visual-prompt/examples/example-art.txt` |
+| `ui` | `${CLAUDE_PLUGIN_ROOT}/skills/visual-prompt/references/subagent-brief-ui.md` | `${CLAUDE_PLUGIN_ROOT}/skills/visual-prompt/examples/example-ui.txt` |
 
-Read the corresponding brief once. You'll paste it verbatim into each subagent call.
+Read the corresponding brief once (Read tool). Paste it verbatim into each subagent call. Note the absolute path of the example file — each subagent gets that path as a format reference.
 
 ### 2. Reserve a free trio of file numbers
 
 Filename pattern: `visual-prompt-<slug>-<n>.txt` (the profile is reflected inside the file, not in the name).
+
+Glob the working directory for `visual-prompt-<slug>-*.txt`, then pick the first free trio from the matches:
 
 ```
 slug    = topic lowercased, hyphenated, max 40 chars
@@ -99,16 +102,35 @@ Same topic, different cultural angle each time.
 
 ### 4. Dispatch three subagents in parallel
 
-In **one** assistant message, call the `Agent` tool three times with `subagent_type: "general-purpose"`. Three is the cap — one per direction, and no fourth agent to review, compare, or re-rank what the three returned. The refinement checklist inside the brief is the quality gate; the orchestrator only reports paths.
+Drive the trio with the **Workflow tool** — invoking this skill is the opt-in to run it. If the Workflow tool is unavailable, use the `Agent` fallback below. Either way three is the cap — one subagent per direction, and no fourth agent to review, compare, or re-rank what the three returned. The refinement checklist inside the brief is the quality gate; the orchestrator only reports paths.
 
-Each prompt contains:
+Each subagent prompt contains:
 
 1. The verbatim content of the profile-appropriate brief (`subagent-brief-art.md` or `subagent-brief-ui.md`).
 2. The seeded direction (movement, essence, hidden reference, axis).
 3. The user's topic.
 4. The assigned absolute file path: `<cwd>/visual-prompt-<slug>-<n>.txt`.
+5. The absolute path of the profile example file (`example-art.txt` / `example-ui.txt`) — a format reference the subagent Reads before writing.
 
 Each subagent writes exactly one file and replies with its absolute path.
+
+Reference workflow script:
+
+```javascript
+export const meta = {
+  name: 'visual-prompt-trio',
+  description: 'Three subagents each write one text-to-image prompt file',
+  phases: [{ title: 'Write' }],
+}
+// args: { brief, topic, examplePath, directions: [{ movement, essence, reference, axis, path }] }
+const paths = await parallel(args.directions.map(d => () =>
+  agent(
+    `${args.brief}\n\nTopic: ${args.topic}\nMovement name: ${d.movement}\nPhilosophy essence: ${d.essence}\nHidden reference: ${d.reference}\nAxis label: ${d.axis}\nFile path: ${d.path}\nFormat example (Read it before writing): ${args.examplePath}`,
+    { label: `write:${d.axis}`, phase: 'Write' })))
+return paths.filter(Boolean)
+```
+
+**Fallback (no Workflow tool):** in **one** assistant message, call the `Agent` tool three times with `subagent_type: "general-purpose"` — one call per direction, same prompt contents. Identical logic, same three-agent cap.
 
 ### 5. Report back
 
@@ -129,7 +151,7 @@ No summary of the prompts. No usage hints. No offer to generate more.
 - Mixing profiles inside one trio — all three directions stay on one profile.
 - Using `art` axes for a `ui` topic or vice versa — each profile has its own contrast table.
 - Skipping trio reservation, so two subagents collide on the same `-N` number.
-- Dispatching subagents sequentially. They run in parallel — three `Agent` calls in one assistant message.
+- Dispatching subagents sequentially. They run in parallel — one Workflow call, or (fallback) three `Agent` calls in one assistant message.
 - Naming the hidden reference inside the seed text the subagent will read — it's a conceptual thread, not a label to mention.
 - Summarising prompts in the report-back. Three lines, that's it.
 - Treating the `ui` profile as a wireframe spec or a UX deliverable. It produces an artistic prompt that describes a mockup as an art piece — same 80–140 word artistic register as `art`.
