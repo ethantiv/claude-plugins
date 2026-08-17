@@ -1,9 +1,11 @@
 ---
 name: read-arxiv-paper
 description: >
-  This skill should be used when the user asks to read, summarize, analyze, or
-  review an arxiv paper, or provides an arxiv URL or ID — including versioned
-  IDs (e.g. 2601.07372v3) and old-format IDs (e.g. cs/0301012).
+  This skill should be used when the user asks to read, download, summarize,
+  analyze, or review an arXiv paper, or provides an arXiv URL or ID — including
+  versioned IDs (e.g. 2601.07372v3) and old-format IDs (e.g. cs/0301012).
+argument-hint: "<arXiv URL or ID>"
+allowed-tools: Read, Write, Grep, Glob, Bash(mkdir:*), Bash(curl:*), Bash(file:*), Bash(tar:*), Bash(cp:*), Bash(unzip:*), Bash(gunzip:*)
 ---
 
 # Read arXiv Paper
@@ -20,7 +22,7 @@ Download an arXiv paper's LaTeX source, read and analyze it, and produce a proje
 
 ### Step 1: Normalize the URL
 
-Extract the arXiv ID. Supported inputs:
+Extract the arXiv ID from `$ARGUMENTS` (or from the user's message when invoked without arguments). If neither contains a URL or ID, ask for one. Supported inputs:
 
 - `https://arxiv.org/abs/2601.07372`
 - `https://arxiv.org/abs/2601.07372v3` — versioned
@@ -46,6 +48,8 @@ mkdir -p ./arxiv
 
 The `[ -f ... ] ||` guard skips re-downloads. `-f` makes `curl` exit non-zero on HTTP errors so a 404 doesn't silently produce an HTML file.
 
+If `curl` fails (403/404 — PDF-only submission or withdrawn paper), tell the user the TeX source is unavailable, fetch the abstract from `https://arxiv.org/abs/{arxiv_id}`, and offer an abstract-only summary instead of continuing the workflow.
+
 Suggest adding `arxiv/` (but not `arxiv/knowledge/`) to `.gitignore` so downloaded sources don't get committed:
 
 ```
@@ -64,26 +68,18 @@ file ./arxiv/{safe_id}.src
 
 Dispatch on the output:
 
-- `gzip compressed data` → `tar -xzf ./arxiv/{safe_id}.src -C ./arxiv/{safe_id}`
+- `gzip compressed data` → `tar -xzf ./arxiv/{safe_id}.src -C ./arxiv/{safe_id}`; if `tar` fails, the file is a single gzipped `.tex` (not a tarball) → `gunzip -c ./arxiv/{safe_id}.src > ./arxiv/{safe_id}/main.tex`
 - `POSIX tar archive` → `tar -xf  ./arxiv/{safe_id}.src -C ./arxiv/{safe_id}`
 - `LaTeX 2e document` or `ASCII text` → `cp ./arxiv/{safe_id}.src ./arxiv/{safe_id}/main.tex`
 - `Zip archive` → `unzip -d ./arxiv/{safe_id} ./arxiv/{safe_id}.src`
 
-If the archive unpacks into a single nested directory, flatten path lookups with:
-
-```bash
-find ./arxiv/{safe_id} -maxdepth 3 -name '*.tex'
-```
+If the archive unpacks into a single nested directory, locate the `.tex` files with the Glob tool (pattern `arxiv/{safe_id}/**/*.tex`).
 
 ### Step 4: Locate the Entrypoint
 
-Find the file containing `\documentclass`:
+Find the file containing `\documentclass` with the Grep tool: pattern `\\documentclass`, path `./arxiv/{safe_id}/`, glob `*.tex`, output mode `files_with_matches`.
 
-```bash
-grep -rlF '\documentclass' --include='*.tex' ./arxiv/{safe_id}/
-```
-
-If multiple candidates, pick the one that also contains `\begin{document}`. Common names (`main.tex`, `paper.tex`, `ms.tex`) are hints, not guarantees — the `grep` is authoritative.
+If multiple candidates, pick the one that also contains `\begin{document}`. Common names (`main.tex`, `paper.tex`, `ms.tex`) are hints, not guarantees — the search is authoritative.
 
 ### Step 5: Read the Paper
 
@@ -171,8 +167,8 @@ file ./arxiv/2601.07372v2.src
 # -> gzip compressed data
 tar -xzf ./arxiv/2601.07372v2.src -C ./arxiv/2601.07372v2
 
-# Step 4: entrypoint
-grep -rlF '\documentclass' --include='*.tex' ./arxiv/2601.07372v2/
+# Step 4: entrypoint — Grep tool: pattern '\\documentclass', glob '*.tex',
+# path ./arxiv/2601.07372v2/, files_with_matches
 # -> ./arxiv/2601.07372v2/main.tex
 
 # Step 5: Read tool on main.tex, then follow \input{sections/method.tex} etc.
@@ -184,6 +180,4 @@ mkdir -p ./arxiv/knowledge
 
 ## Notes
 
-- Always fetch the **TeX source** (`/src/`), never the PDF — LaTeX source is far more readable and token-efficient.
-- `./arxiv/` holds downloaded sources locally; `./arxiv/knowledge/` keeps summaries inside the project.
-- Filename pattern `summary_{tag}_{safe_id}.md` is deterministic — re-running on the same paper overwrites in place.
+Always fetch the **TeX source** (`/src/`), never the PDF — LaTeX source is far more readable and token-efficient.

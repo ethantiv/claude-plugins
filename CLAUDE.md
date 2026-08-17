@@ -34,6 +34,9 @@ Run the relevant test after touching anything in `plugins/babysit-pr/scripts/` o
 - Bump the `version` in a plugin's `plugin.json` when changing that plugin.
 - A plugin's description lives in two places — its `plugin.json` and the entry in `.claude-plugin/marketplace.json`; keep them in sync whenever either changes.
 - Skill `allowed-tools` grant Bash least-privilege: scoped patterns like `Bash(git:*), Bash(gh:*)`, never bare `Bash`.
+- In skill workflow instructions prefer the dedicated Grep/Glob/Read tools over their bash equivalents — each avoided shell command is one less `Bash(...)` grant in allowed-tools.
+- Slash-invoked skills read their input from `$ARGUMENTS` in the body (with a fallback to the user's message), not just declare `argument-hint`.
+- After creating or modifying a skill, validate with the plugin-dev:plugin-validator and plugin-dev:skill-reviewer agents before committing.
 - Conventional commits scoped to the plugin: `feat(babysit-pr): ...`, `style: ...`.
 - Cross-plugin references in skills use the namespaced form (`/teach-me:teach-me`, not `/teach-me`) and must be guarded with "if the <name> plugin is installed" — plugins install independently.
 - Slash-invoked skills keep `argument-hint` in SKILL.md frontmatter (see teach-me, babysit-pr) — the plugin-validator agent may wrongly flag it as a command-only field; ignore that finding.
