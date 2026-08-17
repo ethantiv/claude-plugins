@@ -32,6 +32,8 @@ Run the relevant test after touching anything in `plugins/babysit-pr/scripts/` o
 - Plugins do not get their own README.md — the root README table is the only per-plugin doc (book-forge is the sole exception).
 - Shell scripts in `plugins/*/scripts/` must pass `shellcheck` and use `set -uo pipefail`.
 - Bump the `version` in a plugin's `plugin.json` when changing that plugin.
+- A plugin's description lives in two places — its `plugin.json` and the entry in `.claude-plugin/marketplace.json`; keep them in sync whenever either changes.
+- Skill `allowed-tools` grant Bash least-privilege: scoped patterns like `Bash(git:*), Bash(gh:*)`, never bare `Bash`.
 - Conventional commits scoped to the plugin: `feat(babysit-pr): ...`, `style: ...`.
 - Cross-plugin references in skills use the namespaced form (`/teach-me:teach-me`, not `/teach-me`) and must be guarded with "if the <name> plugin is installed" — plugins install independently.
 - Write markdown prose as long single lines — never hard-wrap at a column width.
