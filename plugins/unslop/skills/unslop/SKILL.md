@@ -12,7 +12,7 @@ Edit the document(s) in `$ARGUMENTS` **in place**, removing the telltale signs o
 
 ## Workflow
 
-1. **Resolve targets.** `$ARGUMENTS` may hold one or more file paths (any text format) or a directory (take its `.md` and `.txt` files). Empty → if another skill loaded this one as an editing pass, or a drafting task is already in progress in the conversation, skip the workflow and apply the pattern catalog below to all prose produced from that point on; otherwise ask in one sentence which file to fix — don't guess.
+1. **Resolve targets.** `$ARGUMENTS` may hold one or more file paths (any text format) or a directory (expand it with `Glob` patterns `**/*.md` and `**/*.txt`; files with other extensions inside a directory are skipped — name them explicitly to include them). Empty → if another skill loaded this one as an editing pass, or a drafting task is already in progress in the conversation, skip the workflow and apply the pattern catalog below to all prose produced from that point on; otherwise ask in one sentence which file to fix — don't guess.
 2. **Read each file whole** (long files in sequential chunks) and detect its language. Apply the shared patterns below plus the matching vocabulary table. For mixed-language files, apply each language's rules to its own passages.
 3. **Fix with surgical `Edit` calls** — sentence-level replacements, not a wholesale rewrite. The author's voice and structure stay; the slop goes.
 4. **Summarize in chat** when done: per file, fix counts for the main categories touched and one or two before → after examples. Write the summary in the conversation language.
@@ -57,12 +57,12 @@ Hard rules:
 
 ## Leftover LLM artifacts
 
-Certain proof of AI generation — grep each file for these before reading, and delete every hit (the whole tag, keeping any human-readable text it wraps):
+Certain proof of AI generation — `Grep` each file for these before reading, and delete every hit (the whole tag, keeping any human-readable text it wraps):
 
 - ChatGPT: `oaicite`, `contentReference`, `turn0search`, `citeturn`
 - Gemini: `[cite: 1]`-style tags, `[cite_start]`
 - Grok: `grok_card`, `render_inline_citation`
-- DeepSeek: lenticular-bracket citations `【…】`
+- DeepSeek: lenticular-bracket citations (`Grep` pattern `【[^】]*】`)
 - Perplexity: `ppl-ai-file-upload`
 - Generic: `:contentReference[oaicite:0]{index=0}`, stray `[1]`-style citation markers pointing at nothing, unresolved placeholders (`[Company Name]`, `[insert date]`)
 

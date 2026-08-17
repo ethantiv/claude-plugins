@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 # SessionStart hook: injects the unslop style rules so all agent prose is slop-free from the first reply.
 # Stop flag: `touch .claude/unslop-off` (this project) or `touch ~/.claude/unslop-off` (global) disables it; delete the file to re-enable.
+set -uo pipefail
+
 [ -f "${CLAUDE_PROJECT_DIR:-.}/.claude/unslop-off" ] && exit 0
-[ -f "$HOME/.claude/unslop-off" ] && exit 0
+[ -f "${HOME:-}/.claude/unslop-off" ] && exit 0
 
 cat <<'EOF'
 UNSLOP MODE ACTIVE — apply these rules to ALL prose you produce this session (chat replies and written documents, Polish and English). Full catalog: the unslop skill. Disable: create the file .claude/unslop-off.
