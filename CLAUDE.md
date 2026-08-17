@@ -8,7 +8,7 @@ A Claude Code plugin marketplace (`ethantiv-plugins`). There is no build, lint, 
 
 ## Tests
 
-Only two plugins have executable code, each with its own self-contained tests (no frameworks, no dependencies):
+Only two plugins have test suites, each self-contained (no frameworks, no dependencies) — unslop additionally ships an untested SessionStart hook script (`plugins/unslop/hooks/`):
 
 ```bash
 bash plugins/babysit-pr/scripts/test/test-auto-gate.sh   # gate logic in a throwaway git repo
