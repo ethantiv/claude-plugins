@@ -1,9 +1,9 @@
 ---
 name: eli
 description: >-
-  Explain like I'm an intern — explain any concept, term, acronym, or piece of code to a smart, mature person who simply has zero knowledge of that domain. NOT baby-talk (no "imagine you're 5"): treat the user as an intelligent adult, just unfamiliar. Always short, concrete, and visual — built on examples and analogies, no fluff, no padding. Triggers: "/eli", "eli", "wytłumacz jak stażyście", "wytłumacz prosto", "wyjaśnij obrazowo", "explain like I'm an intern", "ELI intern", "co to jest <X>", "wytłumacz mi <X> krótko".
+  Explains any concept, term, acronym, or piece of code to a smart, mature adult with zero knowledge of that domain — short, concrete, example-driven, never childish (not ELI5 baby-talk). Use when the user invokes /eli or asks for a simple, vivid explanation: "wytłumacz jak stażyście", "wytłumacz prosto", "wyjaśnij obrazowo", "explain like I'm an intern", "ELI intern", "wytłumacz mi <X> krótko".
 argument-hint: "<concept / term / file path / code snippet to explain>"
-allowed-tools: Read, Grep, Glob, Bash
+allowed-tools: Read, Grep, Glob
 ---
 
 # eli — explain like I'm an intern
@@ -33,6 +33,6 @@ The whole point is **short, vivid, concrete**. A senior engineer skimming it sho
 - **No jargon without paying for it.** If a term is unavoidable, define it in the same breath, in plain words. Don't explain one unknown with three more.
 - **Length matches the subject, and stays tight.** A term → a few sentences. A gnarly system → still compact, no walls of text. Every sentence earns its place; if a line only restates the previous one, cut it.
 - **Show, don't pad.** A good example beats a paragraph of qualifiers. Reach for an analogy, a number, or a 3-line snippet before reaching for more sentences.
-- **One pass, done.** This is a one-shot explanation, not a tutoring session. If the user wants to go deeper or be quizzed, point them to `/teach-me`.
+- **One pass, done.** This is a one-shot explanation, not a tutoring session. If the user wants to go deeper or be quizzed, point them to `/teach-me:teach-me` (only if the teach-me plugin is installed).
 
-After explaining, offer in one line: deeper dive, a different analogy, or `/teach-me` for an interactive session — then stop.
+After explaining, offer in one line: deeper dive, a different analogy, or — if the teach-me plugin is installed — `/teach-me:teach-me` for an interactive session. Then stop.

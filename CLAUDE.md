@@ -33,5 +33,6 @@ Run the relevant test after touching anything in `plugins/babysit-pr/scripts/` o
 - Shell scripts in `plugins/*/scripts/` must pass `shellcheck` and use `set -uo pipefail`.
 - Bump the `version` in a plugin's `plugin.json` when changing that plugin.
 - Conventional commits scoped to the plugin: `feat(babysit-pr): ...`, `style: ...`.
+- Cross-plugin references in skills use the namespaced form (`/teach-me:teach-me`, not `/teach-me`) and must be guarded with "if the <name> plugin is installed" — plugins install independently.
 - Write markdown prose as long single lines — never hard-wrap at a column width.
 - Language: root README and most plugins are English; book-forge is deliberately Polish (skills, shared docs, generated artifacts). Match the language of the file you edit.
