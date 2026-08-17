@@ -36,5 +36,7 @@ Run the relevant test after touching anything in `plugins/babysit-pr/scripts/` o
 - Skill `allowed-tools` grant Bash least-privilege: scoped patterns like `Bash(git:*), Bash(gh:*)`, never bare `Bash`.
 - Conventional commits scoped to the plugin: `feat(babysit-pr): ...`, `style: ...`.
 - Cross-plugin references in skills use the namespaced form (`/teach-me:teach-me`, not `/teach-me`) and must be guarded with "if the <name> plugin is installed" — plugins install independently.
+- Slash-invoked skills keep `argument-hint` in SKILL.md frontmatter (see teach-me, babysit-pr) — the plugin-validator agent may wrongly flag it as a command-only field; ignore that finding.
+- Skills referencing optional MCP servers or external tools (context7, agent-browser) guard them with an availability condition and name a built-in fallback (e.g. WebFetch).
 - Write markdown prose as long single lines — never hard-wrap at a column width.
 - Language: root README and most plugins are English; book-forge is deliberately Polish (skills, shared docs, generated artifacts). Match the language of the file you edit.

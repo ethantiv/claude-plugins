@@ -6,6 +6,8 @@ description: >
   detected ecosystems, or doing researched major-version upgrades. Triggers
   include "update dependencies", "upgrade packages", "bump versions", "check
   outdated", "update npm packages", "upgrade pip packages".
+argument-hint: "[ecosystem or package scope] [dry run] — empty = full sweep"
+allowed-tools: Read, Glob, Grep, Edit, WebFetch, Bash(git:*), Bash(command:*), Bash(npm:*), Bash(yarn:*), Bash(pnpm:*), Bash(bun:*), Bash(pip:*), Bash(pip-compile:*), Bash(uv:*), Bash(poetry:*), Bash(pipenv:*), Bash(bundle:*), Bash(go:*), Bash(cargo:*), Bash(composer:*), Bash(mvn:*), Bash(gradle:*), Bash(dotnet:*), Bash(dart:*), Bash(flutter:*), Bash(mix:*), Bash(swift:*), Bash(./gradlew:*)
 ---
 
 # Dependency Update
@@ -64,10 +66,11 @@ For each detected ecosystem, run the appropriate listing command:
 | Rust | `cargo outdated` (only if installed — see Step 1.3) |
 | PHP | `composer outdated --direct` |
 | Java (Maven) | `mvn versions:display-dependency-updates` |
-| Java (Gradle) | `gradle dependencyUpdates` (only if plugin configured) |
+| Java (Gradle) | `./gradlew dependencyUpdates` (or `gradle` if no wrapper; only if plugin configured) |
 | .NET | `dotnet list package --outdated` |
 | Dart | `dart pub outdated` / `flutter pub outdated` |
 | Elixir | `mix hex.outdated` |
+| Swift | `swift package update --dry-run` |
 
 **Classify every outdated package** by semver delta of current → latest:
 
@@ -108,6 +111,7 @@ a. **Update patch/minor only** — Use the conservative form of each tool. Do **
 | .NET | Edit `*.csproj` manually (non-major only), or `dotnet outdated --upgrade` if the tool is installed |
 | Dart | `dart pub upgrade` (no `--major-versions`) |
 | Elixir | `mix deps.update --all` |
+| Swift | `swift package update` (resolves within `Package.swift` ranges) |
 
 Run these **per ecosystem, not all at once** — sequential updates allow attributing a failure to a specific ecosystem.
 
@@ -124,8 +128,8 @@ If verification fails, **stop**. Do not proceed to Step 4. Revert one ecosystem 
 For each package classified as **major** in Step 2, run this loop **one package at a time**:
 
 a. **Research breaking changes**
-   - **context7 MCP** — `resolve-library-id` then `query-docs` for migration guides and changelog. Prefer this over web fetching.
-   - **agent-browser** — Fallback if context7 lacks migration info: open the library's CHANGELOG / migration guide on GitHub or the docs site.
+   - If the context7 MCP server is available: `resolve-library-id` then `query-docs` for migration guides and changelog. Prefer this over web fetching.
+   - Otherwise (or if context7 lacks migration info): fetch the library's CHANGELOG / migration guide from GitHub or the docs site with WebFetch.
    - Summarize required code changes for the user **before** updating.
 
 b. **Update only this package**
@@ -136,7 +140,7 @@ b. **Update only this package**
 | Node.js (yarn) | `yarn add <pkg>@latest` |
 | Node.js (pnpm) | `pnpm add <pkg>@latest` |
 | Node.js (bun) | `bun add <pkg>@latest` |
-| Python (uv) | `uv add <pkg>@latest` |
+| Python (uv) | `uv add <pkg>` (re-adds at latest, rewriting the constraint) |
 | Python (poetry) | `poetry add <pkg>@latest` |
 | Python (pip) | `pip install --upgrade <pkg>` (then regenerate the lockfile) |
 | Ruby | `bundle update <gem>` |
@@ -144,6 +148,7 @@ b. **Update only this package**
 | Rust | `cargo add <crate>@<version>` (or edit `Cargo.toml`, then `cargo update -p <crate>`) |
 | PHP | `composer require <pkg>:^<major>` |
 | Dart | `dart pub upgrade --major-versions <pkg>` |
+| Java / Gradle / .NET / Elixir / Swift | Edit the version in the build file (`pom.xml` / `build.gradle` / `*.csproj` / `mix.exs` / `Package.swift`), then re-resolve with the ecosystem's install command |
 
 c. **Apply code changes** identified in Step 4.a (call sites, deprecated APIs, config format changes).
 
