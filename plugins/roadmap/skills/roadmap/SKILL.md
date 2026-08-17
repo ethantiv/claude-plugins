@@ -2,10 +2,13 @@
 name: roadmap
 description: >
   This skill should be used when the user asks to "generate roadmap",
-  "create ROADMAP.md", "project proposals", "plan features", or
+  "create ROADMAP.md", "project proposals", "propose new features", or
   "roadmap proposals". Runs an agent swarm: many perspectives propose
   feature ideas, a product-manager panel scores them for usefulness,
   sellability, creativity and wow-factor, and the survivors become the roadmap.
+  Also triggers on /roadmap.
+argument-hint: "[focus area or constraint — empty = whole product]"
+allowed-tools: Read, Glob, Write, Bash(git log:*), AskUserQuestion, Workflow, Agent
 ---
 
 # docs/ROADMAP.md Generator (agent swarm)
@@ -16,6 +19,10 @@ Generate a project roadmap by running a **swarm of agents** in two groups:
 - **Verification group (convergent)** — a product-manager panel scores every idea like a PM who wants to **sell a better product**, not ship a feature for its own sake. It kills generic/obvious/low-value ideas and keeps only the ones that earn their place.
 
 The survivors are synthesized into `docs/ROADMAP.md`. If the file already exists, it is regenerated from scratch — confirm overwrite before writing.
+
+## Arguments
+
+`$ARGUMENTS` may carry a focus: a user segment, theme, or constraint (e.g. `mobile onboarding`, `enterprise buyers`). If non-empty, fold it into the brief and bias lens selection toward it. If empty, check the user's message for a stated focus; otherwise roadmap the whole product.
 
 ## When NOT to use
 
@@ -39,10 +46,10 @@ Banned outputs unless analysis *proves* they are the actual gap: "add tests", "i
 
 Before the swarm runs, gather context that becomes the brief every agent receives:
 
-1. **Detect project manifests:** ```bash find . -type f \( \ -name "package.json" -o \ -name "pyproject.toml" -o \ -name "Cargo.toml" -o \ -name "go.mod" -o \ -name "pom.xml" \ \) -not -path "*/node_modules/*" -not -path "*/.git/*" -not -path "*/vendor/*" 2>/dev/null ``` Extract project name, description, dependencies. Multiple manifests → note the monorepo structure.
-2. **Read README.md** — root and key subdirectory READMEs, for what the product *is and is for*.
+1. **Detect project manifests** — Glob for `**/package.json`, `**/pyproject.toml`, `**/Cargo.toml`, `**/go.mod`, `**/pom.xml`; ignore matches under `node_modules/`, `.git/`, `vendor/`. Read the manifests found and extract project name, description, dependencies. Multiple manifests → note the monorepo structure.
+2. **Read README.md** — root and key subdirectory READMEs (Read tool), for what the product *is and is for*.
 3. **Review git log** — `git log --oneline -20` for recent direction.
-4. **Scan structure** — `ls -la` and key subdirectories for the shape of the app.
+4. **Scan structure** — Glob top-level and key subdirectories for the shape of the app.
 
 Distill this into a 5–10 line brief: what the product does, who uses it, its stack, and its current direction. The whole swarm reasons from this brief.
 
@@ -175,10 +182,10 @@ Rank by aggregate score within each tier — highest wow/usefulness first.
 
 ## Workflow
 
-1. **Check for existing file:** ```bash test -f docs/ROADMAP.md && echo "EXISTS" || echo "NOT_EXISTS" ``` If it exists, call `AskUserQuestion` to confirm overwrite. On decline, print a one-line note and stop — do not partially update the file.
-2. **Build the brief:** gather context per *Project analysis* and distill it to 5–10 lines.
+1. **Check for existing file:** Glob `docs/ROADMAP.md`. If it exists, call `AskUserQuestion` to confirm overwrite. On decline, print a one-line note and stop — do not partially update the file.
+2. **Build the brief:** resolve the focus from `$ARGUMENTS` (see *Arguments*), gather context per *Project analysis*, and distill it to 5–10 lines.
 3. **Select the swarm size:** pick perspectives and judge count per *Scale to the project*.
-4. **Run the swarm:** launch the Workflow (generate → judge → synthesize), or the Task-agent fallback.
+4. **Run the swarm:** launch the Workflow (generate → judge → synthesize), or the Agent-tool fallback.
 5. **Synthesize:** dedupe survivors, rank, map to tiers, keep the top 4–7.
 6. **Write docs/ROADMAP.md:** use the Write tool; structure per *Output format*.
 7. **Display summary:** proposals per tier, how many ideas were generated vs. kept, and the file path.
