@@ -11,7 +11,8 @@ A Claude Code plugin marketplace (`ethantiv-plugins`). There is no build, lint, 
 Only two plugins have test suites, each self-contained (no frameworks, no dependencies) — unslop additionally ships an untested SessionStart hook script (`plugins/unslop/hooks/`):
 
 ```bash
-bash plugins/babysit-pr/scripts/test/test-auto-gate.sh   # gate logic in a throwaway git repo
+bash plugins/babysit-pr/scripts/test/test-auto-gate.sh    # gate logic in a throwaway git repo
+bash plugins/babysit-pr/scripts/test/test-pr-snapshot.sh  # snapshot jq assembly against a stubbed gh
 python3 plugins/book-forge/scripts/tests/test_bible.py    # canon-wiki library E2E
 python3 plugins/book-forge/scripts/tests/test_echo.py     # repetition detector
 ```
@@ -28,6 +29,8 @@ Run the relevant test after touching anything in `plugins/babysit-pr/scripts/` o
 ## Conventions
 
 - Adding a plugin means three places: `plugins/<name>/`, an entry in `.claude-plugin/marketplace.json`, and the table + install command in [README.md](README.md).
+- Plugins do not get their own README.md — the root README table is the only per-plugin doc (book-forge is the sole exception).
+- Shell scripts in `plugins/*/scripts/` must pass `shellcheck` and use `set -uo pipefail`.
 - Bump the `version` in a plugin's `plugin.json` when changing that plugin.
 - Conventional commits scoped to the plugin: `feat(babysit-pr): ...`, `style: ...`.
 - Write markdown prose as long single lines — never hard-wrap at a column width.

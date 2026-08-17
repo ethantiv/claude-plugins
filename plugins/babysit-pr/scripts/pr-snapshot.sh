@@ -22,7 +22,9 @@
 #   pending_checks[]    — {name}                   (CI checks still running)
 #   review_threads[]    — {thread_id, user, path, line, body, created_at, is_outdated}
 #                          (UNRESOLVED inline review threads only; thread_id feeds resolveReviewThread)
-#   changes_requested[] — {user, body, submitted_at}            (reviews requesting changes)
+#   changes_requested[] — {user, body, submitted_at}
+#                          (reviewers whose LATEST review requests changes; a
+#                           later APPROVED/DISMISSED supersedes the request)
 #   unpushed_local_commits — bool (local HEAD ahead of its upstream)
 #
 # The script never mutates anything; it only reads.
@@ -43,14 +45,16 @@ if [[ -z "$pr_number" && -n "$default_branch" && "$current_branch" == "$default_
   jq -n '{status:"on_default_branch"}'; exit 0
 fi
 
+errf="$(mktemp)"; trap 'rm -f "$errf"' EXIT
+
 fields="number,state,url,headRefName,baseRefName,mergeable,mergeStateStatus,statusCheckRollup"
 if [[ -n "$pr_number" ]]; then
-  pr_json="$(gh pr view "$pr_number" --json "$fields" 2>pr_err.tmp)"
+  pr_json="$(gh pr view "$pr_number" --json "$fields" 2>"$errf")"
 else
-  pr_json="$(gh pr view --json "$fields" 2>pr_err.tmp)"
+  pr_json="$(gh pr view --json "$fields" 2>"$errf")"
 fi
 gh_rc=$?
-gh_msg="$(cat pr_err.tmp 2>/dev/null)"; rm -f pr_err.tmp
+gh_msg="$(cat "$errf" 2>/dev/null)"
 
 if [[ $gh_rc -ne 0 || -z "$pr_json" ]]; then
   if printf '%s' "$gh_msg" | grep -qi "no .*pull request\|no pull requests\|Could not resolve to a PullRequest\|no open"; then
@@ -84,7 +88,9 @@ if [[ -n "$slug" ]]; then
   }'
   threads_resp="$(gh api graphql -f query="$gql" -f owner="$owner" -f name="$name" -F number="$number" 2>/dev/null || echo '{}')"
   threads_json="$(printf '%s' "$threads_resp" | jq '[.data.repository.pullRequest.reviewThreads.nodes[]?]' 2>/dev/null || echo "[]")"
-  reviews_json="$(gh api --paginate "repos/$slug/pulls/$number/reviews" 2>/dev/null || echo "[]")"
+  # --paginate emits one array per page; slurp-add merges them into a single array
+  reviews_raw="$(gh api --paginate "repos/$slug/pulls/$number/reviews" 2>/dev/null || echo "[]")"
+  reviews_json="$(printf '%s' "$reviews_raw" | jq -s 'add // []' 2>/dev/null || echo "[]")"
 fi
 [[ -z "$threads_json" ]] && threads_json="[]"
 [[ -z "$reviews_json" ]] && reviews_json="[]"
@@ -138,8 +144,12 @@ jq -n \
       ] | sort_by(.created_at),
       changes_requested: [
         $reviews[]
-        | select(.state == "CHANGES_REQUESTED")
-        | {user: .user.login, body: .body, submitted_at: .submitted_at}
-      ],
+        | select(.state | IN("APPROVED","CHANGES_REQUESTED","DISMISSED"))
+      ]
+      | group_by(.user.login) | map(sort_by(.submitted_at) | last)
+      | map(
+          select(.state == "CHANGES_REQUESTED")
+          | {user: .user.login, body: .body, submitted_at: .submitted_at}
+        ),
       unpushed_local_commits: $unpushed
     }'

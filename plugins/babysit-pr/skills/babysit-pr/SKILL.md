@@ -6,8 +6,7 @@ description: >
   invokes /babysit-pr. It is the local equivalent of Claude Code's built-in
   autofix-pr: it inspects the current pull request and pushes fixes for failing
   CI, review comments requesting changes, and merge conflicts — all in the
-  local session, not a remote cloud session. After one clean pass it merges the
-  PR and deletes its branch on its own.
+  local session, not a remote cloud session.
 argument-hint: "[PR number] [--loop [interval]] [--push [interval]]"
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob, Skill, CronList, CronDelete, ScheduleWakeup
 ---
@@ -33,7 +32,7 @@ Do this **before** writing the report, then say in the report that the loop is s
 ## When NOT to use
 
 - No open PR exists for the branch yet — open the PR first (or run with `--push`, which does it for you).
-- The user wants a one-off review or critique of the diff — that is `/code-review`, not this.
+- The user wants a one-off review or critique of the diff — that is a review skill such as `/code-review`, not this.
 - Changes need design discussion or a human decision — this skill fixes mechanical breakage, it does not negotiate.
 
 ## Step 0 — Parse flags
@@ -65,6 +64,8 @@ The script prints one JSON object and never mutates anything. Branch on `.status
 | `gh_missing` | Report that `gh` is required but not installed. Stop. |
 | `gh_error` | Report `.error`. Stop this pass; the loop may retry. |
 
+When `.unpushed_local_commits == true`, run `git push` **before anything else**: a previous pass committed a fix whose push failed (see "Safety net" in Step 3), and the snapshot's review threads already reflect those commits as handled.
+
 ## Step 2 — Learn the repository's conventions
 
 Before changing code, find how this repo validates itself so fixes match local standards (this mirrors how `autofix-pr` accepts custom instructions). Read, if present: `CLAUDE.md`, `AGENTS.md`, `CONTRIBUTING.md`, and the manifest scripts (`package.json` → `scripts`, `Makefile`, `justfile`). Note the lint, type-check, and test commands — use them to verify a fix locally before pushing.
@@ -74,7 +75,7 @@ Before changing code, find how this repo validates itself so fixes match local s
 Address every problem the snapshot reports, in this order. Verify each fix locally with the repo's own commands when feasible and commit it as you go, but **hold the push until the end** — see "Commit, resolve, then push" for why.
 
 1. **Merge conflicts** (`.has_conflicts == true`): merge or rebase the base branch (`.baseRefName`) into the PR branch, resolve conflicts, verify.
-2. **Failing CI** (`.failing_checks`): for each failing check, open its `.url` if needed to read the failure, reproduce locally, fix the root cause. Do not paper over a failure (no skipped tests, no disabled checks — Rule 10).
+2. **Failing CI** (`.failing_checks`): for each failing check, inspect the failing run (`gh run view <run-id> --log-failed`; the run id is in the check's `.url`), reproduce locally, fix the root cause. Do not paper over a failure (no skipped tests, no disabled checks).
 3. **Review threads** (`.review_threads`, `.changes_requested`): the snapshot already filters out resolved threads, so everything listed is still open. Act **only** on threads that clearly request a concrete code change. For each, make the change at the referenced `path`/`line`.
    - You decide each finding's worth yourself (see "Decide each finding's worth yourself" below); only genuinely un-adjudicable items stay open for a human.
    - `is_outdated == true` means the code moved since the comment; re-read the current code before deciding whether it still applies.
@@ -95,7 +96,13 @@ The push is what a review bot reacts to. Repos commonly run a bot on `pull_reque
 For each problem:
 
 1. Make the fix, verify locally, and **commit it — but do not push yet.** One focused commit per problem class (conflict resolution / CI fix / review fix); commit messages in English.
-2. For a fixed **review thread**, mark it resolved with its `thread_id`: ```bash gh api graphql -f query='mutation($id:ID!){resolveReviewThread(input:{threadId:$id}){thread{isResolved}}}' -f id="<thread_id>" ``` Resolve threads you fixed in the committed code, and threads you deliberately skipped (after replying with the rationale — see "Decide each finding's worth yourself"). Only a thread you are genuinely handing to the human stays unresolved — resolving that one would hide it from the reviewer.
+2. For a fixed **review thread**, mark it resolved with its `thread_id`:
+
+   ```bash
+   gh api graphql -f query='mutation($id:ID!){resolveReviewThread(input:{threadId:$id}){thread{isResolved}}}' -f id="<thread_id>"
+   ```
+
+   Resolve threads you fixed in the committed code, and threads you deliberately skipped (after replying with the rationale — see "Decide each finding's worth yourself"). Only a thread you are genuinely handing to the human stays unresolved — resolving that one would hide it from the reviewer.
 
 Once every fix is committed and every fixed thread resolved, **push once**:
 
@@ -115,7 +122,7 @@ A review run that started *before* your resolves reads the pre-resolve thread st
 
 It no-ops when nothing is in progress, and cancels stale in-flight runs (on superseded commits) before rerunning the latest against the current HEAD. Pass the review workflow name (or set `$BABYSIT_REVIEW_WORKFLOW`) if it is not `claude-code-review.yml`.
 
-**Safety net:** committing before resolving means a fix is never lost. If the push fails, the resolved thread is filtered out of the next snapshot, but `.unpushed_local_commits` will be `true` — so at the **start** of each pass, push any pending local commits before doing anything else.
+**Safety net:** committing before resolving means a fix is never lost. If the push fails, the resolved thread is filtered out of the next snapshot, but `.unpushed_local_commits` will be `true` — Step 1 pushes those pending commits at the start of the next pass.
 
 **Stop and ask the human — do not commit or push — when:**
 - The failure is in infrastructure you cannot change (flaky external service, secrets).
@@ -127,7 +134,7 @@ It no-ops when nothing is in progress, and cancels stale in-flight runs (on supe
 Close the pass with a one-paragraph status, then one of:
 
 - **Fixed and pushed**: list what was fixed in one line each. The next loop pass will re-check CI.
-- **Nothing to do**: PR is green, no actionable comments, no conflicts — say so plainly. Under a fixed-interval `/loop` this is normal; keep waiting. Proceed to Step 5 (this is the only path that can merge).
+- **Nothing to do**: PR is green, no actionable comments, no conflicts — say so plainly. Under a fixed-interval `/loop` this is normal; keep waiting. Proceed to Step 5 (this is the only path that can merge) and hold the final report until after the gate, so it can include the merge outcome.
 - **Done**: PR is merged or closed — stop the loop (see "Stopping the loop") and state the outcome.
 - **Blocked**: a problem needs a human — state exactly what and why.
 
