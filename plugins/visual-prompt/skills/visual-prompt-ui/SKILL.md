@@ -1,6 +1,7 @@
 ---
 name: visual-prompt-ui
-description: This skill should be used when the user wants to "generate a UI mockup prompt", "dashboard mockup prompt", "landing page prompt", "mobile screen prompt", "website mockup prompt", or explicitly invokes /visual-prompt-ui — forcing the `ui` profile of the visual-prompt orchestrator (artistic interface mockups: dashboards, landings, mobile screens, marketing sites, product UI). For artwork, posters or photography use visual-prompt-art instead.
+description: >-
+  This skill should be used when the user wants to "generate a UI mockup prompt", "dashboard mockup prompt", "landing page prompt", "mobile screen prompt", "website mockup prompt", or explicitly invokes /visual-prompt-ui — forcing the `ui` profile of the visual-prompt orchestrator (artistic interface mockups: dashboards, landings, mobile screens, marketing sites, product UI). For artwork, posters or photography use visual-prompt-art instead.
 argument-hint: "<interface description, e.g. operational dashboard for marine fleet monitoring>"
 allowed-tools: Read, Glob, Agent, Workflow
 ---
