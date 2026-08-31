@@ -13,9 +13,9 @@
 | **teach-me** | universal | An interactive tutor that walks you step by step to a deep understanding of a topic (a code change, a PR, a file, or an abstract concept): a running checklist, "why" drills, and quizzes. It doesn't stop until your understanding is confirmed. |
 | **visual-prompt** | universal | Generates three `.txt` files with artistic text-to-image prompts in three contrasting directions, written in parallel by separate subagents. Two profiles: `art` (artwork, posters, photography) and `ui` (artistic interface mockups). Commands: `/visual-prompt-art`, `/visual-prompt-ui`. |
 | **dependency-update** | universal | Scans your project's dependencies across all ecosystems and updates them safely: minor/patch in one pass, majors one at a time with separate research for each. |
-| **eli** | universal | Explain like I'm an intern: explains any concept, term, or piece of code to a smart person who just lacks the domain knowledge. Short, concrete, example-driven, no padding. |
-| **docstyle** | universal | Applies the [Google developer documentation style guide](https://developers.google.com/style) to technical docs. `/docstyle` edits files in place (or reports findings with `--audit`), the skill kicks in automatically when you write documentation, and a SessionStart hook keeps all session prose aligned with the guide's core rules (disable by creating `.claude/docstyle-off`). Ships the full guide (70 pages) as local references with a topic index. |
-| **unslop** | universal | Edits LLM-generated documents in place to remove the telltale signs of AI writing catalogued by Wikipedia's ["Signs of AI writing"](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing): AI vocabulary, negative parallelisms, rule of three, promotional tone, vague attributions, throat-clearing, fake-profound kickers, formatting slop — plus Polish officialese and bureaucratic heaviness. Handles Polish and English. Audit mode reports findings with red/yellow/green severity instead of editing; `/unslop:plain` rewrites Polish into plain language (a deliberate register change). A SessionStart hook applies the style to all agent prose; disable it by creating `.claude/unslop-off`. |
+| **eli** | universal | Explain like I'm an intern: explains any concept, term, or piece of code to a smart person who lacks the domain knowledge. Short, concrete, example-driven, no padding. |
+| **docstyle** | universal | Applies the [Google developer documentation style guide](https://developers.google.com/style) to technical docs. `/docstyle` edits files in place (or reports findings with `--audit`), the skill activates automatically when you write documentation, and a SessionStart hook keeps all session prose aligned with the guide's core rules (disable by creating `.claude/docstyle-off`). Ships the full guide (70 pages) as local references with a topic index. |
+| **unslop** | universal | Edits LLM-generated documents in place to remove the telltale signs of AI writing catalogued by Wikipedia's ["Signs of AI writing"](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing): AI vocabulary, negative parallelisms, rule of three, promotional tone, vague attributions, throat-clearing, fake-profound kickers, formatting slop—plus Polish officialese and bureaucratic heaviness. Handles Polish and English. Audit mode reports findings with red/yellow/green severity instead of editing; `/unslop:plain` rewrites Polish into plain language (a deliberate register change). A SessionStart hook applies the style to all agent prose; disable it by creating `.claude/unslop-off`. |
 
 ## Installation
 
@@ -35,7 +35,7 @@ In a Claude Code session, run these commands (`/plugin` is built into Claude Cod
 /plugin install unslop@ethantiv-plugins
 ```
 
-Or from the terminal, via the CLI:
+Or from the terminal, with the CLI:
 
 ```bash
 claude plugin marketplace add ethantiv/claude-plugins
@@ -51,7 +51,7 @@ claude plugin install docstyle@ethantiv-plugins
 claude plugin install unslop@ethantiv-plugins
 ```
 
-Install only what you need; the plugins are independent of each other. After installing, check the state:
+Install only what you need; the plugins are independent of each other. After installing, verify the installation:
 
 ```bash
 claude plugin marketplace list
@@ -59,7 +59,7 @@ claude plugin marketplace list
 
 ### Updates
 
-The marketplace is added via `git clone`, so plugins update when you refresh the marketplace, with no reinstall:
+Claude Code adds the marketplace with `git clone`, so plugins update when you refresh the marketplace, with no reinstall:
 
 ```bash
 claude plugin marketplace update ethantiv-plugins
@@ -83,7 +83,7 @@ claude plugin install unslop@ethantiv-plugins
 npx skills add https://github.com/vercel-labs/agent-browser --skill agent-browser
 ```
 
-agent-browser has two layers: the **skill** is the Claude Code integration (the `npx skills add` command above), and the **CLI** is the browser-driving tool the skill uses under the hood. **The skill won't work without the CLI.** It's a dependency, not an alternative, so start with the CLI:
+agent-browser has two layers: the **skill** is the Claude Code integration (the `npx skills add` command above), and the **CLI** is the browser-driving tool that the skill runs. **The skill won't work without the CLI.** It's a dependency, not an alternative, so start with the CLI:
 
 ```bash
 npm install -g agent-browser      # all platforms
@@ -110,18 +110,18 @@ npx agent-browser open example.com
 - The **Workflow** tool (agent swarm) for writing prompts in parallel; without it the skills fall back to parallel `Task` agents.
 
 **dependency-update**
-- The package managers of your ecosystems (e.g. `npm`, `pip`, `cargo`, `go`) available in `PATH`, used to check for and install updates.
+- The package managers of your ecosystems (for example, `npm`, `pip`, `cargo`, or `go`) available in `PATH`, used to check for and install updates.
 
 ## Usage
 
 After installation, each plugin exposes its skills as `/<plugin>:<skill>` commands.
 
 - **book-forge**: the full pipeline is described in [`plugins/book-forge/README.md`](plugins/book-forge/README.md); a visual guide to the 12 stages: [`przewodnik.html`](plugins/book-forge/przewodnik.html). Start with `/book-forge:market-report` (or the lighter `/book-forge:idea-spark`).
-- **babysit-pr**: run `/babysit-pr` on a branch with an open PR to monitor and fix CI, reviews, and conflicts locally; once a pass comes back clean, it merges the PR and deletes the branch. `/babysit-pr --loop 10m` keeps watching by re-running the check every 10 minutes (the interval is yours to pick). No PR yet? `/babysit-pr --push` commits your work, pushes it, opens the PR, and then starts the same watch loop.
-- **read-arxiv-paper**: `/read-arxiv-paper:read-arxiv-paper` with a paper URL or ID (e.g. `2401.12345`); you get a summary in the context of your repo.
+- **babysit-pr**: run `/babysit-pr` on a branch with an open PR to monitor and fix CI, reviews, and conflicts locally; once a pass comes back clean, it merges the PR and deletes the branch. `/babysit-pr --loop 10m` keeps watching by re-running the check every 10 minutes (you choose the interval). No PR yet? `/babysit-pr --push` commits your work, pushes it, opens the PR, and then starts the same watch loop.
+- **read-arxiv-paper**: `/read-arxiv-paper:read-arxiv-paper` with a paper URL or ID (for example, `2401.12345`); you get a summary in the context of your repo.
 - **roadmap**: `/roadmap:roadmap` gathers ideas with an agent swarm and writes `docs/ROADMAP.md`.
 - **teach-me**: `/teach-me:teach-me` with a topic (a code change, a PR, a file, or a concept); it teaches until your understanding is confirmed.
-- **visual-prompt**: `/visual-prompt-art` or `/visual-prompt-ui` (or just describe what you need) generates three `.txt` files with prompts in contrasting directions.
+- **visual-prompt**: `/visual-prompt-art` or `/visual-prompt-ui` (or describe what you need) generates three `.txt` files with prompts in contrasting directions.
 - **dependency-update**: `/dependency-update:dependency-update` scans and safely updates your project's dependencies.
 - **eli**: `/eli:eli` with a concept, term, or piece of code; you get a short, vivid explanation.
 - **docstyle**: `/docstyle:docstyle` with a file path (or directory) edits documentation in place per the Google developer documentation style guide; `--audit` reports severity-graded findings instead. Writing docs without invoking it also triggers the skill, and the SessionStart hook keeps everyday session prose on-style.
