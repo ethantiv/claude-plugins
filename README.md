@@ -14,6 +14,7 @@
 | **visual-prompt** | universal | Generates three `.txt` files with artistic text-to-image prompts in three contrasting directions, written in parallel by separate subagents. Two profiles: `art` (artwork, posters, photography) and `ui` (artistic interface mockups). Commands: `/visual-prompt-art`, `/visual-prompt-ui`. |
 | **dependency-update** | universal | Scans your project's dependencies across all ecosystems and updates them safely: minor/patch in one pass, majors one at a time with separate research for each. |
 | **eli** | universal | Explain like I'm an intern: explains any concept, term, or piece of code to a smart person who just lacks the domain knowledge. Short, concrete, example-driven, no padding. |
+| **docstyle** | universal | Applies the [Google developer documentation style guide](https://developers.google.com/style) to technical docs. `/docstyle` edits files in place (or reports findings with `--audit`), the skill kicks in automatically when you write documentation, and a SessionStart hook keeps all session prose aligned with the guide's core rules (disable by creating `.claude/docstyle-off`). Ships the full guide (70 pages) as local references with a topic index. |
 | **unslop** | universal | Edits LLM-generated documents in place to remove the telltale signs of AI writing catalogued by Wikipedia's ["Signs of AI writing"](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing): AI vocabulary, negative parallelisms, rule of three, promotional tone, vague attributions, throat-clearing, fake-profound kickers, formatting slop — plus Polish officialese and bureaucratic heaviness. Handles Polish and English. Audit mode reports findings with red/yellow/green severity instead of editing; `/unslop:plain` rewrites Polish into plain language (a deliberate register change). A SessionStart hook applies the style to all agent prose; disable it by creating `.claude/unslop-off`. |
 
 ## Installation
@@ -30,6 +31,7 @@ In a Claude Code session, run these commands (`/plugin` is built into Claude Cod
 /plugin install visual-prompt@ethantiv-plugins
 /plugin install dependency-update@ethantiv-plugins
 /plugin install eli@ethantiv-plugins
+/plugin install docstyle@ethantiv-plugins
 /plugin install unslop@ethantiv-plugins
 ```
 
@@ -45,6 +47,7 @@ claude plugin install teach-me@ethantiv-plugins
 claude plugin install visual-prompt@ethantiv-plugins
 claude plugin install dependency-update@ethantiv-plugins
 claude plugin install eli@ethantiv-plugins
+claude plugin install docstyle@ethantiv-plugins
 claude plugin install unslop@ethantiv-plugins
 ```
 
@@ -100,7 +103,7 @@ npx agent-browser open example.com
 **roadmap**
 - The **Workflow** tool (agent swarm); without it the skill falls back to parallel `Task` agents.
 
-**teach-me**, **eli**
+**teach-me**, **eli**, **docstyle**
 - No dependencies beyond Claude Code.
 
 **visual-prompt**
@@ -121,6 +124,7 @@ After installation, each plugin exposes its skills as `/<plugin>:<skill>` comman
 - **visual-prompt**: `/visual-prompt-art` or `/visual-prompt-ui` (or just describe what you need) generates three `.txt` files with prompts in contrasting directions.
 - **dependency-update**: `/dependency-update:dependency-update` scans and safely updates your project's dependencies.
 - **eli**: `/eli:eli` with a concept, term, or piece of code; you get a short, vivid explanation.
+- **docstyle**: `/docstyle:docstyle` with a file path (or directory) edits documentation in place per the Google developer documentation style guide; `--audit` reports severity-graded findings instead. Writing docs without invoking it also triggers the skill, and the SessionStart hook keeps everyday session prose on-style.
 - **unslop**: `/unslop:unslop` with a file path (or directory); it edits the document in place to remove signs of AI writing and reports what it fixed. Add `--audit` (or ask for "tylko audyt") to get severity-graded findings without edits. `/unslop:plain` with a file path simplifies bureaucratic Polish into plain language.
 
 ## License

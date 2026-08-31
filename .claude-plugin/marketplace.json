@@ -21,6 +21,11 @@
       "source": "./plugins/dependency-update"
     },
     {
+      "name": "docstyle",
+      "description": "Apply the Google developer documentation style guide to technical docs. /docstyle edits files in place (--audit reports findings instead), the skill auto-triggers when writing developer documentation, and a SessionStart hook keeps session prose aligned with the guide's core rules (disable by creating .claude/docstyle-off). Ships the full guide (70 pages) as local references with a topic index.",
+      "source": "./plugins/docstyle"
+    },
+    {
       "name": "eli",
       "description": "Explain like I'm an intern: explain any concept, term, or piece of code to a smart adult who simply lacks domain knowledge — short, vivid, example-driven, no fluff.",
       "source": "./plugins/eli"

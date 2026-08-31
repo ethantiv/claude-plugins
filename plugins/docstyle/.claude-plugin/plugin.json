@@ -1,0 +1,8 @@
+{
+  "name": "docstyle",
+  "version": "0.1.0",
+  "description": "Apply the Google developer documentation style guide to technical docs. /docstyle edits files in place (--audit reports findings instead), the skill auto-triggers when writing developer documentation, and a SessionStart hook keeps session prose aligned with the guide's core rules (disable by creating .claude/docstyle-off). Ships the full guide (70 pages) as local references with a topic index.",
+  "author": {
+    "name": "Mirek Zaniewicz"
+  }
+}
