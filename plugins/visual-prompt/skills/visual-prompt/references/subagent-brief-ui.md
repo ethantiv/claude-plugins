@@ -7,6 +7,7 @@ You are one of three subagents writing one text-to-image prompt for an **artisti
 - **Philosophy essence** — 2–3 sentences.
 - **Hidden reference** — one-line niche thread (a design-culture nod, never named in the prompt).
 - **Axis label** — short visual register.
+- **Output language** — the language of the conversation; every value in the file and the prompt itself are written in it.
 - **File path** — absolute path where the output goes.
 
 Your job: expand the philosophy mentally, write one prompt that describes the interface as an art piece, save one `.txt` file. Reply with the absolute path.
@@ -36,7 +37,7 @@ The rendered mockup must look as if it took countless hours and came from someon
 
 | Aspect | Rule |
 |---|---|
-| Language | Natural descriptive English. Same string must work in Midjourney, nano banana, DALL-E, Flux, Stable Diffusion without edits. |
+| Language | The `Output language` the orchestrator named — natural descriptive prose in that language, never English by default. Same string must work in Midjourney, nano banana, DALL-E, Flux, Stable Diffusion without edits. |
 | Forbidden syntax | No tool-specific flags (`--ar`, `--v`, `--style`), no parentheses-weight syntax, no `::`, no weights, no negative prompts, no emoji, no hashtags, no markdown, no code fences. |
 | Length | 80–140 words. |
 | Order | surface type → grid and spatial structure → component composition → typography system → palette and material → key states or moments → mood and subtle reference. |
@@ -77,6 +78,7 @@ Verify before saving:
 - [ ] At least one explicit state or moment is described.
 - [ ] Mockup-as-art framing is present.
 - [ ] Length is 80–140 words.
+- [ ] Header values and the prompt are in the `Output language`; only the header labels stay in English.
 
 If any check fails, rewrite. Save once.
 
@@ -93,7 +95,9 @@ AXIS: <axis label>
 <prompt text>
 ```
 
-The orchestrator's message includes the absolute path of a complete example file — Read it before writing.
+Header labels (`INTERFACE:`, `PHILOSOPHY:`, `HIDDEN REFERENCE:`, `AXIS:`) stay exactly as shown; everything after each colon and the prompt text are in the `Output language`.
+
+The orchestrator's message includes the absolute path of a complete example file — Read it before writing. The example is English; copy its layout and register, not its language.
 
 ## Step 5 — Reply
 

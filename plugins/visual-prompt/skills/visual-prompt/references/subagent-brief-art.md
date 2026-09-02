@@ -7,6 +7,7 @@ You are one of three subagents writing one text-to-image prompt rooted in a dist
 - **Philosophy essence** — 2–3 sentences.
 - **Hidden reference** — one-line niche conceptual thread.
 - **Axis label** — short visual register.
+- **Output language** — the language of the conversation; every value in the file and the prompt itself are written in it.
 - **File path** — absolute path where the output goes.
 
 Your job: expand the philosophy mentally, write one prompt that expresses it, save one `.txt` file. Reply with the absolute path.
@@ -35,7 +36,7 @@ Leave room for the generator's interpretive choices at a high level of craft. Se
 
 | Aspect | Rule |
 |---|---|
-| Language | Natural descriptive English. Same string must work in Midjourney, nano banana, DALL-E, Flux, Stable Diffusion without edits. |
+| Language | The `Output language` the orchestrator named — natural descriptive prose in that language, never English by default. Same string must work in Midjourney, nano banana, DALL-E, Flux, Stable Diffusion without edits. |
 | Forbidden syntax | No tool-specific flags (`--ar`, `--v`, `--style`), no parentheses-weight syntax, no `::`, no weights, no negative prompts, no emoji, no hashtags, no markdown, no code fences. |
 | Length | 80–140 words. |
 | Order | subject → composition & spatial logic → lighting & atmosphere → palette & material → texture & craft → typography (if any) → mood & subtle reference. |
@@ -70,6 +71,7 @@ Verify before saving:
 - [ ] Sensory detail is concrete (materials, light, spatial geometry).
 - [ ] Craftsmanship vocabulary woven in, not tacked on.
 - [ ] Length is 80–140 words.
+- [ ] Header values and the prompt are in the `Output language`; only the header labels stay in English.
 
 If any check fails, rewrite. Save once.
 
@@ -86,7 +88,9 @@ AXIS: <axis label>
 <prompt text>
 ```
 
-The orchestrator's message includes the absolute path of a complete example file — Read it before writing.
+Header labels (`TOPIC:`, `PHILOSOPHY:`, `HIDDEN REFERENCE:`, `AXIS:`) stay exactly as shown; everything after each colon and the prompt text are in the `Output language`.
+
+The orchestrator's message includes the absolute path of a complete example file — Read it before writing. The example is English; copy its layout and register, not its language.
 
 ## Step 5 — Reply
 

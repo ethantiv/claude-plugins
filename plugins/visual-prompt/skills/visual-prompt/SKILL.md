@@ -26,6 +26,10 @@ The orchestrator never writes a prompt itself. Three prompts are written by thre
 - **Topic missing**: ask one short question — what should the image be about? Wait for the answer.
 - **Profile unclear**: ask which profile (`art` / `ui`).
 
+## Output language
+
+The files come out in the language of the conversation, not in English by default. Determine it once, before dispatching: the response language configured for this session (for example a `Language:` instruction in `CLAUDE.md` or the user's settings) wins; if none is configured, use the language the user wrote the request in. Pass the result to every subagent as `Output language: <language>`. The header labels (`TOPIC:`, `PHILOSOPHY:`, ...) stay as-is; every value and the prompt itself are written in that language.
+
 ## Orchestrator steps
 
 ### 1. Load the brief for the chosen profile
@@ -109,8 +113,9 @@ Each subagent prompt contains:
 1. The verbatim content of the profile-appropriate brief (`subagent-brief-art.md` or `subagent-brief-ui.md`).
 2. The seeded direction (movement, essence, hidden reference, axis).
 3. The user's topic.
-4. The assigned absolute file path: `<cwd>/visual-prompt-<slug>-<n>.txt`.
-5. The absolute path of the profile example file (`example-art.txt` / `example-ui.txt`) — a format reference the subagent Reads before writing.
+4. The output language (`Output language: <language>`).
+5. The assigned absolute file path: `<cwd>/visual-prompt-<slug>-<n>.txt`.
+6. The absolute path of the profile example file (`example-art.txt` / `example-ui.txt`) — a format reference the subagent Reads before writing. The examples are English; they show the layout, not the language.
 
 Each subagent writes exactly one file and replies with its absolute path.
 
@@ -122,10 +127,10 @@ export const meta = {
   description: 'Three subagents each write one text-to-image prompt file',
   phases: [{ title: 'Write' }],
 }
-// args: { brief, topic, examplePath, directions: [{ movement, essence, reference, axis, path }] }
+// args: { brief, topic, language, examplePath, directions: [{ movement, essence, reference, axis, path }] }
 const paths = await parallel(args.directions.map(d => () =>
   agent(
-    `${args.brief}\n\nTopic: ${args.topic}\nMovement name: ${d.movement}\nPhilosophy essence: ${d.essence}\nHidden reference: ${d.reference}\nAxis label: ${d.axis}\nFile path: ${d.path}\nFormat example (Read it before writing): ${args.examplePath}`,
+    `${args.brief}\n\nTopic: ${args.topic}\nOutput language: ${args.language}\nMovement name: ${d.movement}\nPhilosophy essence: ${d.essence}\nHidden reference: ${d.reference}\nAxis label: ${d.axis}\nFile path: ${d.path}\nFormat example (Read it before writing): ${args.examplePath}`,
     { label: `write:${d.axis}`, phase: 'Write' })))
 return paths.filter(Boolean)
 ```
@@ -152,6 +157,7 @@ No summary of the prompts. No usage hints. No offer to generate more.
 - Using `art` axes for a `ui` topic or vice versa — each profile has its own contrast table.
 - Skipping trio reservation, so two subagents collide on the same `-N` number.
 - Dispatching subagents sequentially. They run in parallel — one Workflow call, or (fallback) three `Agent` calls in one assistant message.
+- Forgetting to pass `Output language:` — the subagent then falls back to English and the files ignore the conversation language.
 - Naming the hidden reference inside the seed text the subagent will read — it's a conceptual thread, not a label to mention.
 - Summarising prompts in the report-back. Three lines, that's it.
 - Treating the `ui` profile as a wireframe spec or a UX deliverable. It produces an artistic prompt that describes a mockup as an art piece — same 80–140 word artistic register as `art`.

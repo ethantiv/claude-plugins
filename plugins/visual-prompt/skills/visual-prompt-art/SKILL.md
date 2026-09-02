@@ -20,9 +20,10 @@ Read the orchestrator and the `art` brief, then follow the orchestrator exactly:
 1. Read `${CLAUDE_PLUGIN_ROOT}/skills/visual-prompt/SKILL.md` (the orchestrator).
 2. Read `${CLAUDE_PLUGIN_ROOT}/skills/visual-prompt/references/subagent-brief-art.md`.
 3. Run the orchestrator steps with the profile fixed to `art`:
+   - Determine the output language (the session's configured response language, otherwise the language of the user's request).
    - Reserve a free trio of file numbers in the current working directory (Glob).
    - Seed three contrasting `art`-profile directions (movement, essence, hidden reference, axis), using the `art` contrast axes.
-   - Dispatch three subagents in parallel — the Workflow tool, or (fallback) three `Agent` calls in one message — each pasted the verbatim content of `subagent-brief-art.md` plus its seeded direction, assigned file path, and the absolute path of `examples/example-art.txt`.
+   - Dispatch three subagents in parallel — the Workflow tool, or (fallback) three `Agent` calls in one message — each pasted the verbatim content of `subagent-brief-art.md` plus its seeded direction, the output language, assigned file path, and the absolute path of `examples/example-art.txt`.
    - Report back with exactly three lines: `<path> — <axis>`.
 
 Never write a prompt directly — the three prompts come from three independent subagents dispatched in parallel.
