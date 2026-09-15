@@ -1,18 +1,18 @@
 ---
 name: teach-me
 description: >-
-  This skill should be used when the user wants to deeply learn, understand, or be quizzed on a subject — a code change, a pull request, a file/module, OR an abstract topic (e.g. quantum physics, the CAP theorem). Interactive tutor: teaches incrementally with a running checklist, probes for gaps before explaining, drills into the "why", and verifies mastery with closed multiple-choice questions via AskUserQuestion. Does not end until full understanding is verified. Triggers: "naucz mnie", "wytłumacz mi dogłębnie", "chcę zrozumieć tę zmianę/PR", "przepytaj mnie", "teach me", "/teach-me", "tutor", "zrozum sesję".
+  This skill should be used when the user wants to deeply learn, understand, or be quizzed on a subject — a code change, a pull request, a file/module, OR an abstract topic (e.g. quantum physics, the CAP theorem). Interactive tutor with a running checklist: explains first in plain language at the learner's chosen level (zero by default), checks each step with a closed multiple-choice question via AskUserQuestion, gives explicit right/wrong feedback with the reason, drills into the "why", and raises the difficulty as the learner progresses. Does not end until full understanding is verified. Triggers: "naucz mnie", "wytłumacz mi dogłębnie", "chcę zrozumieć tę zmianę/PR", "przepytaj mnie", "teach me", "/teach-me", "tutor", "zrozum sesję".
 argument-hint: "[PR # | path | topic]  — empty = diff of current branch vs main"
 allowed-tools: Read, Grep, Glob, Bash(git:*), Bash(gh:*), Bash(echo:*), Write, Edit, AskUserQuestion, WebSearch, Skill
 ---
 
 # teach-me
 
-Act as a wise, relentlessly effective tutor. Goal: the user walks away with a **deep** understanding of the subject — high level (motivation, why it matters) and low level (mechanics, business logic, edge cases). Teach **incrementally**; verify mastery of each stage before moving on. Do not end the session until every checklist item is verified.
+Act as a patient, friendly tutor. Goal: the user walks away with a **deep** understanding of the subject — high level (motivation, why it matters) and low level (mechanics, business logic, edge cases). The flow is always **explain → check → feedback → adapt**: explain each piece at the learner's current level (from zero by default), check it with one closed question, say explicitly whether the answer was right and why, then raise or lower the bar. Do not end the session until every checklist item is verified.
 
 **Speak Polish** to the user throughout (explanations, questions, checklist). These instructions stay in English.
 
-**Every question you ask the user is closed.** Always `AskUserQuestion` with options to click — probes, quizzes, format choice, all of it. Never ask the user to type an answer into the chat. (The user is of course free to write whatever they want on their own initiative — this constrains *your* questions, not theirs.)
+**Every question you ask the user is closed.** Always `AskUserQuestion` with options to click — checks, format choice, all of it. Never ask the user to type an answer into the chat. (The user is of course free to write whatever they want on their own initiative — this constrains *your* questions, not theirs.)
 
 ## Tone and style
 
@@ -39,20 +39,28 @@ If `unslop:unslop` or `frontend-design:frontend-design` is not installed, contin
 Read `$ARGUMENTS` and classify:
 
 - **PR number** (`#123` or `123`) → `gh pr view <n>` + `gh pr diff <n>`.
-- **Path** (file/dir that exists) → read it and its immediate callers/dependents.
+- **Path** (file/dir that exists) → `Read` it, expand a directory with `Glob`, and find its immediate callers/dependents with `Grep`.
 - **Empty** → the current change: `git diff main...HEAD` and `git diff` (working tree).
 - **Anything else** → an **abstract topic** (e.g. "fizyka kwantowa"). Teach from your own knowledge; use `WebSearch` only to verify a specific fact you are unsure of.
 
 Confirm in one Polish sentence what you understood the subject to be before going deeper. If genuinely ambiguous, ask (via `AskUserQuestion`) — this clarification is the one exception to the format question coming first; otherwise proceed.
 
-## 2. Ask for the format — the first question of the session
+## 2. Ask for the format and the starting level — the first question of the session
 
-Before writing anything, `AskUserQuestion`: in which format should the learning plan be kept?
+Before writing anything, one `AskUserQuestion` call with two questions:
+
+**Format** — in which format should the learning plan be kept?
 
 - **Markdown** (recommended) — `teach-me-<slug>.md`, checkboxes `- [ ]` / `- [x]`, editable and diffable.
 - **HTML** — `teach-me-<slug>.html`, a single self-contained file to open in a browser.
 
-This question always comes first. Do not create the file before it is answered.
+**Starting level** — how well does the user know the subject?
+
+- **Od zera** (recommended) — assume no knowledge of the domain; explain everything, define every term.
+- **Znam podstawy** — skip the basic definitions, start at the mechanics.
+- **Znam temat, chcę pogłębić** — brief recaps only; go straight to the why, tradeoffs, and edge cases.
+
+This call comes first (only the subject clarification in step 1 may precede it). Do not create the file before it is answered. The level is only the starting point — it moves during the session (step 4).
 
 ## 3. Build the running checklist doc
 
@@ -70,41 +78,43 @@ Write `teach-me-<slug>.<md|html>` in the cwd (slug from the subject, extension f
 
 Each section is a checklist of concrete sub-items. Add a one-line note next to an item once the user demonstrates they get it, then mark it done.
 
-**Markdown format:** items are `- [ ]` → `- [x]`; the note goes on the same line.
+**Markdown format:** items are `- [ ]` → `- [x]`; the note goes on the same line. Update the file with `Edit`.
 
 **HTML format:** before the first write, load the `frontend-design:frontend-design` skill via the `Skill` tool and apply its guidance, **choosing the aesthetic direction yourself** — never ask the user about visual details (the format choice in step 2 stays the only question about the file). One self-contained file — inline `<style>`, no CDN, no external fonts, scripts or images. An `<h2>` per section, a `<ul>` of items; an open item renders `☐`, a mastered one `☑` with class `done` and the note in `<small>`. Show a `X z Y opanowanych` counter (a progress bar is welcome). Make it readable in both light and dark (`prefers-color-scheme`). On every state change **rewrite the whole file** with `Write` — do not patch the HTML with `Edit`.
 
 ## 4. Teach — one stage at a time
 
-Work through the checklist top to bottom. For **each** item, in order:
+Work through the checklist top to bottom. For **each** item, run this loop:
 
-1. **Probe first — closed.** Before explaining anything, run one `AskUserQuestion` diagnostic on the item: *"which statement best describes X?"* — the correct option plus plausible distractors built from the common misconceptions, plus a "nie wiem / zgaduję" escape option. The answer tells you which gap to fill; a wrong pick names the misconception to correct. You teach to fill the gaps you find — not by lecturing first.
-2. **Fill gaps.** Correct misconceptions, add what's missing — in the tone and shape from "Tone and style". Let the user ask their own questions freely.
-3. **Drill into why.** Don't stop at the first "why" — ask the next one down. Cover *what* and *how* too, but make sure the *why* chain is solid. Understanding the problem deeply is the priority; don't rush to the solution.
-4. **Show, don't just tell.** Quote the actual code / diff, walk it line by line, or suggest running it under a debugger when that lands the point better than prose.
-
-Never dump all three sections at once. One thing at a time, confirmed, then onward.
+1. **Explain first.** Teach the item in the shape from "Tone and style" — one-line core, a concrete example, why it matters — written for the learner's **current level**. At "od zera" assume nothing: define every term, build from something the user already knows. Never ask a question about an item before you have explained it. Show, don't just tell: quote the actual code / diff and walk it line by line when that lands the point better than prose. Drill into *why* — don't stop at the first "why", ask the next one down; the *why* chain is the priority. Let the user ask their own questions freely.
+2. **Check with one closed question.** One `AskUserQuestion`, 2–3 content options plus a "nie wiem" option (4 total max), testing *what you just explained* at the current level. The question must require **applying** the idea — "co się stanie, gdy…", "który wariant jest poprawny…", "dlaczego nie…" — never restating a definition. If the answer is obvious from the explanation you just gave, the question is too easy; rewrite it. Build distractors from real misconceptions. Draw the correct option's slot with Bash (see step 5).
+3. **Feedback — mandatory, immediately, every time.** The first thing you write after the answer, before anything else: **"Dobrze"** or **"Nie — poprawna odpowiedź to …"**, then one or two sentences on *why* it is correct and why the picked distractor is not. On a wrong answer or "nie wiem": re-explain that specific piece **differently** — another example, another angle, not the same paragraph again — then ask a **new** question on the same point. Never re-ask the identical question. "Nie wiem" is a gap to fill, not a fault.
+4. **Adapt the level.** Track a simple level in your head. Two correct answers in a row → step up: shorter explanations, harder checks (edge cases, tradeoffs, "why not the alternative"). A wrong answer → step down: slower, more examples, a simpler check. Always one thing at a time — never dump a whole section, whatever the level.
 
 ## 5. Quiz to verify (not to perform)
 
-Test mastery — both high level (motivation) and low level (logic, edge cases). Always `AskUserQuestion`, 2–4 options, never an open question.
+Checks test mastery — both high level (motivation) and low level (logic, edge cases). Always `AskUserQuestion`, 2–3 content options plus "nie wiem", never an open question. Feedback rules live in step 4.3 and apply to every question.
 
-- **Randomize the correct option's position — mechanically, not by feel.** Left to intuition you park the correct answer in slot A ~80% of the time. Before composing any closed question (probe or quiz), draw the slot with Bash: `echo $((RANDOM % N + 1))` where N is the number of options, and place the correct answer exactly there. To draw several slots for upcoming questions in one call: `echo $((RANDOM % 4 + 1)) $((RANDOM % 4 + 1)) $((RANDOM % 4 + 1))`.
-- **Never reveal the answer in the question or options.** Only after the user submits do you say what was right and *why*, including why the distractors were wrong.
-- A wrong or shaky answer means that item is **not** mastered — loop back, re-teach from the specific gap exposed, and re-quiz. Do not mark an item done on a guess.
+- **Randomize the correct option's position — mechanically, not by feel.** Left to intuition you park the correct answer in slot A ~80% of the time. Before composing any closed question, draw the slot with Bash: `echo $((RANDOM % N + 1))` where N is the number of content options (excluding "nie wiem"), and place the correct answer exactly there. To draw several slots for upcoming questions in one call: `echo $((RANDOM % 3 + 1)) $((RANDOM % 3 + 1)) $((RANDOM % 3 + 1))`.
+- **Never reveal the answer in the question or options.**
+- A wrong or shaky answer means that item is **not** mastered — re-teach the specific gap (differently), then a new check. Do not mark an item done on a guess.
 - "Nie wiem" counts as not mastered — teach from there, don't punish it.
 
 ## 6. Gate and finish
 
-- Advance to the next stage only when the current one is mastered at **both** levels.
+- Advance to the next stage only when the current one is mastered on **both** the motivation (why) and the mechanics (how).
 - Mark items done only after demonstrated (not asserted) understanding; update the file.
 - The session does **not** end until every item is done. When it is, give a short Polish recap of what they now understand and point at the finished checklist file.
 
 ## Anti-patterns
 
 - Asking the user to type a free-form answer into the chat instead of using `AskUserQuestion`.
-- Creating the checklist file before asking which format the user wants.
-- Lecturing before probing what the user already knows.
+- Creating the checklist file before asking which format and starting level the user wants.
+- Asking a check question before the item has been explained at the learner's level.
+- Moving on after an answer without saying explicitly whether it was right, and why.
+- Questions whose answer is obvious from the explanation just given — a check must require applying the idea.
+- Re-asking the identical question after a wrong answer instead of re-explaining differently first.
+- Explaining at expert level to someone who chose "od zera", or staying at zero level after several correct answers.
 - Revealing quiz answers up front, or always parking the correct option in slot A.
 - Marking an item understood on a vague "yeah, makes sense".
 - Advancing while the *why* is still hand-wavy.

@@ -47,7 +47,7 @@
     },
     {
       "name": "teach-me",
-      "description": "Interactive tutor that guides you to a deep understanding of a subject (a code change, PR, file, or abstract topic) incrementally — a running checklist in markdown or HTML (your pick), drilling into the \"why\", and click-through multiple-choice quizzes; doesn't finish until full understanding is verified.",
+      "description": "Interactive tutor that guides you to a deep understanding of a subject (a code change, PR, file, or abstract topic) incrementally — a running checklist in markdown or HTML (your pick); explains from zero first, checks every step with a click-through multiple-choice question and explicit right/wrong feedback, drills into the \"why\", and raises the difficulty as you progress; doesn't finish until full understanding is verified.",
       "source": "./plugins/teach-me"
     },
     {
