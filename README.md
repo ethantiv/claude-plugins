@@ -15,7 +15,7 @@
 | **dependency-update** | universal | Scans your project's dependencies across all ecosystems and updates them safely: minor/patch in one pass, majors one at a time with separate research for each. |
 | **eli** | universal | Explain like I'm an intern: explains any concept, term, or piece of code to a smart person who lacks the domain knowledge. Short, concrete, example-driven, no padding. |
 | **docstyle** | universal | Applies the [Google developer documentation style guide](https://developers.google.com/style) to technical docs. `/docstyle` edits files in place (or reports findings with `--audit`), the skill activates automatically when you write documentation, and a SessionStart hook keeps all session prose aligned with the guide's core rules (disable by creating `.claude/docstyle-off`). Ships the full guide (70 pages) as local references with a topic index. |
-| **unslop** | universal | Edits LLM-generated documents in place to remove the telltale signs of AI writing catalogued by Wikipedia's ["Signs of AI writing"](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing): AI vocabulary, negative parallelisms, rule of three, promotional tone, vague attributions, throat-clearing, fake-profound kickers, formatting slop—plus Polish officialese and bureaucratic heaviness. Handles Polish and English. Audit mode reports findings with red/yellow/green severity instead of editing; `/unslop:plain` rewrites Polish into plain language (a deliberate register change). A SessionStart hook applies the style to all agent prose; disable it by creating `.claude/unslop-off`. |
+| **unslop** | universal | Edits LLM-generated documents in place to remove the telltale signs of AI writing catalogued by Wikipedia's ["Signs of AI writing"](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing): AI vocabulary, negative parallelisms, rule of three, promotional tone, vague attributions, throat-clearing, fake-profound kickers, formatting slop—plus Polish officialese and bureaucratic heaviness. Handles Polish and English. Audit mode reports findings with red/yellow/green severity instead of editing; `/unslop:plain` rewrites Polish into plain language (a deliberate register change). The plugin provides skills only; it does not inject instructions at session start. |
 
 ## Installation
 
@@ -130,3 +130,19 @@ After installation, each plugin exposes its skills as `/<plugin>:<skill>` comman
 ## License
 
 [MIT](LICENSE). Use, modify, and redistribute freely.
+
+## Codex CLI
+
+Native Codex packages are available for `unslop`, `eli`, `visual-prompt`, and `teach-me`. Claude Code continues to use the existing marketplace and manifests.
+
+```sh
+codex plugin marketplace add ethantiv/claude-plugins
+codex plugin add unslop@ethantiv-plugins
+codex plugin add eli@ethantiv-plugins
+codex plugin add visual-prompt@ethantiv-plugins
+codex plugin add teach-me@ethantiv-plugins
+```
+
+For local development, register the repository directory instead of the GitHub source. Restart the session after installation. Invoke `$unslop:unslop`, `$unslop:plain`, `$eli:eli`, `$visual-prompt:visual-prompt`, `$visual-prompt:visual-prompt-art`, `$visual-prompt:visual-prompt-ui`, or `$teach-me:teach-me`. Skills use the tools available in their host; teach-me falls back to numbered chat choices when Codex has no interactive question tool. Visual-prompt uses Codex subagents when available.
+
+Unslop provides skills only in both Claude Code and Codex. Version 0.4.3 removes its SessionStart hooks; existing `unslop-off` files are no longer used.

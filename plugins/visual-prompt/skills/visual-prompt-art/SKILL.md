@@ -5,6 +5,13 @@ argument-hint: "<topic, e.g. cyberpunk samurai walking through neon Tokyo>"
 allowed-tools: Read, Glob, Agent, Workflow
 ---
 
+## Agent compatibility
+
+In Codex use its native `spawn_agent` and wait tools for the three independent directions; the Workflow/Agent examples below are Claude-specific equivalents. If delegation is unavailable, report that limitation and ask whether to produce the three directions sequentially; do not claim agents ran.
+
+Use the host’s native reading, search, editing and web tools; Claude tool names below describe capabilities, not requirements to call missing tools. In Codex, invoke this skill as `$visual-prompt:visual-prompt-art`; take arguments from the user’s message when `$ARGUMENTS` is unavailable. Cross-plugin slash references mean the corresponding `$plugin:skill` in Codex, only when that skill is installed. Resolve relative resource paths from this SKILL.md, never from the working directory.
+
+
 # Visual Prompt — `art` profile entry point
 
 Force the **`art` profile** of the shared visual-prompt orchestrator.
@@ -17,8 +24,8 @@ Force the **`art` profile** of the shared visual-prompt orchestrator.
 
 Read the orchestrator and the `art` brief, then follow the orchestrator exactly:
 
-1. Read `${CLAUDE_PLUGIN_ROOT}/skills/visual-prompt/SKILL.md` (the orchestrator).
-2. Read `${CLAUDE_PLUGIN_ROOT}/skills/visual-prompt/references/subagent-brief-art.md`.
+1. Read `../visual-prompt/SKILL.md` (the orchestrator).
+2. Read `../visual-prompt/references/subagent-brief-art.md`.
 3. Run the orchestrator steps with the profile fixed to `art`:
    - Determine the output language (the session's configured response language, otherwise the language of the user's request).
    - Reserve a free trio of file numbers in the current working directory (Glob).

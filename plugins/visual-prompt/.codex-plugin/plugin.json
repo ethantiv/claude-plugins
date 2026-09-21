@@ -1,0 +1,18 @@
+{
+  "name": "visual-prompt",
+  "version": "0.8.1",
+  "description": "Generate three .txt files with artistic text-to-image prompts in three contrasting visual directions, written by separate subagents in parallel in the conversation language. Two profiles: art (artwork, posters, photography) and ui (artistic interface mockups). Slash-invocable skills: /visual-prompt-art, /visual-prompt-ui.",
+  "author": {
+    "name": "Mirek Zaniewicz"
+  },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Visual Prompt",
+    "shortDescription": "Create three contrasting image prompts",
+    "longDescription": "Generate three .txt files with artistic text-to-image prompts in three contrasting visual directions, written by separate subagents in parallel in the conversation language. Two profiles: art (artwork, posters, photography) and ui (artistic interface mockups). Slash-invocable skills: /visual-prompt-art, /visual-prompt-ui.",
+    "developerName": "Mirek Zaniewicz",
+    "category": "Productivity",
+    "capabilities": [],
+    "defaultPrompt": "Help me use Visual Prompt."
+  }
+}

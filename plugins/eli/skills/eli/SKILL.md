@@ -6,6 +6,11 @@ argument-hint: "<concept / term / file path / code snippet to explain>"
 allowed-tools: Read, Grep, Glob
 ---
 
+## Agent compatibility
+
+Use the host’s native reading, search, editing and web tools; Claude tool names below describe capabilities, not requirements to call missing tools. In Codex, invoke this skill as `$eli:eli`; take arguments from the user’s message when `$ARGUMENTS` is unavailable. Cross-plugin slash references mean the corresponding `$plugin:skill` in Codex, only when that skill is installed. Resolve relative resource paths from this SKILL.md, never from the working directory.
+
+
 # eli — explain like I'm an intern
 
 Explain the subject in `$ARGUMENTS` to **a smart, mature adult who just doesn't know this domain yet** — a sharp new intern on day one. Not a child. Assume general intelligence and life experience; assume **zero** field-specific knowledge and zero jargon.
@@ -14,7 +19,7 @@ Explain the subject in `$ARGUMENTS` to **a smart, mature adult who just doesn't 
 
 ## Resolve the subject
 
-- **Empty `$ARGUMENTS`** → ask in one Polish sentence what to explain. Don't guess.
+- **No subject in `$ARGUMENTS` or the user’s message** → ask in one Polish sentence what to explain. Don't guess.
 - **A file path / something that looks like code in this repo** → read it (and only what you need to understand it) before explaining. Explain *that* code, not the abstract concept.
 - **Anything else** → an abstract concept, term, or acronym. Explain from your own knowledge. Only run a tool if you genuinely need to check a repo-specific fact.
 

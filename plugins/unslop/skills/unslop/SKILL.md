@@ -6,6 +6,11 @@ argument-hint: "<file path(s) to fix, or a directory> [--audit]"
 allowed-tools: Read, Edit, Grep, Glob
 ---
 
+## Agent compatibility
+
+Use the host’s native reading, search, editing and web tools; Claude tool names below describe capabilities, not requirements to call missing tools. In Codex, invoke this skill as `$unslop:unslop`; take arguments from the user’s message when `$ARGUMENTS` is unavailable. Cross-plugin slash references mean the corresponding `$plugin:skill` in Codex, only when that skill is installed. Resolve relative resource paths from this SKILL.md, never from the working directory.
+
+
 # unslop — remove signs of AI writing
 
 Edit the document(s) in `$ARGUMENTS` **in place**, removing the telltale signs of AI-generated writing catalogued by Wikipedia's [Signs of AI writing](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing). Preserve the meaning, the facts, and the order of the argument; change only wording, style, and formatting.

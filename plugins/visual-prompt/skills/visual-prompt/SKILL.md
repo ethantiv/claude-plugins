@@ -4,6 +4,13 @@ description: This skill should be used when the user asks to generate text-to-im
 allowed-tools: Read, Glob, Agent, Workflow
 ---
 
+## Agent compatibility
+
+In Codex use its native `spawn_agent` and wait tools for the three independent directions; the Workflow/Agent examples below are Claude-specific equivalents. If delegation is unavailable, report that limitation and ask whether to produce the three directions sequentially; do not claim agents ran.
+
+Use the host’s native reading, search, editing and web tools; Claude tool names below describe capabilities, not requirements to call missing tools. In Codex, invoke this skill as `$visual-prompt:visual-prompt`; take arguments from the user’s message when `$ARGUMENTS` is unavailable. Cross-plugin slash references mean the corresponding `$plugin:skill` in Codex, only when that skill is installed. Resolve relative resource paths from this SKILL.md, never from the working directory.
+
+
 # Visual Prompt — Orchestrator
 
 Produces **three `.txt` files**, each holding one text-to-image prompt rooted in a different invented design philosophy. Two profiles available:
@@ -36,8 +43,8 @@ The files come out in the language of the conversation, not in English by defaul
 
 | Profile | Subagent brief | Example output |
 |---|---|---|
-| `art` | `${CLAUDE_PLUGIN_ROOT}/skills/visual-prompt/references/subagent-brief-art.md` | `${CLAUDE_PLUGIN_ROOT}/skills/visual-prompt/examples/example-art.txt` |
-| `ui` | `${CLAUDE_PLUGIN_ROOT}/skills/visual-prompt/references/subagent-brief-ui.md` | `${CLAUDE_PLUGIN_ROOT}/skills/visual-prompt/examples/example-ui.txt` |
+| `art` | `../visual-prompt/references/subagent-brief-art.md` | `../visual-prompt/examples/example-art.txt` |
+| `ui` | `../visual-prompt/references/subagent-brief-ui.md` | `../visual-prompt/examples/example-ui.txt` |
 
 Read the corresponding brief once (Read tool). Paste it verbatim into each subagent call. Note the absolute path of the example file — each subagent gets that path as a format reference.
 

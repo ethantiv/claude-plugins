@@ -1,0 +1,18 @@
+{
+  "name": "teach-me",
+  "version": "0.5.1",
+  "description": "Interactive tutor that guides you to a deep understanding of a subject (a code change, PR, file, or abstract topic) incrementally — a running checklist in markdown or HTML (your pick); explains from zero first, checks every step with a click-through multiple-choice question and explicit right/wrong feedback, drills into the \"why\", and raises the difficulty as you progress; doesn't finish until full understanding is verified.",
+  "author": {
+    "name": "Mirek Zaniewicz"
+  },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Teach Me",
+    "shortDescription": "Learn a topic through guided questions",
+    "longDescription": "Interactive tutor that guides you to a deep understanding of a subject (a code change, PR, file, or abstract topic) incrementally — a running checklist in markdown or HTML (your pick); explains from zero first, checks every step with a click-through multiple-choice question and explicit right/wrong feedback, drills into the \"why\", and raises the difficulty as you progress; doesn't finish until full understanding is verified.",
+    "developerName": "Mirek Zaniewicz",
+    "category": "Productivity",
+    "capabilities": [],
+    "defaultPrompt": "Help me use Teach Me."
+  }
+}

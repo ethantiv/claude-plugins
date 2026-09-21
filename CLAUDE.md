@@ -8,7 +8,7 @@ A Claude Code plugin marketplace (`ethantiv-plugins`). There is no build, lint, 
 
 ## Tests
 
-Only two plugins have test suites, each self-contained (no frameworks, no dependencies)—unslop additionally ships an untested SessionStart hook script (`plugins/unslop/hooks/`):
+Only two plugins have test suites, each self-contained (no frameworks, no dependencies):
 
 ```bash
 bash plugins/babysit-pr/scripts/test/test-auto-gate.sh    # gate logic in a throwaway git repo
@@ -24,7 +24,7 @@ Run the relevant test after touching anything in `plugins/babysit-pr/scripts/` o
 - **Skills are the product.** A plugin is essentially its `SKILL.md` files—prompt instructions with YAML frontmatter (`name`, `description`). Larger skills split detail into `references/*.md` next to the SKILL.md (progressive disclosure); skills reference plugin files through `${CLAUDE_PLUGIN_ROOT}`.
 - **book-forge** is the largest plugin: a 12-stage Polish novel-writing pipeline. Its skills share a common foundation in `plugins/book-forge/shared/` (`biblia-spec.md`—the book-bible data contract, `polish-style.md`—the mandatory Polish-language editing rules, `roadmap.md`). `scripts/bible.py` is the deterministic CLI the skills call for canon state (`status`, `check-stage`, write-back); `scripts/echo.py` detects prose repetition. Pipeline state lives in the user's book directory under `.book-forge/`—the stage-by-stage file map is in [plugins/book-forge/README.md](plugins/book-forge/README.md).
 - **docstyle** ships the Google developer documentation style guide scraped into `plugins/docstyle/skills/docstyle/references/guide/` (70 files, source URL in a first-line comment). Generated content: never hand-edit, unslop, or reformat these files—refresh by re-scraping developers.google.com/style.
-- SessionStart-hook plugins (unslop, docstyle) share one pattern: `hooks/<name>-activate.sh` injects rules at session start; disable it by creating `.claude/<name>-off` (project) or `~/.claude/<name>-off` (global).
+- The **docstyle** SessionStart hook uses this pattern: `hooks/<name>-activate.sh` injects rules at session start; disable it by creating `.claude/<name>-off` (project) or `~/.claude/<name>-off` (global).
 - **babysit-pr** drives its loop through `scripts/pr-snapshot.sh` (collect PR state as JSON), `scripts/auto-gate.sh` (decide whether a snapshot is positively green), and `scripts/restart-review.sh`; the SKILL.md orchestrates them.
 - Swarm-based skills (book-forge, roadmap, visual-prompt) target the **Workflow** tool and must keep a documented fallback to parallel Task/Agent calls.
 
@@ -44,7 +44,7 @@ Run the relevant test after touching anything in `plugins/babysit-pr/scripts/` o
 - Conventional commits scoped to the plugin: `feat(babysit-pr): ...`, `style: ...`.
 - Cross-plugin references in skills use the namespaced form (`/teach-me:teach-me`, not `/teach-me`) and must be guarded with "if the <name> plugin is installed"—plugins install independently.
 - Slash-invoked skills keep `argument-hint` in SKILL.md frontmatter (see teach-me, babysit-pr)—the plugin-validator agent may wrongly flag it as a command-only field; ignore that finding.
-- The `statusMessage` field in hooks.json entries is intentional (used by unslop and docstyle SessionStart hooks)—the plugin-validator agent may flag it as an undocumented field; ignore that finding.
+- The `statusMessage` field in hooks.json entries is intentional (used by the docstyle SessionStart hook)—the plugin-validator agent may flag it as an undocumented field; ignore that finding.
 - Skills referencing optional MCP servers or external tools (context7, agent-browser) guard them with an availability condition and name a built-in fallback (for example, WebFetch).
 - Write markdown prose as long single lines—never hard-wrap at a column width.
 - Language: root README and most plugins are English; book-forge is deliberately Polish (skills, shared docs, generated artifacts). Match the language of the file you edit.

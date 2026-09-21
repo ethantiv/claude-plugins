@@ -6,6 +6,11 @@ argument-hint: "<file path(s) to simplify, or a directory>"
 allowed-tools: Read, Edit, Glob
 ---
 
+## Agent compatibility
+
+Use the host’s native reading, search, editing and web tools; Claude tool names below describe capabilities, not requirements to call missing tools. In Codex, invoke this skill as `$unslop:plain`; take arguments from the user’s message when `$ARGUMENTS` is unavailable. Cross-plugin slash references mean the corresponding `$plugin:skill` in Codex, only when that skill is installed. Resolve relative resource paths from this SKILL.md, never from the working directory.
+
+
 # plain — prosty język for Polish documents
 
 Rewrite the Polish document(s) in `$ARGUMENTS` **in place** into plain language (prosty język): the register deliberately shifts from bureaucratic or heavy to direct and reader-first. This is the opposite contract to `/unslop:unslop`, which preserves the register — use this skill only when the user explicitly wants simplification.
@@ -13,7 +18,7 @@ Rewrite the Polish document(s) in `$ARGUMENTS` **in place** into plain language 
 ## Workflow
 
 1. **Resolve targets.** `$ARGUMENTS` may hold one or more file paths or a directory (expand with `Glob` patterns `**/*.md` and `**/*.txt`; other extensions inside a directory are skipped — name them explicitly to include them). Empty → take the file the user points at in their message; if none, ask in one sentence which file to simplify.
-2. **Read each file whole** and identify its job and reader. Then `Read` `${CLAUDE_PLUGIN_ROOT}/skills/unslop/references/polish-patterns.md` — its officialese, nominalization, passive-fog, genitive-chain, and participle patterns are the core of this pass, applied here without the register restraint (naming the actor and addressing the reader directly is the point, not a risk).
+2. **Read each file whole** and identify its job and reader. Then `Read` `../unslop/references/polish-patterns.md` — its officialese, nominalization, passive-fog, genitive-chain, and participle patterns are the core of this pass, applied here without the register restraint (naming the actor and addressing the reader directly is the point, not a risk).
 3. **Simplify with surgical `Edit` calls**, sentence by sentence. Principles:
    - Start with what the reader needs to know or do; legal basis and background move below the action.
    - Address the reader directly (`złóż wniosek`, `możesz odwołać się`) where the text instructs; name the actor (`urząd wyda decyzję`) where it informs.
