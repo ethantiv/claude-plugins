@@ -1,6 +1,6 @@
-# claude-plugins
+# agents-plugins
 
-**A plugin marketplace for [Claude Code](https://claude.com/claude-code)**, with Codex and GitHub Copilot CLI support for `eli`, `teach-me`, `unslop`, `visual-prompt`, and `docstyle`. Add the marketplace once, then install the plugins you need.
+A plugin marketplace for [Claude Code](https://claude.com/claude-code), with Codex and GitHub Copilot CLI support for `eli`, `teach-me`, `unslop`, `visual-prompt`, and `docstyle`. Add the marketplace once, then install the plugins you need.
 
 ## Plugins
 
@@ -19,10 +19,10 @@
 
 ## Installation
 
-In a Claude Code session, run these commands (`/plugin` is built into Claude Code):
+In a Claude Code session, add the marketplace and install the plugins you need with the built-in `/plugin` command:
 
 ```text
-/plugin marketplace add ethantiv/claude-plugins
+/plugin marketplace add ethantiv/agents-plugins
 /plugin install book-forge@ethantiv-plugins
 /plugin install babysit-pr@ethantiv-plugins
 /plugin install read-arxiv-paper@ethantiv-plugins
@@ -35,10 +35,10 @@ In a Claude Code session, run these commands (`/plugin` is built into Claude Cod
 /plugin install unslop@ethantiv-plugins
 ```
 
-Or from the terminal, with the CLI:
+Alternatively, add the marketplace and install plugins from your terminal:
 
 ```bash
-claude plugin marketplace add ethantiv/claude-plugins
+claude plugin marketplace add ethantiv/agents-plugins
 claude plugin install book-forge@ethantiv-plugins
 claude plugin install babysit-pr@ethantiv-plugins
 claude plugin install read-arxiv-paper@ethantiv-plugins
@@ -57,24 +57,17 @@ Install only what you need; the plugins are independent of each other. After ins
 claude plugin marketplace list
 ```
 
-### Updates
-
-Claude Code adds the marketplace with `git clone`, so plugins update when you refresh the marketplace, with no reinstall:
-
-```bash
-claude plugin marketplace update ethantiv-plugins
-```
-
 ## Requirements
 
-All plugins work with Claude Code. The five plugins listed above also support Codex and GitHub Copilot CLI. Beyond the host CLI:
+All plugins work with Claude Code. The five plugins listed in the introduction also support Codex and GitHub Copilot CLI. The following requirements apply in addition to the host CLI:
 
 **book-forge**
-- **Python 3**, standard library only, no `pip install`.
-- **Node.js**, used to validate generated HTML artifacts (`node --check`).
-- The **Workflow** tool (agent swarm); without it the skills fall back to parallel `Task` agents.
-- The **`/unslop:unslop`** skill (the `unslop` plugin from this marketplace), a mandatory language-editing pass.
-- The **agent-browser** skill, used for research and fact checking; project page: [agent-browser.dev](https://agent-browser.dev).
+
+- Python 3, standard library only, no `pip install`.
+- Node.js, used to validate generated HTML artifacts (`node --check`).
+- The Workflow tool (agent swarm); without it the skills fall back to parallel `Task` agents.
+- The `/unslop:unslop` skill (the `unslop` plugin from this marketplace), a mandatory language-editing pass.
+- The agent-browser skill, used for research and fact checking; project page: [agent-browser.dev](https://agent-browser.dev).
 
 Install both skills with:
 
@@ -83,7 +76,7 @@ claude plugin install unslop@ethantiv-plugins
 npx skills add https://github.com/vercel-labs/agent-browser --skill agent-browser
 ```
 
-agent-browser has two layers: the **skill** is the Claude Code integration (the `npx skills add` command above), and the **CLI** is the browser-driving tool that the skill runs. **The skill won't work without the CLI.** It's a dependency, not an alternative, so start with the CLI:
+agent-browser has two components: the skill integrates with Claude Code through the `npx skills add` command, and the CLI controls the browser. The skill requires the CLI. Install or run the CLI before using the skill:
 
 ```bash
 npm install -g agent-browser      # all platforms
@@ -95,51 +88,54 @@ npx agent-browser open example.com
 ```
 
 **babysit-pr**
-- **`gh`** (GitHub CLI, logged in), **`jq`**, and **`git`** available in `PATH`.
+
+- `gh` (GitHub CLI, logged in), `jq`, and `git` available in `PATH`.
 
 **read-arxiv-paper**
-- **`curl`** and **`tar`** (usually already on your system), used to download and unpack the arXiv source.
+
+- `curl` and `tar` (usually already on your system), used to download and unpack the arXiv source.
 
 **roadmap**
-- The **Workflow** tool (agent swarm); without it the skill falls back to parallel `Task` agents.
+
+- The Workflow tool (agent swarm); without it the skill falls back to parallel `Task` agents.
 
 **eli**, **unslop**, **docstyle**
+
 - No dependencies beyond the host CLI.
 
 **teach-me**
+
 - Bash for randomizing quiz choices; Git for code-change lessons and authenticated `gh` for GitHub PR lessons.
 
 **visual-prompt**
+
 - Native subagent tools: Workflow/Agent in Claude Code, `spawn_agent` in Codex, or `task` in Copilot CLI. Without delegation, the skill asks before producing the three directions sequentially.
 
 **dependency-update**
+
 - The package managers of your ecosystems (for example, `npm`, `pip`, `cargo`, or `go`) available in `PATH`, used to check for and install updates.
 
 ## Usage
 
 After installation, each plugin exposes its skills as `/<plugin>:<skill>` commands.
 
-- **book-forge**: the full pipeline is described in [`plugins/book-forge/README.md`](plugins/book-forge/README.md); a visual guide to the 12 stages: [`przewodnik.html`](plugins/book-forge/przewodnik.html). Start with `/book-forge:market-report` (or the lighter `/book-forge:idea-spark`).
-- **babysit-pr**: run `/babysit-pr` on a branch with an open PR to monitor and fix CI, reviews, and conflicts locally; once a pass comes back clean, it merges the PR and deletes the branch. `/babysit-pr --loop 10m` keeps watching by re-running the check every 10 minutes (you choose the interval). No PR yet? `/babysit-pr --push` commits your work, pushes it, opens the PR, and then starts the same watch loop.
-- **read-arxiv-paper**: `/read-arxiv-paper:read-arxiv-paper` with a paper URL or ID (for example, `2401.12345`); you get a summary in the context of your repo.
-- **roadmap**: `/roadmap:roadmap` gathers ideas with an agent swarm and writes `docs/ROADMAP.md`.
-- **teach-me**: `/teach-me:teach-me` with a topic (a code change, a PR, a file, or a concept); it explains first, checks each step, and raises the difficulty until your understanding is confirmed.
-- **visual-prompt**: `/visual-prompt-art` or `/visual-prompt-ui` (or describe what you need) generates three `.txt` files with prompts in contrasting directions.
-- **dependency-update**: `/dependency-update:dependency-update` scans and safely updates your project's dependencies.
-- **eli**: `/eli:eli` with a concept, term, or piece of code; you get a short, vivid explanation.
-- **docstyle**: `/docstyle:docstyle` with a file path (or directory) edits documentation in place per the Google developer documentation style guide; `--audit` reports severity-graded findings instead. Creating or editing documentation also triggers the skill. Its rules apply to documentation only, not ordinary chat replies.
-- **unslop**: `/unslop:unslop` with a file path (or directory); it edits the document in place to remove signs of AI writing and reports what it fixed. Add `--audit` (or ask for "tylko audyt") to get severity-graded findings without edits. `/unslop:plain` with a file path simplifies bureaucratic Polish into plain language.
-
-## License
-
-[MIT](LICENSE). Use, modify, and redistribute freely.
+- **book-forge**: Read the full pipeline description in [`plugins/book-forge/README.md`](plugins/book-forge/README.md) and the visual guide to the 12 stages in [`przewodnik.html`](plugins/book-forge/przewodnik.html). Start with `/book-forge:market-report` (or the lighter `/book-forge:idea-spark`).
+- **babysit-pr**: Run `/babysit-pr` on a branch with an open PR to monitor and fix CI, reviews, and conflicts locally; once a pass completes without issues, it merges the PR and deletes the branch. `/babysit-pr --loop 10m` keeps watching by re-running the check every 10 minutes (you choose the interval). If you have no open PR, run `/babysit-pr --push` to commit your work, push it, open the PR, and start the same watch loop.
+- **read-arxiv-paper**: Run `/read-arxiv-paper:read-arxiv-paper` with a paper URL or ID (for example, `2401.12345`) to get a summary in the context of your repository.
+- **roadmap**: Run `/roadmap:roadmap` to gather ideas with an agent swarm and write `docs/ROADMAP.md`.
+- **teach-me**: Run `/teach-me:teach-me` with a topic (a code change, a PR, a file, or a concept); it explains first, checks each step, and raises the difficulty until your understanding is confirmed.
+- **visual-prompt**: Run `/visual-prompt-art` or `/visual-prompt-ui` (or describe what you need) to generate three `.txt` files with prompts in contrasting directions.
+- **dependency-update**: Run `/dependency-update:dependency-update` to scan and safely update your project's dependencies.
+- **eli**: Run `/eli:eli` with a concept, term, or piece of code to get a short, vivid explanation.
+- **docstyle**: Run `/docstyle:docstyle` with a file path (or directory) to edit documentation in place according to the Google developer documentation style guide; `--audit` reports severity-graded findings instead. Creating or editing documentation also triggers the skill. Its rules apply to documentation only, not ordinary chat replies.
+- **unslop**: Run `/unslop:unslop` with a file path (or directory) to remove signs of AI writing from the document in place. The skill reports what it fixed. Add `--audit` (or ask for "tylko audyt") to get severity-graded findings without edits. `/unslop:plain` with a file path simplifies bureaucratic Polish into plain language.
 
 ## Codex CLI
 
-Native Codex packages are available for `unslop`, `eli`, `visual-prompt`, `teach-me`, and `docstyle`. Claude Code continues to use the existing marketplace and manifests.
+Native Codex packages are available for `unslop`, `eli`, `visual-prompt`, `teach-me`, and `docstyle`. Claude Code uses the marketplace and manifests.
 
 ```sh
-codex plugin marketplace add ethantiv/claude-plugins
+codex plugin marketplace add ethantiv/agents-plugins
 codex plugin add unslop@ethantiv-plugins
 codex plugin add eli@ethantiv-plugins
 codex plugin add visual-prompt@ethantiv-plugins
@@ -147,16 +143,16 @@ codex plugin add teach-me@ethantiv-plugins
 codex plugin add docstyle@ethantiv-plugins
 ```
 
-For local development, register the repository directory instead of the GitHub source. Restart the session after installation. Invoke `$unslop:unslop`, `$unslop:plain`, `$eli:eli`, `$visual-prompt:visual-prompt`, `$visual-prompt:visual-prompt-art`, `$visual-prompt:visual-prompt-ui`, `$teach-me:teach-me`, or `$docstyle:docstyle`. Skills use the tools available in their host; teach-me falls back to numbered chat choices when Codex has no interactive question tool. Visual-prompt uses Codex subagents when available.
+For local development, register the repository directory instead of the GitHub source. Restart the session after installation. Invoke `$unslop:unslop`, `$unslop:plain`, `$eli:eli`, `$visual-prompt:visual-prompt`, `$visual-prompt:visual-prompt-art`, `$visual-prompt:visual-prompt-ui`, `$teach-me:teach-me`, or `$docstyle:docstyle`.
 
-Unslop provides skills only in both Claude Code and Codex. Version 0.4.3 removes its SessionStart hooks; existing `unslop-off` files are no longer used.
+Skills use the tools available in their host; teach-me falls back to numbered chat choices when Codex has no interactive question tool. Visual-prompt uses Codex subagents when available.
 
 ## GitHub Copilot CLI
 
-The same five plugins use the existing `ethantiv-plugins` marketplace:
+The same five plugins use the `ethantiv-plugins` marketplace:
 
 ```sh
-copilot plugin marketplace add ethantiv/claude-plugins
+copilot plugin marketplace add ethantiv/agents-plugins
 copilot plugin install eli@ethantiv-plugins
 copilot plugin install teach-me@ethantiv-plugins
 copilot plugin install unslop@ethantiv-plugins
@@ -164,12 +160,16 @@ copilot plugin install visual-prompt@ethantiv-plugins
 copilot plugin install docstyle@ethantiv-plugins
 ```
 
-Start a new session after installation. Invoke `/eli`, `/teach-me`, `/unslop`, `/plain`, `/visual-prompt`, `/visual-prompt-art`, `/visual-prompt-ui`, or `/docstyle`. Use the skill picker if another installed plugin has the same skill name. Teach-me uses `ask_user` when available and otherwise waits for numbered choices in chat. Visual-prompt uses native subagents. See the [Copilot CLI skill and tool reference](https://docs.github.com/en/copilot/reference/copilot-cli-reference/cli-command-reference).
+Start a new session after installation. Invoke `/eli`, `/teach-me`, `/unslop`, `/plain`, `/visual-prompt`, `/visual-prompt-art`, `/visual-prompt-ui`, or `/docstyle`. If another installed plugin has the same skill name, use the skill picker.
+
+Teach-me uses `ask_user` when available and otherwise waits for numbered choices in chat. Visual-prompt uses native subagents. See the [Copilot CLI skill and tool reference](https://docs.github.com/en/copilot/reference/copilot-cli-reference/cli-command-reference).
 
 ### Devcontainer configuration
 
-In `build-cli-devcontainer`, both `claude.plugins.external` and `copilot.plugins.external` list the five names under `marketplace: ethantiv-plugins` and `source: ethantiv/claude-plugins`. In `ai-devcontainer-sync`, `defaults.codex.plugins` uses one entry per plugin with the same marketplace and source. The setup scripts install the published repository version; local edits become available through that source after publication.
+In `build-cli-devcontainer`, both `claude.plugins.external` and `copilot.plugins.external` list the five names under `marketplace: ethantiv-plugins` and `source: ethantiv/agents-plugins`. In `ai-devcontainer-sync`, `defaults.codex.plugins` uses one entry per plugin with the same marketplace and source.
 
-### Docstyle update
+The setup scripts install the published repository version. To make local edits available through that source, publish them to the repository.
 
-Docstyle 0.1.1 removes all session hooks. It applies only when creating, editing, or auditing technical documentation; ordinary chat replies are outside its scope. After updating an existing installation, start a new session to discard previously injected style instructions. Old `docstyle-off` files are no longer used and can be removed.
+## License
+
+[MIT](LICENSE). Use, modify, and redistribute freely.

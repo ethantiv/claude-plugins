@@ -1,9 +1,9 @@
 ---
 name: eli
 description: >-
-  Explains any concept, term, acronym, or piece of code to a smart, mature adult with zero knowledge of that domain — short, concrete, example-driven, never childish (not ELI5 baby-talk). Use when the user invokes /eli or asks for a simple, vivid explanation: "wytłumacz jak stażyście", "wytłumacz prosto", "wyjaśnij obrazowo", "explain like I'm an intern", "ELI intern", "wytłumacz mi <X> krótko".
+  Explains any concept, term, acronym, or piece of code to a smart, mature adult with zero knowledge of that domain — short, concrete, example-driven, never childish (not ELI5 baby-talk). Use when the user invokes /eli or asks for a simple, vivid explanation: "wytłumacz jak stażyście", "wytłumacz prosto", "wyjaśnij obrazowo", "explain like I'm an intern", "ELI intern", "wytłumacz mi to krótko".
 argument-hint: "<concept / term / file path / code snippet to explain>"
-allowed-tools: Read, Grep, Glob
+allowed-tools: Read, Grep, Glob, WebSearch, WebFetch
 ---
 
 ## Agent compatibility
@@ -12,15 +12,15 @@ Use the host’s native tools: Claude Code tool names below describe capabilitie
 
 # eli — explain like I'm an intern
 
-Explain the subject in `$ARGUMENTS` to **a smart, mature adult who just doesn't know this domain yet** — a sharp new intern on day one. Not a child. Assume general intelligence and life experience; assume **zero** field-specific knowledge and zero jargon.
+Explain the subject in `$ARGUMENTS` to **a smart, mature adult who just doesn't know this domain yet** — a sharp new intern on day one. Not a child. Assume general intelligence and life experience; assume **zero** field-specific knowledge unless the user indicates otherwise, and define unfamiliar jargon.
 
-**Speak Polish** to the user (the explanation, headings, examples). These instructions stay in English.
+**Speak Polish by default** to the user (the explanation, headings, examples), unless they request another language. These instructions stay in English.
 
 ## Resolve the subject
 
-- **No subject in `$ARGUMENTS` or the user’s message** → ask in one Polish sentence what to explain. Don't guess.
+- **No subject in `$ARGUMENTS` or the user’s message** → use a clear referent from the conversation (for example, "explain that"). If none is clear, ask in one sentence what to explain.
 - **A file path / something that looks like code in this repo** → read it (and only what you need to understand it) before explaining. Explain *that* code, not the abstract concept.
-- **Anything else** → an abstract concept, term, or acronym. Explain from your own knowledge. Only run a tool if you genuinely need to check a repo-specific fact.
+- **Anything else** → an abstract concept, term, or acronym. Use your own knowledge for stable, familiar concepts. Verify uncertain or time-sensitive claims and named sources with available research tools; if unavailable, state the limitation instead of guessing.
 
 ## How to explain
 
@@ -39,4 +39,4 @@ The whole point is **short, vivid, concrete**. A senior engineer skimming it sho
 - **Show, don't pad.** A good example beats a paragraph of qualifiers. Reach for an analogy, a number, or a 3-line snippet before reaching for more sentences.
 - **One pass, done.** This is a one-shot explanation, not a tutoring session. If the user wants to go deeper or be quizzed, point them to `/teach-me:teach-me` (only if the teach-me plugin is installed).
 
-After explaining, offer in one line: deeper dive, a different analogy, or — if the teach-me plugin is installed — `/teach-me:teach-me` for an interactive session. Then stop.
+Stop after the explanation. Offer a follow-up only when it helps with a specific remaining difficulty; do not append a routine menu to every answer.

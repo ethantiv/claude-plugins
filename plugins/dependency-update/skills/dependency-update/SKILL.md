@@ -12,190 +12,78 @@ allowed-tools: Read, Glob, Grep, Edit, WebFetch, Bash(git:*), Bash(command:*), B
 
 # Dependency Update
 
-Scan the current project for dependency manifests across all ecosystems, separate safe minor/patch bumps from risky major bumps, and verify after each phase.
+Update dependencies within the user's requested scope, separate routine updates from migrations, and verify each batch. Version numbers indicate compatibility expectations, not a guarantee of safety.
 
-## When NOT to use
+## Scope
 
-- **Security-only fix** (e.g. `npm audit fix`, CVE patching): that is a narrower workflow, run it directly.
-- **Library projects publishing version ranges**: tightening or widening `^x.y.z` ranges in published libraries has consumer-impact rules this skill does not cover — confirm scope with the user first.
-- **Reproducible-build / pinned environments**: repos that intentionally pin exact versions should not be bumped without an explicit user request.
-- **Single-package update**: if the user names one package, just update that package; the full multi-ecosystem sweep is overkill.
+- A named package or ecosystem limits the run; do not expand it into a full sweep. Include related packages only when compatibility requires it, and explain why.
+- For "check outdated", "check only", or "dry run", report candidates without changing manifests, lockfiles, or installed environments. Do not run an update command merely to discover its effects.
+- Honor requested versions, release channels, pins, and repository policy. Default to stable releases. A request to update dependencies includes ordinary pinned dependencies; clarify only pins with a documented reason or policy conflict.
+- In published libraries, preserve the intended consumer compatibility and peer-dependency ranges. Ask only when the requested update leaves that policy ambiguous.
+- Security-only remediation is a narrower task; do not turn it into a general upgrade.
 
-## Workflow
+## 1. Discover and establish a baseline
 
-### Step 1: Discover and preflight
+Read applicable repository instructions (`AGENTS.md`, `CLAUDE.md`, and relevant nested instructions), CI configuration, and package scripts to find validation commands. Do not assume a particular heading or file exists.
 
-1. **Working tree check** — Run `git status`. If there are uncommitted changes, ask the user whether to stash, commit, or proceed anyway. Aggressive updates plus pre-existing edits make rollback impossible.
-2. **Manifest discovery** — Scan with the Glob tool, excluding `node_modules/`, `vendor/`, `.venv/`, `target/`, `build/`, `dist/`:
+Inspect `git status`, staged changes, and unstaged changes. Preserve existing edits and record the starting contents of files you will change so you can undo only your own work. Unrelated edits do not require stopping. Ask only if overlapping changes cannot be preserved safely; do not stash, commit, or discard user work automatically.
 
-| Ecosystem | Files to find |
-|-----------|---------------|
-| Node.js | `package.json` + lockfile (`package-lock.json` / `yarn.lock` / `pnpm-lock.yaml` / `bun.lock`) |
-| Python | `requirements*.txt`, `pyproject.toml`, `setup.py`, `setup.cfg`, `Pipfile`, `uv.lock` |
-| Ruby | `Gemfile` |
-| Go | `go.mod` |
-| Rust | `Cargo.toml` |
-| PHP | `composer.json` |
-| Java/Kotlin | `pom.xml`, `build.gradle`, `build.gradle.kts` |
-| .NET | `*.csproj`, `*.fsproj`, `Directory.Packages.props` |
-| Dart/Flutter | `pubspec.yaml` |
-| Elixir | `mix.exs` |
-| Swift | `Package.swift` |
+Discover manifests within scope, excluding generated and vendored directories such as `node_modules/`, `vendor/`, `.venv/`, `target/`, `build/`, and `dist/`:
 
-3. **Tooling check** — For each detected ecosystem, verify that the listing tool is installed (e.g. `command -v cargo-outdated`, `command -v dotnet-outdated`, presence of Gradle's `dependencyUpdates` plugin). If a helper is missing, **ask the user** whether to install it or skip that ecosystem. Never install global tools silently.
-4. **Read `CLAUDE.md`** — Look up the `## Validation` section in the project's `CLAUDE.md` (root and nested). Those exact commands are the ones to run in Step 3.b and Step 4.d.
+| Ecosystem | Common manifests and lockfiles |
+|-----------|--------------------------------|
+| Node.js | `package.json`, `package-lock.json`, `yarn.lock`, `pnpm-lock.yaml`, `bun.lock`, `bun.lockb` |
+| Python | `requirements*.in`, `requirements*.txt`, `pyproject.toml`, `setup.py`, `setup.cfg`, `Pipfile`, `uv.lock`, `poetry.lock`, `Pipfile.lock` |
+| Ruby | `Gemfile`, `Gemfile.lock` |
+| Go | `go.mod`, `go.sum` |
+| Rust | `Cargo.toml`, `Cargo.lock` |
+| PHP | `composer.json`, `composer.lock` |
+| Java/Kotlin | `pom.xml`, `build.gradle`, `build.gradle.kts`, `gradle/libs.versions.toml` |
+| .NET | `*.csproj`, `*.fsproj`, `Directory.Packages.props`, `packages.lock.json` |
+| Dart/Flutter | `pubspec.yaml`, `pubspec.lock` |
+| Elixir | `mix.exs`, `mix.lock` |
+| Swift | `Package.swift`, `Package.resolved` |
 
-Report findings: ecosystems detected, lockfiles found, package manager per ecosystem, tools missing, and validation commands collected.
+Choose the package manager and version from repository declarations, lockfiles, and CI. Resolve conflicting evidence before updating; do not create a second lockfile. Use workspace roots for shared lockfiles and the project's Python environment rather than global pip. Update the source manifest of generated dependency files, then regenerate them with the existing workflow.
 
-### Step 2: List outdated and classify
+Prefer installed tooling. If a listing helper is missing, use the package manager or official registry metadata where possible. Ask before installing a helper or modifying build configuration to add one, unless already authorized; otherwise report the coverage gap.
 
-For each detected ecosystem, run the appropriate listing command:
+Before mutations, run relevant baseline checks when practical, so existing failures are distinguishable from regressions. Report detected managers, scope, and available validation.
 
-| Ecosystem | Listing command |
-|-----------|-----------------|
-| Node.js (npm) | `npm outdated` |
-| Node.js (yarn) | `yarn outdated` |
-| Node.js (pnpm) | `pnpm outdated` |
-| Node.js (bun) | `bun outdated` |
-| Python (pip) | `pip list --outdated` |
-| Python (uv) | `uv pip list --outdated` |
-| Python (poetry) | `poetry show --outdated` |
-| Python (pipenv) | `pipenv update --dry-run` |
-| Ruby | `bundle outdated` |
-| Go | `go list -m -u all` |
-| Rust | `cargo outdated` (only if installed — see Step 1.3) |
-| PHP | `composer outdated --direct` |
-| Java (Maven) | `mvn versions:display-dependency-updates` |
-| Java (Gradle) | `./gradlew dependencyUpdates` (or `gradle` if no wrapper; only if plugin configured) |
-| .NET | `dotnet list package --outdated` |
-| Dart | `dart pub outdated` / `flutter pub outdated` |
-| Elixir | `mix hex.outdated` |
-| Swift | `swift package update --dry-run` |
+## 2. List candidates and classify
 
-**Classify every outdated package** by semver delta of current → latest:
+Use the installed manager's supported read-only listing command (for example `npm outdated`, `pnpm outdated`, `poetry show --outdated`, `go list -m -u all`, or `composer outdated --direct`). Check local help or official documentation for version-dependent commands; do not assume Yarn generations or other manager versions share flags. Treat a nonzero exit according to the command's documented behavior, not automatically as a failed scan.
 
-- **patch** (z bump): safe, apply in Step 3.
-- **minor** (y bump): usually safe, apply in Step 3.
-- **major** (x bump): risky, handle in Step 4 one at a time.
-- **pre-1.0** (`0.y.z`): treat any y bump as major (libraries on `0.y.z` use y as their breaking-change axis).
+Read current resolved versions from lockfiles where possible. An installed-environment listing such as `pip list --outdated` is not a complete inventory of declared project dependencies.
 
-Present a table grouped by bucket:
+For each candidate, report current version, proposed target, latest stable version, and classification. A new major being available does not exclude a newer patch/minor on the current major line.
 
-```
-| Package | Ecosystem | Current | Latest | Bucket |
-|---------|-----------|---------|--------|--------|
-```
+- Patch/minor under semver: candidates for the routine batch, subject to release notes and project constraints.
+- Major or pre-1.0 minor: migration candidates; review compatibility before updating.
+- Non-semver versions, prereleases, and known breaking changes: classify using the project's release policy rather than numeric assumptions.
 
-### Step 3: Minor and patch sweep
+For a read-only request, finish with this table and any discovery limits.
 
-Goal: apply all patch and minor bumps in one pass per ecosystem, then verify before touching majors.
+## 3. Apply routine updates
 
-a. **Update patch/minor only** — Use the conservative form of each tool. Do **not** use `--latest`, `--major-versions`, or `npm-check-updates` here:
+Work one ecosystem at a time, verifying each before continuing. Choose explicit target versions or bounded constraints that enforce the intended patch/minor scope. Preserve dependency groups, extras, registry sources, workspace placement, and the repository's pin/range style.
 
-| Ecosystem | Patch/minor update |
-|-----------|--------------------|
-| Node.js (npm) | `npm update` |
-| Node.js (yarn) | `yarn upgrade` |
-| Node.js (pnpm) | `pnpm update` (without `--latest`) |
-| Node.js (bun) | `bun update` |
-| Python (pip-tools) | `pip-compile --upgrade` |
-| Python (uv) | `uv lock --upgrade` |
-| Python (poetry) | `poetry update` |
-| Python (pipenv) | `pipenv update` |
-| Ruby | `bundle update --conservative` |
-| Go | `go get -u=patch ./... && go mod tidy` |
-| Rust | `cargo update` |
-| PHP | `composer update --with-dependencies` |
-| Java (Maven) | `mvn versions:use-latest-releases -DallowMajorUpdates=false` |
-| Java (Gradle) | Edit version numbers in `build.gradle` manually (non-major only) |
-| .NET | Edit `*.csproj` manually (non-major only), or `dotnet outdated --upgrade` if the tool is installed |
-| Dart | `dart pub upgrade` (no `--major-versions`) |
-| Elixir | `mix deps.update --all` |
-| Swift | `swift package update` (resolves within `Package.swift` ranges) |
+Do not treat a resolver's generic update command as a patch/minor filter. For example, [`npm update`](https://docs.npmjs.com/cli/commands/npm-update) follows declared ranges; [`pip-compile --upgrade`](https://pip-tools.readthedocs.io/en/stable/) re-resolves allowed versions. Broad ranges can permit major updates, while narrow ranges can prevent intended minor updates. Inspect constraints before running the command and inspect the resulting manifest and lockfile diff afterward.
 
-Run these **per ecosystem, not all at once** — sequential updates allow attributing a failure to a specific ecosystem.
+Use package-scoped updates when the user named packages. Allow necessary transitive changes, but investigate unrelated churn or unexpected major upgrades before accepting the batch. Never hand-edit generated lockfiles or use force flags to hide dependency conflicts.
 
-b. **Verify after the sweep** — Run the validation commands collected in Step 1.4. Check:
-- Lockfile regenerated.
-- Build passes.
-- Tests pass.
-- Type check passes (if applicable).
+Run the collected checks (build, tests, type checks as applicable). If a regression appears, stop further updates, diagnose it, and either fix it within scope or undo only this batch's changes using the recorded baseline. A blanket `git restore` can erase user edits and earlier successful updates; do not use it as a generic rollback.
 
-If verification fails, **stop**. Do not proceed to Step 4. Revert one ecosystem at a time with `git restore` until the culprit is isolated.
+## 4. Apply migrations
 
-### Step 4: Major bumps loop
+For each requested major or other breaking update:
 
-For each package classified as **major** in Step 2, run this loop **one package at a time**:
+1. Read official release notes and migration guidance for the exact current-to-target path, including intermediate breaking releases when crossing several majors. Use a documentation MCP if available, otherwise official web sources. Summarize required changes before editing.
+2. Update to the researched target, preserving dependency groups and manifest conventions. Do not substitute a moving `latest` for the version you reviewed. Some ecosystems require manifest constraints or import/module paths to change before the resolver can install a major release.
+3. Apply the required code and configuration migration. Update tightly coupled packages together when peer or framework compatibility requires it; otherwise keep migrations separate.
+4. Run validation and inspect the complete diff. If incompatible, undo only this migration, preserve prior work, and report the reason. If unresolved failure remains, stop dependent updates rather than building on a broken state.
+5. Report the verified checkpoint and continue within the authorized scope. Do not auto-commit or require another confirmation solely because a major update completed.
 
-a. **Research breaking changes**
-   - If the context7 MCP server is available: `resolve-library-id` then `query-docs` for migration guides and changelog. Prefer this over web fetching.
-   - Otherwise (or if context7 lacks migration info): fetch the library's CHANGELOG / migration guide from GitHub or the docs site with WebFetch.
-   - Summarize required code changes for the user **before** updating.
+## 5. Report
 
-b. **Update only this package**
-
-| Ecosystem | Single-package major update |
-|-----------|------------------------------|
-| Node.js (npm) | `npm install <pkg>@latest` |
-| Node.js (yarn) | `yarn add <pkg>@latest` |
-| Node.js (pnpm) | `pnpm add <pkg>@latest` |
-| Node.js (bun) | `bun add <pkg>@latest` |
-| Python (uv) | `uv add <pkg>` (re-adds at latest, rewriting the constraint) |
-| Python (poetry) | `poetry add <pkg>@latest` |
-| Python (pip) | `pip install --upgrade <pkg>` (then regenerate the lockfile) |
-| Ruby | `bundle update <gem>` |
-| Go | `go get <module>@latest && go mod tidy` |
-| Rust | `cargo add <crate>@<version>` (or edit `Cargo.toml`, then `cargo update -p <crate>`) |
-| PHP | `composer require <pkg>:^<major>` |
-| Dart | `dart pub upgrade --major-versions <pkg>` |
-| Java / Gradle / .NET / Elixir / Swift | Edit the version in the build file (`pom.xml` / `build.gradle` / `*.csproj` / `mix.exs` / `Package.swift`), then re-resolve with the ecosystem's install command |
-
-c. **Apply code changes** identified in Step 4.a (call sites, deprecated APIs, config format changes).
-
-d. **Verify** with the same validation commands as Step 3.b. If it fails, either fix the breakage or revert with `git restore` and skip this bump (report as "skipped — incompatible").
-
-e. **Checkpoint** — Do NOT auto-commit, but pause and tell the user: "Major bump `<pkg>` `X` → `Y` complete and verified — good checkpoint to commit." Per-major checkpoints make the eventual git history reviewable.
-
-Repeat until all major bumps are processed (or skipped with reason).
-
-### Step 5: Report
-
-```
-## Dependency Update Summary
-
-### Patch/minor sweep
-| Package | Ecosystem | From | To |
-|---------|-----------|------|-----|
-
-### Major bumps applied
-| Package | From | To | Code changes |
-|---------|------|----|--------------|
-
-### Major bumps skipped
-| Package | Reason |
-|---------|--------|
-
-### Verification
-- Build: PASS/FAIL
-- Tests: PASS/FAIL (X/Y)
-- Type check: PASS/FAIL
-```
-
-## Common mistakes
-
-- **Running `pnpm update --latest` / `npm-check-updates -u` / `dart pub upgrade --major-versions` in Step 3.** Those commands skip the major-bump research gate. Use them only inside Step 4's per-package loop, after researching changes.
-- **Auto-installing helper tools.** `cargo install cargo-outdated`, `dotnet tool install -g dotnet-outdated-tool`, Gradle plugin injection — all require explicit user consent. Ask, do not assume.
-- **Batching all ecosystems before any verification.** Updating Node + Python + Go and then running tests once means a failure cannot be attributed. Verify after each ecosystem in Step 3, after each major bump in Step 4.
-- **Ignoring peer-dependency conflicts.** React/Vue/Angular bumps often require coordinated updates across multiple packages. Inspect the `peerDependencies` warnings from the install step before assuming success.
-- **Treating `pre-1.0` minor as safe.** Libraries on `0.y.z` use the y-bump as their major. Classify them as major in Step 2.
-- **Updating a library's published version ranges silently.** If `package.json` of a publishable library has `peerDependencies` or wide ranges, the bump policy is different — confirm scope with the user.
-
-## Important Notes
-
-- **Lockfile detection drives package-manager choice** — presence of `pnpm-lock.yaml` / `yarn.lock` / `bun.lock` / `package-lock.json` decides the Node.js tool. Never assume npm.
-- **Monorepos** — npm/yarn/pnpm workspaces, Nx, Turborepo: run updates at the workspace root, not in individual packages.
-- **Virtual environments** — For Python, detect and activate `.venv` / `venv` / poetry env before running pip commands.
-- **Selective scope** — If the user names ecosystems or packages, limit the run accordingly; do not expand scope without explicit instruction.
-- **Dry run** — If the user asks for "check only" or "dry run", stop after Step 2 (the classified outdated table) without running any update commands.
-- **Git safety** — Do NOT commit changes automatically. Surface checkpoints (especially after each major bump) so the user can choose what to commit and when.
-- **Security audit is a separate workflow** — `npm audit`, `pip-audit`, `cargo audit`, `bundle audit`, `composer audit`. Run them only if the user explicitly asks.
+Summarize versions changed, migration edits, skipped packages with reasons, and checks actually run. Distinguish passing checks, failures, baseline failures, and checks not run; never label an untested update verified. Include important source links for migration decisions. Do not run a separate security audit unless requested.
