@@ -1,6 +1,6 @@
 # claude-plugins
 
-**A plugin marketplace for [Claude Code](https://claude.com/claude-code)**. Add it once, then install plugins with a single command. They work in the terminal, the desktop app, and the IDE extensions.
+**A plugin marketplace for [Claude Code](https://claude.com/claude-code)**, with Codex and GitHub Copilot CLI support for `eli`, `teach-me`, `unslop`, `visual-prompt`, and `docstyle`. Add the marketplace once, then install the plugins you need.
 
 ## Plugins
 
@@ -14,7 +14,7 @@
 | **visual-prompt** | universal | Generates three `.txt` files with artistic text-to-image prompts in three contrasting directions, written in parallel by separate subagents in the conversation language. Two profiles: `art` (artwork, posters, photography) and `ui` (artistic interface mockups). Commands: `/visual-prompt-art`, `/visual-prompt-ui`. |
 | **dependency-update** | universal | Scans your project's dependencies across all ecosystems and updates them safely: minor/patch in one pass, majors one at a time with separate research for each. |
 | **eli** | universal | Explain like I'm an intern: explains any concept, term, or piece of code to a smart person who lacks the domain knowledge. Short, concrete, example-driven, no padding. |
-| **docstyle** | universal | Applies the [Google developer documentation style guide](https://developers.google.com/style) to technical docs. `/docstyle` edits files in place (or reports findings with `--audit`), the skill activates automatically when you write documentation, and a SessionStart hook keeps all session prose aligned with the guide's core rules (disable by creating `.claude/docstyle-off`). Ships the full guide (70 pages) as local references with a topic index. |
+| **docstyle** | universal | Applies the [Google developer documentation style guide](https://developers.google.com/style) to technical docs. `/docstyle` edits files in place (or reports findings with `--audit`) and activates automatically when you create or edit technical documentation. It does not style chat replies or install session hooks. Ships the full guide (70 pages) as local references with a topic index. |
 | **unslop** | universal | Edits LLM-generated documents in place to remove the telltale signs of AI writing catalogued by Wikipedia's ["Signs of AI writing"](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing): AI vocabulary, negative parallelisms, rule of three, promotional tone, vague attributions, throat-clearing, fake-profound kickers, formatting slop—plus Polish officialese and bureaucratic heaviness. Handles Polish and English. Audit mode reports findings with red/yellow/green severity instead of editing; `/unslop:plain` rewrites Polish into plain language (a deliberate register change). The plugin provides skills only; it does not inject instructions at session start. |
 
 ## Installation
@@ -67,7 +67,7 @@ claude plugin marketplace update ethantiv-plugins
 
 ## Requirements
 
-All plugins need a working Claude Code. Beyond that:
+All plugins work with Claude Code. The five plugins listed above also support Codex and GitHub Copilot CLI. Beyond the host CLI:
 
 **book-forge**
 - **Python 3**, standard library only, no `pip install`.
@@ -103,11 +103,14 @@ npx agent-browser open example.com
 **roadmap**
 - The **Workflow** tool (agent swarm); without it the skill falls back to parallel `Task` agents.
 
-**teach-me**, **eli**, **docstyle**
-- No dependencies beyond Claude Code.
+**eli**, **unslop**, **docstyle**
+- No dependencies beyond the host CLI.
+
+**teach-me**
+- Bash for randomizing quiz choices; Git for code-change lessons and authenticated `gh` for GitHub PR lessons.
 
 **visual-prompt**
-- The **Workflow** tool (agent swarm) for writing prompts in parallel; without it the skills fall back to parallel `Task` agents.
+- Native subagent tools: Workflow/Agent in Claude Code, `spawn_agent` in Codex, or `task` in Copilot CLI. Without delegation, the skill asks before producing the three directions sequentially.
 
 **dependency-update**
 - The package managers of your ecosystems (for example, `npm`, `pip`, `cargo`, or `go`) available in `PATH`, used to check for and install updates.
@@ -124,7 +127,7 @@ After installation, each plugin exposes its skills as `/<plugin>:<skill>` comman
 - **visual-prompt**: `/visual-prompt-art` or `/visual-prompt-ui` (or describe what you need) generates three `.txt` files with prompts in contrasting directions.
 - **dependency-update**: `/dependency-update:dependency-update` scans and safely updates your project's dependencies.
 - **eli**: `/eli:eli` with a concept, term, or piece of code; you get a short, vivid explanation.
-- **docstyle**: `/docstyle:docstyle` with a file path (or directory) edits documentation in place per the Google developer documentation style guide; `--audit` reports severity-graded findings instead. Writing docs without invoking it also triggers the skill, and the SessionStart hook keeps everyday session prose on-style.
+- **docstyle**: `/docstyle:docstyle` with a file path (or directory) edits documentation in place per the Google developer documentation style guide; `--audit` reports severity-graded findings instead. Creating or editing documentation also triggers the skill. Its rules apply to documentation only, not ordinary chat replies.
 - **unslop**: `/unslop:unslop` with a file path (or directory); it edits the document in place to remove signs of AI writing and reports what it fixed. Add `--audit` (or ask for "tylko audyt") to get severity-graded findings without edits. `/unslop:plain` with a file path simplifies bureaucratic Polish into plain language.
 
 ## License
@@ -133,7 +136,7 @@ After installation, each plugin exposes its skills as `/<plugin>:<skill>` comman
 
 ## Codex CLI
 
-Native Codex packages are available for `unslop`, `eli`, `visual-prompt`, and `teach-me`. Claude Code continues to use the existing marketplace and manifests.
+Native Codex packages are available for `unslop`, `eli`, `visual-prompt`, `teach-me`, and `docstyle`. Claude Code continues to use the existing marketplace and manifests.
 
 ```sh
 codex plugin marketplace add ethantiv/claude-plugins
@@ -141,8 +144,32 @@ codex plugin add unslop@ethantiv-plugins
 codex plugin add eli@ethantiv-plugins
 codex plugin add visual-prompt@ethantiv-plugins
 codex plugin add teach-me@ethantiv-plugins
+codex plugin add docstyle@ethantiv-plugins
 ```
 
-For local development, register the repository directory instead of the GitHub source. Restart the session after installation. Invoke `$unslop:unslop`, `$unslop:plain`, `$eli:eli`, `$visual-prompt:visual-prompt`, `$visual-prompt:visual-prompt-art`, `$visual-prompt:visual-prompt-ui`, or `$teach-me:teach-me`. Skills use the tools available in their host; teach-me falls back to numbered chat choices when Codex has no interactive question tool. Visual-prompt uses Codex subagents when available.
+For local development, register the repository directory instead of the GitHub source. Restart the session after installation. Invoke `$unslop:unslop`, `$unslop:plain`, `$eli:eli`, `$visual-prompt:visual-prompt`, `$visual-prompt:visual-prompt-art`, `$visual-prompt:visual-prompt-ui`, `$teach-me:teach-me`, or `$docstyle:docstyle`. Skills use the tools available in their host; teach-me falls back to numbered chat choices when Codex has no interactive question tool. Visual-prompt uses Codex subagents when available.
 
 Unslop provides skills only in both Claude Code and Codex. Version 0.4.3 removes its SessionStart hooks; existing `unslop-off` files are no longer used.
+
+## GitHub Copilot CLI
+
+The same five plugins use the existing `ethantiv-plugins` marketplace:
+
+```sh
+copilot plugin marketplace add ethantiv/claude-plugins
+copilot plugin install eli@ethantiv-plugins
+copilot plugin install teach-me@ethantiv-plugins
+copilot plugin install unslop@ethantiv-plugins
+copilot plugin install visual-prompt@ethantiv-plugins
+copilot plugin install docstyle@ethantiv-plugins
+```
+
+Start a new session after installation. Invoke `/eli`, `/teach-me`, `/unslop`, `/plain`, `/visual-prompt`, `/visual-prompt-art`, `/visual-prompt-ui`, or `/docstyle`. Use the skill picker if another installed plugin has the same skill name. Teach-me uses `ask_user` when available and otherwise waits for numbered choices in chat. Visual-prompt uses native subagents. See the [Copilot CLI skill and tool reference](https://docs.github.com/en/copilot/reference/copilot-cli-reference/cli-command-reference).
+
+### Devcontainer configuration
+
+In `build-cli-devcontainer`, both `claude.plugins.external` and `copilot.plugins.external` list the five names under `marketplace: ethantiv-plugins` and `source: ethantiv/claude-plugins`. In `ai-devcontainer-sync`, `defaults.codex.plugins` uses one entry per plugin with the same marketplace and source. The setup scripts install the published repository version; local edits become available through that source after publication.
+
+### Docstyle update
+
+Docstyle 0.1.1 removes all session hooks. It applies only when creating, editing, or auditing technical documentation; ordinary chat replies are outside its scope. After updating an existing installation, start a new session to discard previously injected style instructions. Old `docstyle-off` files are no longer used and can be removed.

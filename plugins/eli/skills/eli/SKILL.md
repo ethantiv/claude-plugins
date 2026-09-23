@@ -8,8 +8,7 @@ allowed-tools: Read, Grep, Glob
 
 ## Agent compatibility
 
-Use the host’s native reading, search, editing and web tools; Claude tool names below describe capabilities, not requirements to call missing tools. In Codex, invoke this skill as `$eli:eli`; take arguments from the user’s message when `$ARGUMENTS` is unavailable. Cross-plugin slash references mean the corresponding `$plugin:skill` in Codex, only when that skill is installed. Resolve relative resource paths from this SKILL.md, never from the working directory.
-
+Use the host’s native tools: Claude Code tool names below describe capabilities, not requirements to call missing tools. Invoke this skill as `/eli:eli` in Claude Code, `$eli:eli` in Codex, or `/eli` in Copilot CLI (use its skill picker if names collide). Take arguments from the user’s message when `$ARGUMENTS` is unavailable. Resolve relative resource paths from this SKILL.md, never from the working directory. For optional helper skills, use the host’s skill tool when available, otherwise read the installed skill’s SKILL.md; continue without helpers that are not installed. Cross-plugin references use the invocation syntax of the current host.
 
 # eli — explain like I'm an intern
 

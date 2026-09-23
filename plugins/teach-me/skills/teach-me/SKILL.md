@@ -8,10 +8,9 @@ allowed-tools: Read, Grep, Glob, Bash(git:*), Bash(gh:*), Bash(echo:*), Write, E
 
 ## Agent compatibility
 
-The closed-question interface means `AskUserQuestion` in Claude Code, or Codex’s question tool when available in the current mode. When unavailable, present the same closed questions as numbered options in chat and wait for an answer; never assume a choice.
+The closed-question interface means `AskUserQuestion` in Claude Code, `ask_user` in Copilot CLI, or Codex’s question tool when available in the current mode. When unavailable, present the same closed questions as numbered options in chat and wait for an answer; never assume a choice.
 
-Use the host’s native reading, search, editing and web tools; Claude tool names below describe capabilities, not requirements to call missing tools. In Codex, invoke this skill as `$teach-me:teach-me`; take arguments from the user’s message when `$ARGUMENTS` is unavailable. Cross-plugin slash references mean the corresponding `$plugin:skill` in Codex, only when that skill is installed. Resolve relative resource paths from this SKILL.md, never from the working directory.
-
+Use the host’s native tools: Claude Code tool names below describe capabilities, not requirements to call missing tools. Invoke this skill as `/teach-me:teach-me` in Claude Code, `$teach-me:teach-me` in Codex, or `/teach-me` in Copilot CLI (use its skill picker if names collide). Take arguments from the user’s message when `$ARGUMENTS` is unavailable. Resolve relative resource paths from this SKILL.md, never from the working directory. For optional helper skills, use the host’s skill tool when available, otherwise read the installed skill’s SKILL.md; continue without helpers that are not installed. Cross-plugin references use the invocation syntax of the current host.
 
 # teach-me
 
@@ -37,7 +36,7 @@ Hard rules:
 - **No jargon without paying for it.** If a term is unavoidable, define it in the same breath, in plain words. Don't explain one unknown with three more.
 - **Short and dense.** Every sentence earns its place; if a line only restates the previous one, cut it. Reach for an example, an analogy, or a 3-line snippet before reaching for more sentences.
 
-**Unslop edit.** Before writing your first longer explanation of the session, load the `unslop:unslop` skill once via the `Skill` tool and apply its editing rules to all Polish prose you produce from then on — chat explanations and checklist file content alike.
+**Unslop edit.** Before writing your first longer explanation of the session, load the optional `unslop:unslop` skill once using the host’s skill-loading mechanism described above and apply its editing rules to all Polish prose you produce from then on — chat explanations and checklist file content alike.
 
 If `unslop:unslop` or `frontend-design:frontend-design` is not installed, continue without it — never abort the session over a missing helper skill.
 
@@ -87,22 +86,22 @@ Each section is a checklist of concrete sub-items. Add a one-line note next to a
 
 **Markdown format:** items are `- [ ]` → `- [x]`; the note goes on the same line. Update the file with `Edit`.
 
-**HTML format:** before the first write, load the `frontend-design:frontend-design` skill via the `Skill` tool and apply its guidance, **choosing the aesthetic direction yourself** — never ask the user about visual details (the format choice in step 2 stays the only question about the file). One self-contained file — inline `<style>`, no CDN, no external fonts, scripts or images. An `<h2>` per section, a `<ul>` of items; an open item renders `☐`, a mastered one `☑` with class `done` and the note in `<small>`. Show a `X z Y opanowanych` counter (a progress bar is welcome). Make it readable in both light and dark (`prefers-color-scheme`). On every state change **rewrite the whole file** with `Write` — do not patch the HTML with `Edit`.
+**HTML format:** before the first write, load the optional `frontend-design:frontend-design` skill using the host’s skill-loading mechanism described above and apply its guidance, **choosing the aesthetic direction yourself** — never ask the user about visual details (the format choice in step 2 stays the only question about the file). One self-contained file — inline `<style>`, no CDN, no external fonts, scripts or images. An `<h2>` per section, a `<ul>` of items; an open item renders `☐`, a mastered one `☑` with class `done` and the note in `<small>`. Show a `X z Y opanowanych` counter (a progress bar is welcome). Make it readable in both light and dark (`prefers-color-scheme`). On every state change **rewrite the whole file** with `Write` — do not patch the HTML with `Edit`.
 
 ## 4. Teach — one stage at a time
 
 Work through the checklist top to bottom. For **each** item, run this loop:
 
 1. **Explain first.** Teach the item in the shape from "Tone and style" — one-line core, a concrete example, why it matters — written for the learner's **current level**. At "od zera" assume nothing: define every term, build from something the user already knows. Never ask a question about an item before you have explained it. Show, don't just tell: quote the actual code / diff and walk it line by line when that lands the point better than prose. Drill into *why* — don't stop at the first "why", ask the next one down; the *why* chain is the priority. Let the user ask their own questions freely.
-2. **Check with one closed question.** Use the closed-question interface with 2–3 content options plus a "nie wiem" option (4 total max), testing *what you just explained* at the current level. The question must require **applying** the idea — "co się stanie, gdy…", "który wariant jest poprawny…", "dlaczego nie…" — never restating a definition. If the answer is obvious from the explanation you just gave, the question is too easy; rewrite it. Build distractors from real misconceptions. Draw the correct option's slot with Bash (see step 5).
+2. **Check with one closed question.** Use the closed-question interface with 2 content options plus a "nie wiem" option (3 total; omit any recommendation or preselection that would reveal the answer), testing *what you just explained* at the current level. The question must require **applying** the idea — "co się stanie, gdy…", "który wariant jest poprawny…", "dlaczego nie…" — never restating a definition. If the answer is obvious from the explanation you just gave, the question is too easy; rewrite it. Build distractors from real misconceptions. Draw the correct option's slot with the host’s shell tool running Bash (see step 5).
 3. **Feedback — mandatory, immediately, every time.** The first thing you write after the answer, before anything else: **"Dobrze"** or **"Nie — poprawna odpowiedź to …"**, then one or two sentences on *why* it is correct and why the picked distractor is not. On a wrong answer or "nie wiem": re-explain that specific piece **differently** — another example, another angle, not the same paragraph again — then ask a **new** question on the same point. Never re-ask the identical question. "Nie wiem" is a gap to fill, not a fault.
 4. **Adapt the level.** Track a simple level in your head. Two correct answers in a row → step up: shorter explanations, harder checks (edge cases, tradeoffs, "why not the alternative"). A wrong answer → step down: slower, more examples, a simpler check. Always one thing at a time — never dump a whole section, whatever the level.
 
 ## 5. Quiz to verify (not to perform)
 
-Checks test mastery — both high level (motivation) and low level (logic, edge cases). Always use the closed-question interface, 2–3 content options plus "nie wiem", never an open question. Feedback rules live in step 4.3 and apply to every question.
+Checks test mastery — both high level (motivation) and low level (logic, edge cases). Always use the closed-question interface, 2 content options plus "nie wiem", never an open question. Feedback rules live in step 4.3 and apply to every question.
 
-- **Randomize the correct option's position — mechanically, not by feel.** Left to intuition you park the correct answer in slot A ~80% of the time. Before composing any closed question, draw the slot with Bash: `echo $((RANDOM % N + 1))` where N is the number of content options (excluding "nie wiem"), and place the correct answer exactly there. To draw several slots for upcoming questions in one call: `echo $((RANDOM % 3 + 1)) $((RANDOM % 3 + 1)) $((RANDOM % 3 + 1))`.
+- **Randomize the correct option's position — mechanically, not by feel.** Left to intuition you park the correct answer in slot A ~80% of the time. Before composing any closed question, draw the slot using the host’s shell tool running Bash: `echo $((RANDOM % N + 1))` where N is the number of content options (excluding "nie wiem"), and place the correct answer exactly there. To draw several slots for upcoming questions in one call: `echo $((RANDOM % 2 + 1)) $((RANDOM % 2 + 1)) $((RANDOM % 2 + 1))`.
 - **Never reveal the answer in the question or options.**
 - A wrong or shaky answer means that item is **not** mastered — re-teach the specific gap (differently), then a new check. Do not mark an item done on a guess.
 - "Nie wiem" counts as not mastered — teach from there, don't punish it.

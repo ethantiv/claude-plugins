@@ -1,15 +1,14 @@
 ---
 name: visual-prompt
 description: This skill should be used when the user asks to generate text-to-image prompts for AI image generators (Midjourney, DALL-E, Flux, Stable Diffusion, nano banana) — for artwork, posters, photography and key visuals, OR for artistic mockups of interfaces, websites, dashboards, landing pages and mobile screens. Also triggers on "design brief for AI", "image generation prompt", "UI mockup prompt", "interface concept", "website mockup prompt".
-allowed-tools: Read, Glob, Agent, Workflow
+allowed-tools: Read, Glob, Write, Agent, Workflow
 ---
 
 ## Agent compatibility
 
-In Codex use its native `spawn_agent` and wait tools for the three independent directions; the Workflow/Agent examples below are Claude-specific equivalents. If delegation is unavailable, report that limitation and ask whether to produce the three directions sequentially; do not claim agents ran.
+For the three independent directions, use Claude Code’s Workflow/Agent tools, Codex’s native `spawn_agent` and wait tools, or Copilot CLI’s `task` tool and its available completion/status mechanism. Start all three before waiting for completion. The Workflow/Agent examples below apply only to Claude Code. If delegation is unavailable, ask whether to produce the three directions sequentially and wait for the answer. Only with that agreement may the orchestrator write the prompts itself; never claim agents ran.
 
-Use the host’s native reading, search, editing and web tools; Claude tool names below describe capabilities, not requirements to call missing tools. In Codex, invoke this skill as `$visual-prompt:visual-prompt`; take arguments from the user’s message when `$ARGUMENTS` is unavailable. Cross-plugin slash references mean the corresponding `$plugin:skill` in Codex, only when that skill is installed. Resolve relative resource paths from this SKILL.md, never from the working directory.
-
+Use the host’s native tools: Claude Code tool names below describe capabilities, not requirements to call missing tools. Invoke this skill as `/visual-prompt:visual-prompt` in Claude Code, `$visual-prompt:visual-prompt` in Codex, or `/visual-prompt` in Copilot CLI (use its skill picker if names collide). Take arguments from the user’s message when `$ARGUMENTS` is unavailable. Resolve relative resource paths from this SKILL.md, never from the working directory. For optional helper skills, use the host’s skill tool when available, otherwise read the installed skill’s SKILL.md; continue without helpers that are not installed. Cross-plugin references use the invocation syntax of the current host.
 
 # Visual Prompt — Orchestrator
 
@@ -25,7 +24,7 @@ Explicit entry points (sibling skills in this plugin, slash-invocable):
 - `visual-prompt-ui` (`/visual-prompt-ui <topic>`) → forces `ui` profile.
 - Natural-language trigger → this orchestrator infers the profile (mentions of `dashboard`, `interface`, `landing page`, `mobile screen`, `website mockup`, `admin panel` → `ui`; otherwise `art`). If unsure, ask once before dispatching.
 
-The orchestrator never writes a prompt itself. Three prompts are written by three independent subagents dispatched in parallel.
+Normally three independent subagents write the prompts in parallel. The only exception is the user-approved sequential fallback described above.
 
 ## Inputs
 
@@ -113,7 +112,7 @@ Same topic, different cultural angle each time.
 
 ### 4. Dispatch three subagents in parallel
 
-Drive the trio with the **Workflow tool** — invoking this skill is the opt-in to run it. If the Workflow tool is unavailable, use the `Agent` fallback below. Either way three is the cap — one subagent per direction, and no fourth agent to review, compare, or re-rank what the three returned. The refinement checklist inside the brief is the quality gate; the orchestrator only reports paths.
+Use the host-specific delegation described in Agent compatibility — invoking this skill is the opt-in to run it. In Claude Code prefer the **Workflow tool**, then the `Agent` fallback below. Three is the cap — one subagent per direction, and no fourth agent to review, compare, or re-rank what the three returned. The refinement checklist inside the brief is the quality gate; the orchestrator only reports paths.
 
 Each subagent prompt contains:
 
@@ -158,12 +157,12 @@ No summary of the prompts. No usage hints. No offer to generate more.
 
 ## Common mistakes
 
-- Writing the prompts yourself instead of dispatching subagents.
+- Writing the prompts yourself without approval for the sequential fallback.
 - Three flavours of the same idea instead of three genuinely contrasting directions.
 - Mixing profiles inside one trio — all three directions stay on one profile.
 - Using `art` axes for a `ui` topic or vice versa — each profile has its own contrast table.
 - Skipping trio reservation, so two subagents collide on the same `-N` number.
-- Dispatching subagents sequentially. They run in parallel — one Workflow call, or (fallback) three `Agent` calls in one assistant message.
+- Waiting for one subagent before starting the others. Start all three with the host’s native delegation tools before waiting.
 - Forgetting to pass `Output language:` — the subagent then falls back to English and the files ignore the conversation language.
 - Naming the hidden reference inside the seed text the subagent will read — it's a conceptual thread, not a label to mention.
 - Summarising prompts in the report-back. Three lines, that's it.

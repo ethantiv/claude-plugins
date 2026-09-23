@@ -1,0 +1,18 @@
+{
+  "name": "docstyle",
+  "version": "0.1.1",
+  "description": "Apply the Google developer documentation style guide when creating, editing, or auditing technical documentation. Edits files in place; --audit reports findings without edits. Ships the full guide (70 pages) as local references with a topic index. No session hooks or chat styling.",
+  "author": {
+    "name": "Mirek Zaniewicz"
+  },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Docstyle",
+    "shortDescription": "Create and edit technical documentation",
+    "longDescription": "Apply the Google developer documentation style guide when creating, editing, or auditing technical documentation. Edits files in place; --audit reports findings without edits. Ships the full guide (70 pages) as local references with a topic index. No session hooks or chat styling.",
+    "developerName": "Mirek Zaniewicz",
+    "category": "Productivity",
+    "capabilities": [],
+    "defaultPrompt": "Apply docstyle to this documentation."
+  }
+}

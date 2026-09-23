@@ -6,6 +6,10 @@ argument-hint: "<file path(s) to fix, or a directory> [--audit]"
 allowed-tools: Read, Edit, Grep, Glob
 ---
 
+## Agent compatibility
+
+Use the host’s native tools: Claude Code tool names below describe capabilities, not requirements to call missing tools. Invoke this skill as `/docstyle:docstyle` in Claude Code, `$docstyle:docstyle` in Codex, or `/docstyle` in Copilot CLI (use its skill picker if names collide). Take arguments from the user’s message when `$ARGUMENTS` is unavailable. Resolve relative resource paths from this SKILL.md, never from the working directory. For optional helper skills, use the host’s skill tool when available, otherwise read the installed skill’s SKILL.md; continue without helpers that are not installed. Cross-plugin references use the invocation syntax of the current host.
+
 # docstyle — apply the Google developer documentation style guide
 
 Edit the document(s) in `$ARGUMENTS` **in place** so they follow the [Google developer documentation style guide](https://developers.google.com/style). Preserve the meaning, the facts, and the technical content; change wording, style, and formatting. The full guide (70 pages) is available locally under [references/guide/](references/guide/) — never answer a style question from memory when the relevant page is one `Read` away.
@@ -39,12 +43,9 @@ The always-apply subset; the index maps everything else.
 
 With `--audit`, produce a report instead of editing. For each file list the findings grouped by guide topic, each with: severity (**high** — misleads or blocks the reader: ambiguous instructions, future promises, wrong person/tense in procedures; **medium** — clear guide violations: title case headings, "click here" links, passive procedures, superlatives; **low** — polish: serial commas, contractions, number formatting), the location (`file:line`), a quoted fragment, the proposed fix, and the guide page it comes from. End with a per-file tally by severity. Make no edits in audit mode.
 
-## Session-wide style
-
-The plugin's SessionStart hook injects a condensed rule set (`${CLAUDE_PLUGIN_ROOT}/hooks/chat-style.md`) so all session prose follows the guide without invoking this skill. When this skill is active it supersedes the hook's condensed rules. Disable the hook by creating `.claude/docstyle-off` in the project or `~/.claude/docstyle-off` globally.
-
 ## Scope boundaries
 
+- Apply these rules only to documentation being created, edited, or audited. Do not activate a persistent session mode or restyle ordinary chat replies, commit messages, or unrelated prose.
 - Removing AI-writing patterns (negative parallelisms, fake-profound kickers, AI vocabulary) is a different job: if the unslop plugin is installed, use `/unslop:unslop` for it.
 - Deliberately simplifying Polish officialese into plain language: if the unslop plugin is installed, that is `/unslop:plain`.
-- This skill styles developer documentation; leave fiction, marketing copy, and conversational text alone unless the user explicitly asks.
+- This skill styles developer documentation; leave fiction, marketing copy, and conversational text alone.
